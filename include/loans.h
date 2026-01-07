@@ -1,5 +1,6 @@
 #ifndef LOANS_H
 #define LOANS_H
+
 #include "structs.h"
 
 /** 

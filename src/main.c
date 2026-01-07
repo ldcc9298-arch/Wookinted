@@ -7,6 +7,7 @@
 #include "users.h"
 #include "books.h"
 #include "loans.h"
+#include "interface.h"
 
 // Definir tamanhos máximos para os arrays
 #define MAX_BOOKS 100
@@ -67,7 +68,7 @@ int main() {
                     break;
                 case 4:
                     printf("--- MEU PERFIL ---\n");
-                    gerirPerfil(users, totalUsers, &idLogado);
+                    menuGestaoPerfil(users, totalUsers, &idLogado);
                     listarFeedbacks(feedbacks, totalFeedbacks, idLogado);
                     // Se a conta for apagada dentro do menu, idLogado volta como -1
                     if (idLogado == -1) {

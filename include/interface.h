@@ -1,8 +1,9 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
+
 #include "structs.h"
 
-// --- UTILIZADORES ---
+// --- LOGIN & MENU PRINCIPAL ---
 
 /**
  * @brief Apresenta o menu de visitante (Login, Registo, Recuperar).
@@ -17,7 +18,7 @@ int menuModoVisitante(Utilizador users[], int *totalUsers);
  */
 int mostrarMenuPrincipal(char *nome);
 
-// --- LIVROS ---
+// --- SUB-MENU MERCADO ---
 
 /**
  * @brief Gere o menu do Mercado de Livros (Pesquisa, Requisição, Doação).
@@ -29,17 +30,29 @@ int mostrarMenuPrincipal(char *nome);
  */
 void menuMercadoLivros(Livro books[], int *totalBooks, Emprestimo loans[], int *totalLoans, int idLogado);
 
+// --- SUB-MENU MEUS LIVROS ---
+
 /**
  * @brief Gere o menu de gestão de inventário pessoal (Listar, Registar, Editar, Eliminar).
  */
 void menuMeusLivros(Livro books[], int *totalBooks, int idLogado);
 
-// --- TRANSAÇÕES ---
+// --- SUB-MENU MOVIMENTOS ---
 
 /**
  * @brief Menu principal para gerir devoluções, aceitar pedidos e dar feedback.
  */
 void menuGestaoMovimentos(Emprestimo loans[], int *totalLoans, Livro books[], int *totalBooks, Feedback feedbacks[], int *totalFeedbacks, int idLogado);
 
+// --- SUB-MENU PERFIL ---
+
+/**
+ * @brief Gere o sub-menu de perfil (Ver, Editar, Eliminar).
+ * @details Contém o loop do menu, inputs e chamadas de persistência.
+ * * @param users Array completo (necessário para guardar alterações no ficheiro).
+ * @param total Total de utilizadores.
+ * @param idLogado Apontador para o ID atual (para poder fazer logout se eliminar conta).
+ */
+void menuGestaoPerfil(Utilizador users[], int total, int *idLogado);
 
 #endif // INTERFACE_H

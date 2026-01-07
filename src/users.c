@@ -6,6 +6,7 @@
 #include "users.h"
 #include "utils.h"
 #include "files.h"
+#include "interface.h"
 
 /**
  * @brief Calcula a idade com base na data de nascimento.
@@ -307,60 +308,4 @@ int eliminarConta(Utilizador *user) {
         printf("[Cancelado] A conta mantem-se ativa.\n");
         return 0; // Não eliminou
     }
-}
-
-/**
- * @brief Gerencia o perfil do utilizador logado.
- * @param users Array de utilizadores.
- * @param total Número total de utilizadores.
- * @param idLogado Ponteiro para o ID do utilizador logado (pode ser alterado se eliminar conta).
- */
-void gerirPerfil(Utilizador users[], int total, int *idLogado) {
-    int subOpcao;
-    int id = *idLogado;
-
-    do {
-        limparEcra();
-        printf("\n--- GESTAO DE PERFIL ---\n");
-        printf("1. Ver Meus Dados\n");
-        printf("2. Editar Dados\n");
-        printf("3. Eliminar Conta\n");
-        printf("0. Voltar\n");
-        printf("Opcao: ");
-        
-        subOpcao = lerInteiro();
-
-        switch (subOpcao)
-        {
-            case 1:
-                mostrarPerfil(users[id]);
-                esperarEnter();
-                break;
-
-            case 2:
-                editarPerfil(&users[id]);
-                guardarUtilizadores(users, total);
-                esperarEnter();
-                break;
-
-            case 3:
-                if (eliminarConta(&users[id])) {
-                    guardarUtilizadores(users, total);
-                    id = -1; // Logout
-                    subOpcao = 0; // Sair do submenu
-                    printf("Sessao terminada apos eliminacao de conta.\n");
-                }
-                esperarEnter();
-                break;
-
-            case 0:
-                // Não faz nada, só sai do loop
-                break;
-
-            default:
-                printf("Opcao invalida.\n");
-                esperarEnter();                   
-        }
-
-    } while (subOpcao != 0);
 }

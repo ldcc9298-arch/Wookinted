@@ -1,7 +1,14 @@
-#include "books.c"
-#include "users.c"
+#include <stdio.h>
+#include <string.h>
+#include "interface.h"
+#include "utils.h"
+#include "files.h" 
+#include "users.h"
+#include "books.h"
+#include "loans.h"
+#include "structs.h"
 
-// --- UTILIZADORES ---
+// --- LOGIN & MENU PRINCIPAL ---
 
 /**
  * @brief Apresenta o menu de visitante (Login, Registo, Recuperar).
@@ -73,7 +80,7 @@ int mostrarMenuPrincipal(char *nome) {
     return lerInteiro();
 }
 
-// --- LIVROS ---
+// --- SUB-MENU MERCADO ---
 
 /**
  * @brief Gere o menu do Mercado de Livros (Pesquisa, Requisição, Doação).
@@ -218,6 +225,8 @@ void menuMercadoLivros(Livro books[], int *totalBooks, Emprestimo loans[], int *
     } while (opMercado != 0);
 }
 
+// --- SUB-MENU MEUS LIVROS ---
+
 /**
  * @brief Gere o menu de "Meus Livros" (Registar, Editar, Eliminar).
  * @param books Array de livros.
@@ -304,7 +313,7 @@ void menuMeusLivros(Livro books[], int *totalBooks, int idLogado) {
     } while (opMeus != 0);
 }
 
-// --- TRANSAÇÕES ---
+// --- SUB-MENU MOVIMENTOS ---
 
 /**
  * @brief Menu principal para gerir devoluções, aceitar pedidos e dar feedback.
@@ -415,4 +424,62 @@ void menuGestaoMovimentos(Emprestimo loans[], int *totalLoans, Livro books[], in
         }
 
     } while (opMov != 0);
+}
+
+/// --- SUB-MENU PERFIL ---
+
+/**
+ * @brief Gerencia o perfil do utilizador logado.
+ * @param users Array de utilizadores.
+ * @param total Número total de utilizadores.
+ * @param idLogado Ponteiro para o ID do utilizador logado (pode ser alterado se eliminar conta).
+ */
+void menuGestaoPerfil(Utilizador users[], int total, int *idLogado) {
+    int subOpcao;
+    int id = *idLogado;
+
+    do {
+        limparEcra();
+        printf("\n--- GESTAO DE PERFIL ---\n");
+        printf("1. Ver Meus Dados\n");
+        printf("2. Editar Dados\n");
+        printf("3. Eliminar Conta\n");
+        printf("0. Voltar\n");
+        printf("Opcao: ");
+        
+        subOpcao = lerInteiro();
+
+        switch (subOpcao)
+        {
+            case 1:
+                mostrarPerfil(users[id]);
+                esperarEnter();
+                break;
+
+            case 2:
+                editarPerfil(&users[id]);
+                guardarUtilizadores(users, total);
+                esperarEnter();
+                break;
+
+            case 3:
+                if (eliminarConta(&users[id])) {
+                    guardarUtilizadores(users, total);
+                    id = -1; // Logout
+                    subOpcao = 0; // Sair do submenu
+                    printf("Sessao terminada apos eliminacao de conta.\n");
+                }
+                esperarEnter();
+                break;
+
+            case 0:
+                // Não faz nada, só sai do loop
+                break;
+
+            default:
+                printf("Opcao invalida.\n");
+                esperarEnter();                   
+        }
+
+    } while (subOpcao != 0);
 }

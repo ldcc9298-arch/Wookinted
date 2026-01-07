@@ -1,5 +1,6 @@
 #ifndef USERS_H
 #define USERS_H
+
 #include "structs.h"
 
 /**
@@ -50,13 +51,6 @@ void editarPerfil(Utilizador *user);
  */
 int eliminarConta(Utilizador *user);
 
-/**
- * @brief Gere o sub-menu de perfil (Ver, Editar, Eliminar).
- * @details Contém o loop do menu, inputs e chamadas de persistência.
- * * @param users Array completo (necessário para guardar alterações no ficheiro).
- * @param total Total de utilizadores.
- * @param idLogado Apontador para o ID atual (para poder fazer logout se eliminar conta).
- */
-void gerirPerfil(Utilizador users[], int total, int *idLogado);
+
 
 #endif // USERS_H

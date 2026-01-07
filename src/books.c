@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "loans.h"
 #include "files.h"
+#include "interface.h"
 
 /**
  * @brief Regista um novo livro no sistema.
