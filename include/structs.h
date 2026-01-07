@@ -93,4 +93,6 @@ typedef struct {
 } LogSistema;
 
 
+typedef enum { PESQUISA_TITULO, PESQUISA_AUTOR } TipoPesquisa;
+
 #endif // STRUCTS_H

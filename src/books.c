@@ -17,9 +17,8 @@
 void registarLivro(Livro books[], int total, int idLogado) {
     // Usamos uma variável auxiliar ou escrevemos diretamente no array.
     // Escrever diretamente poupa memória.
-
-    //ALERTA : Simples, mas pode causar colisões se livros forem eliminados.
-    books[total].id = total + 1; // 1. Geração do ID
+    printf("\n--- Registar Novo Livro ---\n");
+    books[total].id = gerarProximoId(books, total); // 1. Geração do ID
     books[total].userId = idLogado; // 2. Associação ao Utilizador (Dono)
     books[total].userIdEmprestimo = idLogado; // Se userIdEmprestimo serve para dizer "com quem está o livro agora", começa com o dono.
 
@@ -42,6 +41,21 @@ void registarLivro(Livro books[], int total, int idLogado) {
     books[total].Disponivel = DISPONIVEL; 
 
     printf("\n[Sucesso] Livro '%s' (ID: %d) registado no inventario!\n", books[total].titulo, books[total].id);
+}
+
+/**
+ * @brief Gera o próximo ID único para um novo livro.
+ * Lógica: Percorre todos os livros e encontra o maior ID existente, retornando esse valor + 1.
+ */
+int gerarProximoId(Livro books[], int total) {
+    int maxId = 0;
+    for (int i = 0; i < total; i++) {
+        // Verifica todos, mesmo os "retidos" (soft deleted), se eles ainda estiverem no array
+        if (books[i].id > maxId) {
+            maxId = books[i].id;
+        }
+    }
+    return maxId + 1;
 }
 
 /**
@@ -79,52 +93,63 @@ void listarLivros(Livro books[], int total) {
     }
 }
 
-
-//Pesquisa através da lista
-
 /**
- * @brief Pesquisa livros por título (parcial).
- * @param books Array de livros.
- * @param total Número total de livros.
- * @param titulo Título ou parte do título a pesquisar.
+ * @brief Imprime uma linha formatada de um livro.
+ * Usado para evitar repetição de código nas pesquisas.
  */
-void pesquisarLivroPorTitulo(Livro books[], int total, const char *titulo) {
-    printf("\nResultados da pesquisa por '%s':\n", titulo);
-    int found = 0;
-    for (int i = 0; i < total; i++) {
-        if (books[i].retido == 0 && strstr(books[i].titulo, titulo) != NULL) {
-            char donoStr[15];
-            if (books[i].userId == 0) strcpy(donoStr, "INSTITUTO");
-            else sprintf(donoStr, "User %d", books[i].userId);
+void imprimirLinhaLivro(Livro *book) {
+    char donoStr[20];
+    if (book->userId == 0) strcpy(donoStr, "INSTITUTO");
+    else sprintf(donoStr, "User %d", book->userId);
 
-            printf("- ID: %d | Titulo: %s | Dono: %s\n", 
-                   books[i].id, books[i].titulo, donoStr);
-            found = 1;
-        }
-    }
-    if (!found) printf("Nenhum livro encontrado.\n");
+    printf("- ID: %d | Titulo: %-20s | Autor: %-15s | Dono: %s\n", 
+           book->id, book->titulo, book->autor, donoStr);
 }
-
 /**
- * @brief Pesquisa livros por autor (parcial).
- * @param books Array de livros.
- * @param total Número total de livros.
- * @param autor Autor ou parte do nome do autor a pesquisar.
+ * @brief Pesquisa livros por título ou autor.
+ * Lógica:
+ * - Itera sobre todos os livros.
+ * - Verifica se o termo de pesquisa está contido no título ou autor, dependendo do tipo.
+ * - Imprime os livros encontrados.
  */
-void pesquisarLivroPorAutor(Livro books[], int total, const char *autor) {
+void pesquisarLivroGenerico(Livro books[], int total, const char *termo, TipoPesquisa tipo) {
     int encontrados = 0;
-    printf("\nResultados da pesquisa por autor '%s':\n", autor);
+    printf("\nResultados da pesquisa por '%s' (%s):\n", 
+            termo, (tipo == PESQUISA_TITULO) ? "Titulo" : "Autor");
+
     for (int i = 0; i < total; i++) {
-        if (books[i].retido == 0 && strstr(books[i].autor, autor) != NULL) {
-             printf("- ID: %d | Titulo: %s | Dono: %d\n", 
-                   books[i].id, books[i].titulo, books[i].userId);
+        // Ignora livros eliminados (retido == 1)
+        if (books[i].retido == 1) continue;
+
+        // SELEÇÃO DO CAMPO:
+        // Aponta para o titulo ou para o autor dependendo do tipo
+        const char *campoParaPesquisar = (tipo == PESQUISA_TITULO) ? books[i].titulo : books[i].autor;
+
+        // Verifica se o termo existe dentro desse campo
+        if (strstr(campoParaPesquisar, termo) != NULL) {
+            imprimirLinhaLivro(&books[i]);
             encontrados++;
         }
     }
     if (encontrados == 0) {
-        printf("Nenhum livro encontrado para o autor: %s\n", autor);
+        printf("Nenhum livro encontrado.\n");
     }
 }
+
+/**
+ * @brief Pesquisa livros por título.
+ */
+void pesquisarLivroPorTitulo(Livro books[], int total, const char *titulo) {
+    pesquisarLivroGenerico(books, total, titulo, PESQUISA_TITULO);
+}
+
+/**
+ * @brief Pesquisa livros por autor.
+ */
+void pesquisarLivroPorAutor(Livro books[], int total, const char *autor) {
+    pesquisarLivroGenerico(books, total, autor, PESQUISA_AUTOR);
+}
+
 
 /**
  * @brief Edita um livro.
@@ -235,19 +260,3 @@ void listarMeusLivros(Livro books[], int total, int idLogado) {
     if (cont == 0) printf("    (Ainda nao registou livros)\n");
     printf("----------------------------------------------------------------------\n");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
