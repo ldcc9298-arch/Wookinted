@@ -70,9 +70,4 @@ void listarFeedbacks(Feedback feedbacks[], int totalFeedbacks, int idAvaliado);
  */
 void verificarNotificacoes(Emprestimo loans[], int totalLoans, int idLogado);
 
-/**
- * @brief Menu principal para gerir devoluções, aceitar pedidos e dar feedback.
- */
-void menuGestaoMovimentos(Emprestimo loans[], int *totalLoans, Livro books[], int *totalBooks, Feedback feedbacks[], int *totalFeedbacks, int idLogado);
-
 #endif // LOANS_H

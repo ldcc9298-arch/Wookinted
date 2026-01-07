@@ -56,20 +56,6 @@ int eliminarLivro(Livro *book, int userId);
  */
 void listarMeusLivros(Livro books[], int total, int userId);
 
-/**
- * @brief Gere o menu do Mercado de Livros (Pesquisa, Requisição, Doação).
- * @param books Array de livros.
- * @param totalBooks Apontador para o total de livros (pode mudar se houver doação).
- * @param loans Array de empréstimos (necessário para requisitar).
- * @param totalLoans Apontador para o total de empréstimos.
- * @param idLogado ID do utilizador atual.
- */
-void menuMercadoLivros(Livro books[], int *totalBooks, Emprestimo loans[], int *totalLoans, int idLogado);
-
-/**
- * @brief Gere o menu de gestão de inventário pessoal (Listar, Registar, Editar, Eliminar).
- */
-void menuMeusLivros(Livro books[], int *totalBooks, int idLogado);
 
 
 

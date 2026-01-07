@@ -42,14 +42,15 @@ typedef struct {
 } Livro;
 
 /**
+ * @brief Tipos de operação.
+ */
+typedef enum {DOACAO, EMPRESTIMO, TROCA} TipoOperacao;
+
+/**
  * @brief Estados do empréstimo.
  */
 typedef enum {PENDENTE, ACEITE, REJEITADO, CONCLUIDO} EstadoEmprestimo;
 
-/**
- * @brief Tipos de operação.
- */
-typedef enum {DOACAO, EMPRESTIMO, TROCA} TipoOperacao;
 
 /**
  * @brief Estrutura que representa um empréstimo ou troca de livro.

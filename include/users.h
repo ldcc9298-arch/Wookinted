@@ -3,19 +3,6 @@
 #include "structs.h"
 
 /**
- * @brief Apresenta o menu de visitante (Login, Registo, Recuperar).
- * @return Retorna o ID do utilizador se fizer login, -1 se continuar visitante, ou -10 para Sair do programa.
- */
-int menuModoVisitante(Utilizador users[], int *totalUsers);
-
-/**
- * @brief Mostra o menu principal do utilizador logado e pede a opção.
- * @param nome Nome do utilizador para personalizar a mensagem.
- * @return Retorna o número da opção escolhida pelo utilizador.
- */
-int mostrarMenuPrincipal(char *nome);
-
-/**
  * @brief Regista um novo utilizador no sistema.
  * @details Pede os dados ao utilizador, valida e guarda na memória.
  * * @param users Array de estruturas Utilizador (base de dados em memória).
