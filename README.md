@@ -1,2 +1,0 @@
-# Wookinted
-Projeto AM
