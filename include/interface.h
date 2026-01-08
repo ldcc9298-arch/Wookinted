@@ -18,6 +18,15 @@ int menuModoVisitante(Utilizador users[], int *totalUsers);
  */
 int mostrarMenuPrincipal(char *nome);
 
+// --- MENU ADMINISTRADOR ---
+
+/**
+ * @brief Gere o menu do Administrador (Validar Utilizadores).
+ * @param users Array de utilizadores.
+ * @param total Número total de utilizadores.
+ */
+void menuAdministrador(Utilizador users[], int total);
+
 // --- SUB-MENU MERCADO ---
 
 /**

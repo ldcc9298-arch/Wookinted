@@ -51,6 +51,11 @@ void editarPerfil(Utilizador *user);
  */
 int eliminarConta(Utilizador *user);
 
-
+/**
+ * @brief Valida o formato do email institucional do IPCA.
+ * @param email A string do email a validar.
+ * @return int Retorna 1 se o formato for válido, 0 caso contrário.
+ */
+int validarFormatoEmailIPCA(char *email);
 
 #endif // USERS_H

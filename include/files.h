@@ -19,4 +19,7 @@ void guardarEmprestimos(Emprestimo loans[], int total);
 int carregarFeedbacks(Feedback feedbacks[]);
 void guardarFeedbacks(Feedback feedbacks[], int total);
 
+// Whitelist de emails
+int emailExisteNaWhitelist(char *email);
+
 #endif

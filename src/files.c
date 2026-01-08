@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "files.h"
 
 /**
@@ -144,3 +145,27 @@ void guardarFeedbacks(Feedback feedbacks[], int total) {
     fwrite(feedbacks, sizeof(Feedback), total, fp);
     fclose(fp);
 }
+
+/**
+ * @brief Verifica se um email está na lista de emails permitidos.
+ * @param email Email a ser verificado.
+ * @return 1 se o email estiver na lista, 0 caso contrário.
+ */
+int emailExisteNaWhitelist(char *email) {
+    FILE *f = fopen("whitelist.txt", "r");
+    if (f == NULL) return 0; // Se não houver ficheiro, assumimos que não está na lista
+
+    char linha[100];
+    while (fgets(linha, sizeof(linha), f)) {
+        // Remover o \n do final da linha lida
+        linha[strcspn(linha, "\n")] = 0;
+        
+        if (strcmp(linha, email) == 0) {
+            fclose(f);
+            return 1; // Encontrado!
+        }
+    }
+    fclose(f);
+    return 0; // Não encontrado
+}
+

@@ -7,7 +7,7 @@
 /**
  * @brief Estados da conta do utilizador.
  */
-typedef enum {INATIVO, ATIVO} EstadoConta;
+typedef enum {INATIVO, ATIVO, PENDENTE} EstadoConta;
 
 /**
  * @brief Estrutura que representa um utilizador.
@@ -49,7 +49,7 @@ typedef enum {DOACAO, EMPRESTIMO, TROCA} TipoOperacao;
 /**
  * @brief Estados do empréstimo.
  */
-typedef enum {PENDENTE, ACEITE, REJEITADO, CONCLUIDO} EstadoEmprestimo;
+typedef enum {RESERVADO, ACEITE, REJEITADO, CONCLUIDO} EstadoEmprestimo;
 
 
 /**

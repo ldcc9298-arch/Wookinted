@@ -6,7 +6,7 @@
 #include "files.h"
 #include "users.h"
 #include "books.h"
-#include "loans.h"
+#include "transactions.h"
 #include "interface.h"
 
 // Definir tamanhos máximos para os arrays
@@ -36,23 +36,42 @@ int main() {
 
     while (running) {
         
+
+        
         if (idLogado == -1) {
             // === MODO VISITANTE (Gerido pelo users.c) ===
             int resultado = menuModoVisitante(users, &totalUsers);
             
             if (resultado == -10) {
                 running = 0; // O utilizador escolheu Sair
-            } 
-            else if (resultado >= 0) {
+
+            } else if (resultado >= 0) {
                 idLogado = resultado; // Login feito!
-                printf("\n[Login OK] Bem-vindo, %s!\n", users[idLogado].nome);
                 
-                // Verificar notificações (loans.c) logo após o login
-                verificarNotificacoes(loans, totalLoans, idLogado);
+                // VERIFICAÇÃO DE TIPO DE UTILIZADOR
+                char *email = users[idLogado].email;
+                
+                // Verifica se é Admin
+                if (strcmp(email, "admin@ipca.pt") == 0) {
+                    menuAdministrador(users, totalUsers);
+                    // Opcional: idLogado = -1; se quiseres logout após admin
+                }
+                else {
+                    // Verifica se é Aluno (procura "alunos.ipca.pt" no email)
+                    if (strstr(email, "alunos.ipca.pt") != NULL) {
+                        printf("\n[Login OK] Bem-vindo, Aluno %s!\n", users[idLogado].nome);
+                    } 
+                    // Se não é aluno nem admin, e passou a validação IPCA, é Docente/Staff
+                    else {
+                        printf("\n[Login OK] Bem-vindo, Docente %s!\n", users[idLogado].nome);
+                    }
+
+                    // Verificar notificações logo após o login
+                    verificarNotificacoes(loans, totalLoans, idLogado);
+                }
             }
-        }
-        
-        else {
+
+        } else {
             // === MODO LOGADO (Maestro Main) ===
             int opcao = mostrarMenuPrincipal(users[idLogado].nome);
 

@@ -33,4 +33,23 @@ void limparEcra();
  */
 void esperarEnter();
 
+/**
+ * @brief Verifica se uma string não está vazia (contém pelo menos um caractere não espaço).
+ * @param str A string a verificar.
+ * @return 1 se não estiver vazia, 0 caso contrário.
+ */
+int stringNaoVazia(char *str);
+
+/**
+ * @brief Valida o formato do nome (apenas letras e espaços).
+ * @param nome A string do nome a validar.
+ */
+int validarFormatoNome(char *nome);
+
+/**
+ * @brief Valida o formato do email (deve conter '@' e '.').
+ * @param email A string do email a validar.
+ */
+int validarFormatoEmail(char *email);
+
 #endif

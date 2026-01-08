@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "books.h"
 #include "utils.h"
-#include "loans.h"
+#include "transactions.h"
 #include "files.h"
 #include "interface.h"
 

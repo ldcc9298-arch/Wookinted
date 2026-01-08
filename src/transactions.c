@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h> // Necessário para gerar datas automáticas
-#include "loans.h"
+#include "transactions.h"
 #include "books.h"
 #include "utils.h"
 #include "files.h"
@@ -38,7 +38,7 @@ void solicitarEmprestimo(Emprestimo loans[], int *totalLoans, Livro *book, int i
     novo.bookId = book->id;
     novo.userId = idRequisitante;           // Quem está a pedir
     novo.userIdEmprestimo = book->userIdEmprestimo; // Quem tem o livro agora (Dador)
-    novo.estado = PENDENTE;                 // Fica à espera de aprovação
+    novo.estado = RESERVADO;                 // Fica à espera de aprovação
     novo.dataEmprestimo = obterDataAtual(); // Data de hoje
     novo.dataDevolucao = 0;                 // Ainda não devolvido
     novo.idOperacao = 0;                    // ID reservado para uso futuro
@@ -86,7 +86,7 @@ void gerirPedidosPendentes(Emprestimo loans[], int totalLoans, Livro books[], in
 
     for (int i = 0; i < totalLoans; i++) {
         // Filtro: Mostra apenas pedidos onde o utilizador logado é quem tem o livro atualmente
-        if (loans[i].userIdEmprestimo == idLogado && loans[i].estado == PENDENTE) {
+        if (loans[i].userIdEmprestimo == idLogado && loans[i].estado == RESERVADO) {
             encontrou = 1;
             
             char tipo[20];

@@ -5,7 +5,7 @@
 #include "files.h" 
 #include "users.h"
 #include "books.h"
-#include "loans.h"
+#include "transactions.h"
 #include "structs.h"
 
 // --- LOGIN & MENU PRINCIPAL ---
@@ -78,6 +78,67 @@ int mostrarMenuPrincipal(char *nome) {
     printf("0. Logout\n");
     printf("Opcao: ");
     return lerInteiro();
+}
+
+// --- MENU ADMINISTRADOR ---
+
+void menuAdministrador(Utilizador users[], int total) {
+    int opcao;
+    do {
+        limparEcra();
+        printf("\n=== PAINEL DE ADMINISTRADOR (IPCA) ===\n");
+        printf("1. Listar Utilizadores Pendentes\n");
+        printf("2. Validar/Rejeitar Utilizador\n");
+        printf("0. Sair\n");
+        printf("Opcao: ");
+        opcao = lerInteiro();
+
+        switch(opcao) {
+            case 1:
+                printf("\n--- Pedidos Pendentes ---\n");
+                int pendentes = 0;
+                for(int i=0; i<total; i++) {
+                    if(users[i].ativo == PENDENTE) {
+                        printf("ID: %d | Nome: %s | Email: %s\n", users[i].id, users[i].nome, users[i].email);
+                        pendentes++;
+                    }
+                }
+                if(pendentes == 0) printf("Nenhum pedido pendente.\n");
+                esperarEnter();
+                break;
+
+            case 2:
+                printf("ID do utilizador a validar: ");
+                int idAlvo = lerInteiro();
+                // Buscar utilizador por ID
+                int idx = -1;
+                for(int i=0; i<total; i++) {
+                    if(users[i].id == idAlvo && users[i].ativo == PENDENTE) {
+                        idx = i; break;
+                    }
+                }
+
+                if(idx != -1) {
+                    printf("\nUtilizador: %s (%s)\n", users[idx].nome, users[idx].email);
+                    printf("1 - Aprovar (Ativar Conta)\n");
+                    printf("2 - Rejeitar (Eliminar/Inativar)\n");
+                    printf("0 - Cancelar\n");
+                    int dec = lerInteiro();
+                    
+                    if(dec == 1) {
+                        users[idx].ativo = ATIVO;
+                        printf("Utilizador aprovado com sucesso!\n");
+                    } else if (dec == 2) {
+                        users[idx].ativo = INATIVO;
+                        printf("Utilizador rejeitado.\n");
+                    }
+                } else {
+                    printf("ID invalido ou nao esta pendente.\n");
+                }
+                esperarEnter();
+                break;
+        }
+    } while(opcao != 0);
 }
 
 // --- SUB-MENU MERCADO ---

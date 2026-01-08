@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude
-SRC = src/main.c src/utils.c src/files.c src/users.c src/books.c src/loans.c src/interface.c
+SRC = src/main.c src/utils.c src/files.c src/users.c src/books.c src/transactions.c src/interface.c
 OBJ = $(SRC:.c=.o)
 EXEC = wookinted
 
