@@ -5,43 +5,48 @@
 #include "utils.h"
 #include "loans.h"
 #include "files.h"
-#include "interface.h"
+#include "interface.h" // Se aplicável
+
+// =============================================================
+// GESTÃO DE CATEGORIAS
+// =============================================================
+
+// A ordem DEVE corresponder ao Enum CategoriaLivro no structs.h
+const char *NOME_CATEGORIAS[] = {
+    "Ficcao", 
+    "Nao Ficcao", 
+    "Ciencia", 
+    "Historia",    
+    "Biografia",   
+    "Tecnologia", 
+    "Outro"
+};
 
 /**
- * @brief Regista um novo livro no sistema.
- * Lógica:
- * - Gera um ID único baseado no total atual.
- * - Associa o livro ao utilizador que o está a registar.
- * - Define o estado inicial como DISPONIVEL e retido como 0 (não retido).
+ * @brief Converte o Enum de categoria para String.
  */
-void registarLivro(Livro books[], int total, int idLogado) {
-    // Usamos uma variável auxiliar ou escrevemos diretamente no array.
-    // Escrever diretamente poupa memória.
-    printf("\n--- Registar Novo Livro ---\n");
-    books[total].id = gerarProximoId(books, total); // 1. Geração do ID
-    books[total].userId = idLogado; // 2. Associação ao Utilizador (Dono)
-    books[total].userIdEmprestimo = idLogado; // Se userIdEmprestimo serve para dizer "com quem está o livro agora", começa com o dono.
-
-    // 3. Dados do Livro
-    printf("Titulo do Livro: ");
-    lerString(books[total].titulo, MAX_STRING); 
-
-    printf("Autor: ");
-    lerString(books[total].autor, MAX_STRING);
-
-    printf("Ano de Publicacao: ");
-    while (scanf("%d", &books[total].anoPublicacao) != 1) {
-        printf("Ano invalido. Insira um numero: ");
-        limparBuffer(); // Limpa o enter inválido
-    }
-    limparBuffer(); // Limpa o enter final do scanf
-
-    // 4. Estados Iniciais
-    books[total].retido = 0; // 0 = Não retido (Disponível para troca)
-    books[total].Disponivel = DISPONIVEL; 
-
-    printf("\n[Sucesso] Livro '%s' (ID: %d) registado no inventario!\n", books[total].titulo, books[total].id);
+const char* obterNomeCategoria(CategoriaLivro cat) {
+    // Ajustar o limite conforme o numero de itens no array (0 a 6 neste caso)
+    if (cat < 0 || cat > 6) return "Desconhecido";
+    return NOME_CATEGORIAS[cat];
 }
+
+/**
+ * @brief Menu auxiliar para escolher categoria.
+ */
+CategoriaLivro escolherCategoria() {
+    printf("\n--- Selecione a Categoria ---\n");
+    for (int i = 0; i <= 6; i++) {
+        printf("%d - %s\n", i, NOME_CATEGORIAS[i]);
+    }
+    // Usa lerInteiro com limites seguros
+    int opcao = lerInteiro("Escolha uma opcao: ", 0, 6);
+    return (CategoriaLivro)opcao;
+}
+
+// =============================================================
+// FUNÇÕES AUXILIARES
+// =============================================================
 
 /**
  * @brief Gera o próximo ID único para um novo livro.
@@ -50,47 +55,12 @@ void registarLivro(Livro books[], int total, int idLogado) {
 int gerarProximoId(Livro books[], int total) {
     int maxId = 0;
     for (int i = 0; i < total; i++) {
-        // Verifica todos, mesmo os "retidos" (soft deleted), se eles ainda estiverem no array
+        // Verifica todos, mesmo os "retidos" (soft deleted), para evitar duplicar IDs antigos
         if (books[i].id > maxId) {
             maxId = books[i].id;
         }
     }
     return maxId + 1;
-}
-
-/**
- * @brief Lista todos os livros do sistema (Catálogo Global).
- * Mostra se pertence ao Instituto ou a um Utilizador.
- */
-void listarLivros(Livro books[], int total) {
-    printf("\n--- Catalogo Geral de Livros ---\n");
-    printf("%-4s | %-20s | %-15s | %-10s | %-12s\n", "ID", "Titulo", "Autor", "Dono", "Estado");
-    printf("--------------------------------------------------------------------------\n");
-
-    for (int i = 0; i < total; i++) {
-        if (books[i].retido == 0) {
-            char estado[20];
-            
-            // Traduz o estado do Enum para texto legível
-            if (books[i].Disponivel == INDISPONIVEL || books[i].Disponivel == EMPRESTADO) {
-                strcpy(estado, "EMPRESTADO");
-            } else {
-                strcpy(estado, "DISPONIVEL");
-            }
-
-            // Identifica se o dono é a Instituição (ID 0) ou um User
-            char donoStr[15];
-            if (books[i].userId == 0) strcpy(donoStr, "IPCA");
-            else sprintf(donoStr, "User %d", books[i].userId);
-
-            printf("%-4d | %-20.20s | %-15.15s | %-10s | %-12s\n",
-                   books[i].id,
-                   books[i].titulo,
-                   books[i].autor,
-                   donoStr,
-                   estado);
-        }
-    }
 }
 
 /**
@@ -102,15 +72,93 @@ void imprimirLinhaLivro(Livro *book) {
     if (book->userId == 0) strcpy(donoStr, "INSTITUTO");
     else sprintf(donoStr, "User %d", book->userId);
 
-    printf("- ID: %d | Titulo: %-20s | Autor: %-15s | Dono: %s\n", 
-           book->id, book->titulo, book->autor, donoStr);
+    printf("- ID: %d | Titulo: %-20.20s | Autor: %-15.15s | Cat: %-10s | Dono: %s\n", 
+           book->id, 
+           book->titulo, 
+           book->autor, 
+           obterNomeCategoria(book->categoria), 
+           donoStr);
 }
+
+// =============================================================
+// FUNÇÕES PRINCIPAIS
+// =============================================================
+
+/**
+ * @brief Regista um novo livro no sistema.
+ * Lógica:
+ * - Gera um ID único baseado no maior ID existente.
+ * - Associa o livro ao utilizador que o está a registar.
+ * - Define o estado inicial como DISPONIVEL e retido como 0.
+ */
+void registarLivro(Livro books[], int total, int userId) {
+    // 1. Geração de ID Seguro (Evita colisões se livros forem apagados)
+    books[total].id = gerarProximoId(books, total);
+    
+    // 2. Definição de Propriedade e Posse Inicial
+    books[total].userId = userId;
+    books[total].userIdEmprestimo = userId;
+
+    printf("Titulo: ");
+    lerString(books[total].titulo, MAX_STRING);
+
+    printf("Autor: ");
+    lerString(books[total].autor, MAX_STRING);
+    
+    // 3. Seleção de Categoria
+    books[total].categoria = escolherCategoria();
+
+    printf("Ano: ");
+    // Uso de lerInteiro para robustez
+    books[total].anoPublicacao = lerInteiro("", 1000, 2030);
+
+    // 4. Estados Iniciais
+    books[total].retido = 0;
+    books[total].Disponivel = DISPONIVEL;
+
+    printf("Livro registado com ID %d na categoria '%s'!\n", 
+            books[total].id, obterNomeCategoria(books[total].categoria));
+}
+
+/**
+ * @brief Lista todos os livros do sistema (Catálogo Global).
+ * Mostra se pertence ao Instituto ou a um Utilizador.
+ */
+void listarLivros(Livro books[], int total) {
+    printf("\n--- Catalogo Geral de Livros ---\n");
+    printf("%-4s | %-20s | %-15s | %-10s | %-12s | %-10s\n", "ID", "Titulo", "Autor", "Categoria", "Dono", "Estado");
+    printf("--------------------------------------------------------------------------------------\n");
+
+    for (int i = 0; i < total; i++) {
+        if (books[i].retido == 0) {
+            char estado[20];
+            if (books[i].Disponivel == INDISPONIVEL) strcpy(estado, "EMPRESTADO");
+            else strcpy(estado, "DISPONIVEL");
+
+            char donoStr[20];
+            if (books[i].userId == 0) strcpy(donoStr, "INSTITUTO");
+            else sprintf(donoStr, "User %d", books[i].userId);
+
+            printf("%-4d | %-20.20s | %-15.15s | %-10s | %-12s | %-10s\n",
+                   books[i].id,
+                   books[i].titulo,
+                   books[i].autor,
+                   obterNomeCategoria(books[i].categoria), // Uso do helper de categoria
+                   donoStr,
+                   estado);
+        }
+    }
+}
+
+// =============================================================
+// PESQUISA (DRY Implementation)
+// =============================================================
+
 /**
  * @brief Pesquisa livros por título ou autor.
- * Lógica:
- * - Itera sobre todos os livros.
- * - Verifica se o termo de pesquisa está contido no título ou autor, dependendo do tipo.
- * - Imprime os livros encontrados.
+ * Lógica Genérica:
+ * - Itera sobre todos os livros ativos.
+ * - Compara o termo com o campo selecionado (Titulo ou Autor).
  */
 void pesquisarLivroGenerico(Livro books[], int total, const char *termo, TipoPesquisa tipo) {
     int encontrados = 0;
@@ -118,14 +166,12 @@ void pesquisarLivroGenerico(Livro books[], int total, const char *termo, TipoPes
             termo, (tipo == PESQUISA_TITULO) ? "Titulo" : "Autor");
 
     for (int i = 0; i < total; i++) {
-        // Ignora livros eliminados (retido == 1)
+        // Ignora livros eliminados
         if (books[i].retido == 1) continue;
 
-        // SELEÇÃO DO CAMPO:
-        // Aponta para o titulo ou para o autor dependendo do tipo
+        // Seleção do ponteiro para o campo correto
         const char *campoParaPesquisar = (tipo == PESQUISA_TITULO) ? books[i].titulo : books[i].autor;
 
-        // Verifica se o termo existe dentro desse campo
         if (strstr(campoParaPesquisar, termo) != NULL) {
             imprimirLinhaLivro(&books[i]);
             encontrados++;
@@ -136,20 +182,17 @@ void pesquisarLivroGenerico(Livro books[], int total, const char *termo, TipoPes
     }
 }
 
-/**
- * @brief Pesquisa livros por título.
- */
 void pesquisarLivroPorTitulo(Livro books[], int total, const char *titulo) {
     pesquisarLivroGenerico(books, total, titulo, PESQUISA_TITULO);
 }
 
-/**
- * @brief Pesquisa livros por autor.
- */
 void pesquisarLivroPorAutor(Livro books[], int total, const char *autor) {
     pesquisarLivroGenerico(books, total, autor, PESQUISA_AUTOR);
 }
 
+// =============================================================
+// AÇÕES DE UTILIZADOR
+// =============================================================
 
 /**
  * @brief Edita um livro.
@@ -170,15 +213,15 @@ void editarLivro(Livro *book, int userId) {
 
     printf("\n--- Editar Livro ID: %d ---\n", book->id);
     
-    printf("Novo Titulo (Atual: %s): ", book->titulo);
+    printf("Novo Titulo (Atual: %s) [Enter mantem]: ", book->titulo);
     char buffer[MAX_STRING];
     fgets(buffer, MAX_STRING, stdin);
-    if (buffer[0] != '\n') { // Só altera se o utilizador escrever algo
+    if (buffer[0] != '\n') {
         buffer[strcspn(buffer, "\n")] = 0;
         strcpy(book->titulo, buffer);
     }
 
-    printf("Novo Autor (Atual: %s): ", book->autor);
+    printf("Novo Autor (Atual: %s) [Enter mantem]: ", book->autor);
     fgets(buffer, MAX_STRING, stdin);
     if (buffer[0] != '\n') {
         buffer[strcspn(buffer, "\n")] = 0;
@@ -186,14 +229,14 @@ void editarLivro(Livro *book, int userId) {
     }
 
     printf("Novo Ano (Atual: %d): ", book->anoPublicacao);
-    int novoAno;
-    // Tenta ler int, se falhar consome o buffer
-    char check;
-    if (scanf("%d%c", &novoAno, &check) != 2 || check != '\n') {
-        // Se o user der apenas Enter ou input inválido, mantemos o ano atual (ou ignoramos)
-        // Neste caso simples, assumimos que ele não quis mudar se deu enter
-    } else {
-        book->anoPublicacao = novoAno;
+    // Alterado para lerInteiro para consistência e segurança
+    book->anoPublicacao = lerInteiro("", 1000, 2030);
+
+    printf("Categoria atual: %s.\n", obterNomeCategoria(book->categoria));
+    printf("Deseja alterar a categoria? (1-Sim, 0-Nao): ");
+    int alterar = lerInteiro("", 0, 1);
+    if (alterar) {
+        book->categoria = escolherCategoria();
     }
     
     printf("Livro atualizado com sucesso!\n");
@@ -241,18 +284,27 @@ int eliminarLivro(Livro *book, int userId) {
  */
 void listarMeusLivros(Livro books[], int total, int idLogado) {
     printf("\n--- O MEU INVENTARIO ---\n");
-    printf("%-5s | %-30s | %-20s | %s\n", "ID", "TITULO", "AUTOR", "ESTADO");
+    printf("%-5s | %-25s | %-15s | %s\n", "ID", "TITULO", "AUTOR", "ESTADO ATUAL");
     printf("----------------------------------------------------------------------\n");
     
     int cont = 0;
     for (int i = 0; i < total; i++) {
-        // CORREÇÃO: idDono
-        if (books[i].userId == idLogado) {
-            printf("%-5d | %-30s | %-20s | %s\n", 
+        // Filtra por Dono e garante que não mostra livros apagados (retido == 1)
+        if (books[i].userId == idLogado && books[i].retido == 0) {
+            
+            char estado[40];
+            // Lógica para mostrar onde o livro está fisicamente
+            if (books[i].userIdEmprestimo == idLogado) {
+                strcpy(estado, "Consigo (Disponivel)");
+            } else {
+                sprintf(estado, "EMPRESTADO (User %d)", books[i].userIdEmprestimo);
+            }
+
+            printf("%-5d | %-25.25s | %-15.15s | %s\n", 
                    books[i].id, 
                    books[i].titulo, 
                    books[i].autor, 
-                   (books[i].retido == 0 ? "Disponivel" : "Emprestado/Retido"));
+                   estado);
             cont++;
         }
     }

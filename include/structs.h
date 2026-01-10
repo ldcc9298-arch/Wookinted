@@ -28,6 +28,11 @@ typedef struct {
 typedef enum {INDISPONIVEL, DISPONIVEL, EMPRESTADO} EstadoLivro;
 
 /**
+ * @brief Categorias de livros.
+ */
+typedef enum { FICCAO, NAO_FICCAO, CIENCIA, HISTORIA, BIOGRAFIA, TECNOLOGIA, OUTRO } CategoriaLivro;
+
+/**
  * @brief Estrutura que representa um livro.
  */
 typedef struct {
@@ -35,6 +40,8 @@ typedef struct {
     char titulo[MAX_STRING];// Titulo do livro
     char autor[MAX_STRING];// Autor do livro
     int anoPublicacao;// Ano de publicação
+    CategoriaLivro categoria; // Categoria do livro
+    char isbn[20];// ISBN do livro
     int retido; // 0 = Nao, 1 = Sim
     int userId; // ID do utilizador que detem o livro (se retido)
     int userIdEmprestimo; // ID do utilizador que fez o emprestimo
