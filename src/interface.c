@@ -100,6 +100,8 @@ void menuMercadoLivros(Livro books[], int *totalBooks, Emprestimo loans[], int *
         printf("1. Ver Catalogo Completo\n");
         printf("2. Pesquisar por Titulo\n");
         printf("3. Pesquisar por Autor\n");
+        printf("3. Pesquisar por Categoria\n");
+        printf("3. Pesquisar por ISBN\n");
         printf("4. Requisitar Livro (Troca/Levantamento)\n");
         printf("5. Doar Livro a Instituicao\n");
         printf("0. Voltar\n");
