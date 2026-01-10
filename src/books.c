@@ -72,12 +72,12 @@ void imprimirLinhaLivro(Livro *book) {
     if (book->userId == 0) strcpy(donoStr, "INSTITUTO");
     else sprintf(donoStr, "User %d", book->userId);
 
-    printf("- ID: %d | Titulo: %-20.20s | Autor: %-15.15s | Cat: %-10s | Dono: %s\n", 
-           book->id, 
+    printf("- ID: %d | ISBN: %-13s | Titulo: %-20.20s | Autor: %-15.15s | Cat: %s\n", 
+           book->id,
+           book->isbn,
            book->titulo, 
            book->autor, 
-           obterNomeCategoria(book->categoria), 
-           donoStr);
+           obterNomeCategoria(book->categoria));
 }
 
 // =============================================================
@@ -92,7 +92,7 @@ void imprimirLinhaLivro(Livro *book) {
  * - Define o estado inicial como DISPONIVEL e retido como 0.
  */
 void registarLivro(Livro books[], int total, int userId) {
-    // 1. Geração de ID Seguro (Evita colisões se livros forem apagados)
+    // 1. Geração de ID Seguro
     books[total].id = gerarProximoId(books, total);
     
     // 2. Definição de Propriedade e Posse Inicial
@@ -104,6 +104,9 @@ void registarLivro(Livro books[], int total, int userId) {
 
     printf("Autor: ");
     lerString(books[total].autor, MAX_STRING);
+
+    printf("ISBN (ex: 978-3-16-148410-0): ");
+    lerString(books[total].isbn, 20);
     
     // 3. Seleção de Categoria
     books[total].categoria = escolherCategoria();
@@ -126,8 +129,8 @@ void registarLivro(Livro books[], int total, int userId) {
  */
 void listarLivros(Livro books[], int total) {
     printf("\n--- Catalogo Geral de Livros ---\n");
-    printf("%-4s | %-20s | %-15s | %-10s | %-12s | %-10s\n", "ID", "Titulo", "Autor", "Categoria", "Dono", "Estado");
-    printf("--------------------------------------------------------------------------------------\n");
+    printf("%-4s | %-13s | %-20s | %-15s | %-10s | %-12s | %-10s\n", "ID", "ISBN", "Titulo", "Autor", "Categoria", "Dono", "Estado");
+    printf("-------------------------------------------------------------------------------------------------------\n");
 
     for (int i = 0; i < total; i++) {
         if (books[i].retido == 0) {
@@ -139,11 +142,12 @@ void listarLivros(Livro books[], int total) {
             if (books[i].userId == 0) strcpy(donoStr, "INSTITUTO");
             else sprintf(donoStr, "User %d", books[i].userId);
 
-            printf("%-4d | %-20.20s | %-15.15s | %-10s | %-12s | %-10s\n",
+            printf("%-4d | %-13s | %-20.20s | %-15.15s | %-10s | %-12s | %-10s\n",
                    books[i].id,
+                   books[i].isbn,
                    books[i].titulo,
                    books[i].autor,
-                   obterNomeCategoria(books[i].categoria), // Uso do helper de categoria
+                   obterNomeCategoria(books[i].categoria),
                    donoStr,
                    estado);
         }
@@ -190,6 +194,46 @@ void pesquisarLivroPorAutor(Livro books[], int total, const char *autor) {
     pesquisarLivroGenerico(books, total, autor, PESQUISA_AUTOR);
 }
 
+void pesquisarLivroPorISBN(Livro books[], int total, const char *isbn) {
+    printf("\nResultados da pesquisa por ISBN '%s':\n", isbn);
+    int encontrados = 0;
+    
+    for (int i = 0; i < total; i++) {
+        // strcmp devolve 0 se as strings forem idênticas
+        if (books[i].retido == 0 && strcmp(books[i].isbn, isbn) == 0) {
+            imprimirLinhaLivro(&books[i]);
+            encontrados++;
+        }
+    }
+    
+    if (encontrados == 0) printf("Nenhum livro encontrado com esse ISBN.\n");
+}
+
+/**
+ * @brief Pesquisa livros por Categoria.
+ * Solicita ao utilizador a categoria e lista os resultados.
+ */
+void pesquisarLivroPorCategoria(Livro books[], int total) {
+    // 1. Pedir a categoria ao utilizador
+    CategoriaLivro catAlvo = escolherCategoria();
+
+    printf("\n--- Livros de %s ---\n", obterNomeCategoria(catAlvo));
+
+    int encontrados = 0;
+    for (int i = 0; i < total; i++) {
+        // Verifica se o livro está ativo E se a categoria corresponde
+        if (books[i].retido == 0 && books[i].categoria == catAlvo) {
+            imprimirLinhaLivro(&books[i]);
+            encontrados++;
+        }
+    }
+
+    if (encontrados == 0) {
+        printf("Nenhum livro encontrado nesta categoria.\n");
+    }
+}
+
+
 // =============================================================
 // AÇÕES DE UTILIZADOR
 // =============================================================
@@ -213,8 +257,10 @@ void editarLivro(Livro *book, int userId) {
 
     printf("\n--- Editar Livro ID: %d ---\n", book->id);
     
-    printf("Novo Titulo (Atual: %s) [Enter mantem]: ", book->titulo);
+    // Buffer para leituras
     char buffer[MAX_STRING];
+
+    printf("Novo Titulo (Atual: %s) [Enter mantem]: ", book->titulo);
     fgets(buffer, MAX_STRING, stdin);
     if (buffer[0] != '\n') {
         buffer[strcspn(buffer, "\n")] = 0;
@@ -229,7 +275,7 @@ void editarLivro(Livro *book, int userId) {
     }
 
     printf("Novo Ano (Atual: %d): ", book->anoPublicacao);
-    // Alterado para lerInteiro para consistência e segurança
+    // Usamos lerInteiro que trata do buffer
     book->anoPublicacao = lerInteiro("", 1000, 2030);
 
     printf("Categoria atual: %s.\n", obterNomeCategoria(book->categoria));
@@ -237,6 +283,14 @@ void editarLivro(Livro *book, int userId) {
     int alterar = lerInteiro("", 0, 1);
     if (alterar) {
         book->categoria = escolherCategoria();
+    }
+
+    printf("Novo ISBN (Atual: %s) [Enter mantem]: ", book->isbn);
+    // Reutilizamos o buffer declarado acima (sem re-declarar 'char buffer')
+    fgets(buffer, MAX_STRING, stdin);
+    if (buffer[0] != '\n') {
+        buffer[strcspn(buffer, "\n")] = 0;
+        strcpy(book->isbn, buffer);
     }
     
     printf("Livro atualizado com sucesso!\n");

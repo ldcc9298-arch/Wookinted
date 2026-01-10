@@ -5,7 +5,7 @@
 
 /**
  * @brief Regista um novo livro no sistema.
- * Solicita os dados ao utilizador (título, autor, categoria, etc.) e guarda no array.
+ * Solicita os dados ao utilizador (título, autor, ISBN, categoria, ano) e guarda no array.
  * @param books Array de livros.
  * @param total Número total de livros registados (índice atual).
  * @param userId ID do utilizador que está a registar o livro.
@@ -23,7 +23,7 @@ int gerarProximoId(Livro books[], int total);
 
 /**
  * @brief Lista todos os livros disponíveis no sistema (Catálogo Global).
- * Mostra detalhes como ID, Título, Autor, Categoria e Dono.
+ * Mostra detalhes como ID, ISBN, Título, Autor, Categoria e Dono.
  * @param books Array de livros.
  * @param total Número total de livros registados.
  */
@@ -77,6 +77,14 @@ void pesquisarLivroPorTitulo(Livro books[], int total, const char *titulo);
 void pesquisarLivroPorAutor(Livro books[], int total, const char *autor);
 
 /**
+ * @brief Pesquisa livros pelo código ISBN exato.
+ * @param books Array de livros.
+ * @param total Número total de livros.
+ * @param isbn String com o ISBN a procurar.
+ */
+void pesquisarLivroPorISBN(Livro books[], int total, const char *isbn);
+
+/**
  * @brief Pesquisa e lista todos os livros de uma determinada categoria.
  * Solicita ao utilizador qual a categoria que deseja filtrar.
  * @param books Array de livros.
@@ -86,7 +94,7 @@ void pesquisarLivroPorCategoria(Livro books[], int total);
 
 /**
  * @brief Edita os detalhes de um livro existente.
- * Permite alterar título, autor, ano e categoria. Verifica se o utilizador é o dono.
+ * Permite alterar título, autor, ISBN, ano e categoria. Verifica se o utilizador é o dono.
  * @param book Apontador para o livro a editar.
  * @param userId ID do utilizador que está a tentar editar (para validação de permissões).
  */
