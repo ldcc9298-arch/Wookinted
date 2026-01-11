@@ -10,7 +10,7 @@
 /// @param book livro alvo.
 /// @param idRequisitante ID do utilizador que está a pedir o livro.
 */
-void solicitarEmprestimo(Emprestimo loans[], int *totalLoans, Livro *book, int idRequisitante);
+void solicitarEmprestimo(Operacao loans[], int *totalLoans, Livro *book, int idRequisitante);
 
 /**
 /// @brief Gere os pedidos pendentes para o utilizador logado.
@@ -20,7 +20,7 @@ void solicitarEmprestimo(Emprestimo loans[], int *totalLoans, Livro *book, int i
 /// @param totalBooks número total de livros.
 /// @param idLogado ID do utilizador logado.
 */
-void gerirPedidosPendentes(Emprestimo loans[], int totalLoans, Livro books[], int totalBooks, int idLogado);
+void gerirPedidosPendentes(Operacao loans[], int totalLoans, Livro books[], int totalBooks, int idLogado);
 
 /**
 /// @brief Lista todos os empréstimos no sistema.
@@ -28,7 +28,7 @@ void gerirPedidosPendentes(Emprestimo loans[], int totalLoans, Livro books[], in
 /// @param totalLoans número total de empréstimos.
 /// @param idLogado ID do utilizador logado.
 */
-void listarEmprestimos(Emprestimo loans[], int totalLoans, int idLogado);
+void listarEmprestimos(Operacao loans[], int totalLoans, int idLogado);
 
 /**
 /// @brief Processa a devolução de um livro.
@@ -37,17 +37,17 @@ void listarEmprestimos(Emprestimo loans[], int totalLoans, int idLogado);
 /// @param totalLoans número total de empréstimos.
 /// @param idLogado ID do utilizador logado.
 */
-void devolverLivro(Livro *book, Emprestimo loans[], int totalLoans, int idLogado);
+void devolverLivro(Livro *book, Operacao loans[], int totalLoans, int idLogado);
 
-/**
-/// @brief Doação de um livro à Instituição.
+/** 
+/// @brief Doa um livro à instituição (transferência de propriedade).
 /// @param books array de livros.
-/// @param total Books número total de livros.
+/// @param totalBooks número total de livros.
 /// @param userId ID do utilizador que está a doar.
 /// @param loans array de empréstimos.
-/// @param totalLoans número total de empréstimos.
+/// @param totalLoans apontador para o número total de empréstimos (pode mudar).
 */
-void doarLivro(Livro books[], int *totalBooks, int userId, Emprestimo loans[], int *totalLoans);
+void doarLivro(Livro books[], int totalBooks, int userId, Operacao loans[], int *totalLoans);
 
 /**
 /// @brief Avalia um empréstimo concluído.
@@ -56,7 +56,7 @@ void doarLivro(Livro books[], int *totalBooks, int userId, Emprestimo loans[], i
 /// @param loan empréstimo a ser avaliado.
 /// @param idLogado ID do utilizador logado.
 */
-void avaliarEmprestimo(Feedback feedbacks[], int *totalFeedbacks, Emprestimo *loan, int idLogado);
+void avaliarEmprestimo(Feedback feedbacks[], int *totalFeedbacks, Operacao *loan, int idLogado);
 
 /** 
 /// @brief Lista os feedbacks de um utilizador avaliado.
@@ -69,6 +69,6 @@ void listarFeedbacks(Feedback feedbacks[], int totalFeedbacks, int idAvaliado);
 /**
  * @brief Verifica se o utilizador tem pedidos pendentes e mostra um alerta.
  */
-void verificarNotificacoes(Emprestimo loans[], int totalLoans, int idLogado);
+void verificarNotificacoes(Operacao loans[], int totalLoans, int idLogado);
 
 #endif // LOANS_H

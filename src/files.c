@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "files.h"
+#include "structs.h"
 
 /**
  * @brief Carrega os utilizadores do ficheiro binário.
@@ -79,7 +80,7 @@ void guardarLivros(Livro books[], int total) {
  * @param loans Array onde os empréstimos serão carregados.
  * @return Número total de empréstimos carregados.
  */
-int carregarEmprestimos(Emprestimo loans[]) {
+int carregarEmprestimos(Operacao loans[]) {
     FILE *fp = fopen("data/loans.dat", "rb");
     int total = 0;
     
@@ -87,7 +88,7 @@ int carregarEmprestimos(Emprestimo loans[]) {
 
     fread(&total, sizeof(int), 1, fp);
     if (total > 0) {
-        fread(loans, sizeof(Emprestimo), total, fp);
+        fread(loans, sizeof(Operacao), total, fp);
     }
     
     fclose(fp);
@@ -99,14 +100,14 @@ int carregarEmprestimos(Emprestimo loans[]) {
  * @param loans Array de empréstimos a serem guardados.
  * @param total Número total de empréstimos.
  */
-void guardarEmprestimos(Emprestimo loans[], int total) {
+void guardarEmprestimos(Operacao loans[], int total) {
     FILE *fp = fopen("data/loans.dat", "wb");
     if (fp == NULL) {
         printf("Erro critico: Nao foi possivel escrever em data/loans.dat\n");
         return;
     }
     fwrite(&total, sizeof(int), 1, fp);
-    fwrite(loans, sizeof(Emprestimo), total, fp);
+    fwrite(loans, sizeof(Operacao), total, fp);
     fclose(fp);
 }
 

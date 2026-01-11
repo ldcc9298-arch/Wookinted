@@ -77,20 +77,12 @@ void pesquisarLivroPorTitulo(Livro books[], int total, const char *titulo);
 void pesquisarLivroPorAutor(Livro books[], int total, const char *autor);
 
 /**
- * @brief Pesquisa livros pelo código ISBN exato.
- * @param books Array de livros.
- * @param total Número total de livros.
- * @param isbn String com o ISBN a procurar.
- */
-void pesquisarLivroPorISBN(Livro books[], int total, const char *isbn);
-
-/**
  * @brief Pesquisa e lista todos os livros de uma determinada categoria.
  * Solicita ao utilizador qual a categoria que deseja filtrar.
  * @param books Array de livros.
  * @param total Número total de livros registados.
  */
-void pesquisarLivroPorCategoria(Livro books[], int total);
+void pesquisarLivroPorCategoria(Livro books[], int total, const char *categoria);
 
 /**
  * @brief Edita os detalhes de um livro existente.

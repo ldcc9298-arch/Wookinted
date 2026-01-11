@@ -2,15 +2,16 @@
 #define STRUCTS_H
 
 #define MAX_USERS 50
+#define MAX_BOOKS 100
 #define MAX_STRING 100
 
 /**
  * @brief Estados da conta do utilizador.
  */
-typedef enum {INATIVO, ATIVO, PENDENTE} EstadoConta;
+typedef enum {INATIVO, ATIVO, PENDENTE_APROVACAO, PENDENTE_REATIVACAO} EstadoConta;
 
 /** @brief Estados do livro. */
-typedef enum { INDISPONIVEL, DISPONIVEL, EMPRESTADO } EstadoLivro;
+typedef enum { INDISPONIVEL, DISPONIVEL, EMPRESTADO, PENDENTE_CATEGORIA } EstadoLivro;
 
 /** @brief Categorias de livros. */
 typedef enum { FICCAO, NAO_FICCAO, CIENCIA, HISTORIA, BIOGRAFIA, TECNOLOGIA, OUTRO } CategoriaLivro;
@@ -19,10 +20,10 @@ typedef enum { FICCAO, NAO_FICCAO, CIENCIA, HISTORIA, BIOGRAFIA, TECNOLOGIA, OUT
 typedef enum { DOACAO, EMPRESTIMO, TROCA } TipoOperacao;
 
 /** @brief Estados do empréstimo. */
-typedef enum { RESERVADO, ACEITE, REJEITADO, CONCLUIDO } EstadoEmprestimo;
+typedef enum { PENDENTE_PROPOSTA, ACEITE, REJEITADO, CONCLUIDO } EstadoEmprestimo;
 
 /** @brief Tipos de pesquisa. */
-typedef enum { PESQUISA_TITULO, PESQUISA_AUTOR } TipoPesquisa;
+typedef enum { PESQUISA_TITULO, PESQUISA_AUTOR, PESQUISA_CATEGORIA } TipoPesquisa;
 
 // =============================================================
 // ESTRUTURAS
@@ -44,15 +45,16 @@ typedef struct {
     int id;                 // ID único do livro
     char titulo[MAX_STRING];
     char autor[MAX_STRING];
-    int anoPublicacao;
-    CategoriaLivro categoria; 
+    CategoriaLivro categoria;
+    char categoriaManual[50];  // Categoria personalizada se OUTRO 
     char isbn[20];          // ISBN-13 com hífens
     
     int retido;             // 0 = Ativo, 1 = Eliminado (Soft Delete)
+    EstadoLivro Disponivel;
+
     int userId;             // ID do DONO (Proprietário)
     int userIdEmprestimo;   // ID de quem tem a POSSE atual (Detentor)
-    
-    EstadoLivro disponivel; // (Alterado para minúscula por convenção)
+    int numRequisicoes;   // Para relatório de mais procurados
 } Livro;
 
 /**
@@ -70,7 +72,7 @@ typedef struct {
     
     EstadoEmprestimo estado;
     TipoOperacao tipoOperacao;
-} Emprestimo;
+} Operacao;
 
 /** @brief Estrutura de feedback mútuo. */
 typedef struct {

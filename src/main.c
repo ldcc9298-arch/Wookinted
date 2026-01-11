@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "structs.h"
 #include "utils.h"
-#include "files.h"
 #include "users.h"
 #include "books.h"
 #include "transactions.h"
+#include "files.h"
 #include "interface.h"
+#include "structs.h"
 
 // Definir tamanhos máximos para os arrays
 #define MAX_BOOKS 100
@@ -18,7 +18,7 @@ int main() {
     // --- Inicialização de Dados ---
     Utilizador users[MAX_USERS];
     Livro books[MAX_BOOKS];
-    Emprestimo loans[MAX_LOANS];
+    Operacao loans[MAX_LOANS];
     Feedback feedbacks[MAX_FEEDBACKS];
 
     int totalUsers = carregarUtilizadores(users);
@@ -39,7 +39,7 @@ int main() {
 
         
         if (idLogado == -1) {
-            // === MODO VISITANTE (Gerido pelo users.c) ===
+            // === MODO VISITANTE ===
             int resultado = menuModoVisitante(users, &totalUsers);
             
             if (resultado == -10) {
@@ -53,8 +53,11 @@ int main() {
                 
                 // Verifica se é Admin
                 if (strcmp(email, "admin@ipca.pt") == 0) {
-                    menuAdministrador(users, totalUsers);
-                    // Opcional: idLogado = -1; se quiseres logout após admin
+                    // Passamos agora TUDO o que o admin precisa ver
+                    menuAdministrador(users, totalUsers, books, totalBooks, loans, totalLoans, feedbacks, totalFeedbacks);
+                    idLogado = -1; 
+                    printf("\nSessao de Administrador terminada.\n");
+                    esperarEnter();
                 }
                 else {
                     // Verifica se é Aluno (procura "alunos.ipca.pt" no email)
@@ -72,12 +75,12 @@ int main() {
             }
 
         } else {
-            // === MODO LOGADO (Maestro Main) ===
+            // === MODO LOGADO ===
             int opcao = mostrarMenuPrincipal(users[idLogado].nome);
 
             switch (opcao) {
                 case 1: 
-                    menuMercadoLivros(books, &totalBooks, loans, &totalLoans, idLogado);
+                    menuMercadoLivros(users, totalUsers, books, &totalBooks, loans, &totalLoans, idLogado);
                     break;
                 case 2:
                     menuMeusLivros(books, &totalBooks, idLogado);

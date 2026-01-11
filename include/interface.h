@@ -18,6 +18,10 @@ int menuModoVisitante(Utilizador users[], int *totalUsers);
  */
 int mostrarMenuPrincipal(char *nome);
 
+// --- SUB-MENU VALIDACOES ADMINISTRADOR ---
+
+void submenuValidacoes(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao loans[], int totalLoans);
+
 // --- MENU ADMINISTRADOR ---
 
 /**
@@ -25,9 +29,19 @@ int mostrarMenuPrincipal(char *nome);
  * @param users Array de utilizadores.
  * @param total Número total de utilizadores.
  */
-void menuAdministrador(Utilizador users[], int total);
+void menuAdministrador(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao loans[], int totalLoans, Feedback feedbacks[], int totalFeedbacks);
 
-// --- SUB-MENU MERCADO ---
+// --- SUB-MENU PESQUISA LIVROS ---
+
+/**
+ * @brief Apresenta o sub-menu de pesquisa de livros.
+ * @details Permite pesquisar por Título, Autor ou Categoria.
+ * @param books Array de livros.
+ * @param totalBooks Total de livros no array.
+ */
+void submenuPesquisaLivros(Livro books[], int totalBooks);
+
+// --- MENU MERCADO ---
 
 /**
  * @brief Gere o menu do Mercado de Livros (Pesquisa, Requisição, Doação).
@@ -37,23 +51,23 @@ void menuAdministrador(Utilizador users[], int total);
  * @param totalLoans Apontador para o total de empréstimos.
  * @param idLogado ID do utilizador atual.
  */
-void menuMercadoLivros(Livro books[], int *totalBooks, Emprestimo loans[], int *totalLoans, int idLogado);
+void menuMercadoLivros(Utilizador users[], int totalUsers, Livro books[], int *totalBooks, Operacao loans[], int *totalLoans, int idLogado);
 
-// --- SUB-MENU MEUS LIVROS ---
+// --- MENU MEUS LIVROS ---
 
 /**
  * @brief Gere o menu de gestão de inventário pessoal (Listar, Registar, Editar, Eliminar).
  */
 void menuMeusLivros(Livro books[], int *totalBooks, int idLogado);
 
-// --- SUB-MENU MOVIMENTOS ---
+// --- MENU MOVIMENTOS ---
 
 /**
  * @brief Menu principal para gerir devoluções, aceitar pedidos e dar feedback.
  */
-void menuGestaoMovimentos(Emprestimo loans[], int *totalLoans, Livro books[], int *totalBooks, Feedback feedbacks[], int *totalFeedbacks, int idLogado);
+void menuGestaoMovimentos(Operacao loans[], int *totalLoans, Livro books[], int *totalBooks, Feedback feedbacks[], int *totalFeedbacks, int idLogado);
 
-// --- SUB-MENU PERFIL ---
+// --- MENU PERFIL ---
 
 /**
  * @brief Gere o sub-menu de perfil (Ver, Editar, Eliminar).
