@@ -3,10 +3,10 @@
 #include <ctype.h> // Necessário para a função isdigit
 #include <stdlib.h>
 #include <time.h>  // Necessário para obterDataAtual
-#include "structs.h"
 #include "utils.h"
 #include "files.h"
 #include "transactions.h"
+#include "struct.h"
 
 
 void registarUtilizador(Utilizador users[], int *total, Operacao loans[], int totalLoans) {
@@ -363,11 +363,10 @@ void editarPerfil(Utilizador *user) {
     printf("1. Alterar Nome\n");
     printf("2. Alterar Password\n");
     printf("0. Cancelar\n");
-    printf("Opcao: ");
     
     // Assumindo que tens o lerInteiro() disponível
     // Se não tiveres o import do utils.h aqui, confirma se está no topo
-    opcao = lerInteiro("Opcao: ", 1, 2);
+    opcao = lerInteiro("Opcao: ", 0, 2);
 
     if (opcao == 1) {
         printf("Novo Nome: ");
@@ -378,6 +377,8 @@ void editarPerfil(Utilizador *user) {
         printf("Nova Password: ");
         lerString(user->password, 50);
         printf("[Sucesso] Password atualizada.\n");
+    } else {
+        printf("[Cancelado] Nenhuma alteracao efetuada.\n");
     }
 }
 

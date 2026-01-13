@@ -1,0 +1,8 @@
+var searchData=
+[
+  ['solicitaremprestimo_0',['solicitarEmprestimo',['../transactions_8h.html#acabee2938a4a0b94a7e53386760f4ae8',1,'solicitarEmprestimo(Operacao loans[], int *totalLoans, Livro *book, int idRequisitante):&#160;transactions.c'],['../transactions_8c.html#acabee2938a4a0b94a7e53386760f4ae8',1,'solicitarEmprestimo(Operacao loans[], int *totalLoans, Livro *book, int idRequisitante):&#160;transactions.c']]],
+  ['stringnaovazia_1',['stringNaoVazia',['../utils_8h.html#a90aa050cbbc536b01ce3b2d866bb10e6',1,'stringNaoVazia(char *str):&#160;utils.c'],['../utils_8c.html#a90aa050cbbc536b01ce3b2d866bb10e6',1,'stringNaoVazia(char *str):&#160;utils.c']]],
+  ['structs_2eh_2',['structs.h',['../structs_8h.html',1,'']]],
+  ['submenupesquisalivros_3',['submenuPesquisaLivros',['../interface_8h.html#a70fa0a2b55ac2e1227ec29d6366707d0',1,'submenuPesquisaLivros(Livro books[], int totalBooks):&#160;interface.c'],['../interface_8c.html#a70fa0a2b55ac2e1227ec29d6366707d0',1,'submenuPesquisaLivros(Livro books[], int totalBooks):&#160;interface.c']]],
+  ['submenuvalidacoes_4',['submenuValidacoes',['../interface_8h.html#a13c17b2a82141b30fded0d066e4f65e4',1,'submenuValidacoes(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao loans[], int totalLoans):&#160;interface.c'],['../interface_8c.html#a13c17b2a82141b30fded0d066e4f65e4',1,'submenuValidacoes(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao loans[], int totalLoans):&#160;interface.c']]]
+];

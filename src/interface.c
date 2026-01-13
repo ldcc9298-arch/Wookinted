@@ -638,7 +638,7 @@ void menuGestaoMovimentos(Operacao loans[], int *totalLoans, Livro books[], int 
     } while (opMov != 0);
 }
 
-/// --- SMENU PERFIL ---
+/// --- MENU PERFIL ---
 
 /**
  * @brief Gerencia o perfil do utilizador logado.

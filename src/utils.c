@@ -347,13 +347,19 @@ int validarISBN(const char *isbn) {
     for (int i = 0; i < len; i++) {
         if (isdigit(isbn[i])) {
             if (count < 13) {
-                numeros[count] = isbn[i] - '0'; // Converte char para int
+                numeros[count] = isbn[i] - '0';
                 count++;
             } else {
                 return 0; // Demasiados números
             }
-        } else if (isbn[i] != '-' && isbn[i] != ' ') {
-            return 0; // Caracter inválido (letras ou símbolos estranhos)
+        } 
+        // Lógica para aceitar 'X' ou 'x' apenas no ISBN-10 (último dígito)
+        else if ((isbn[i] == 'X' || isbn[i] == 'x') && count == 9) {
+             numeros[count] = 10; // X vale 10
+             count++;
+        }
+        else if (isbn[i] != '-' && isbn[i] != ' ') {
+            return 0; 
         }
     }
 
