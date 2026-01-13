@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "files.h"
 #include "transactions.h"
-#include "struct.h"
+#include "structs.h"
 
 
 void registarUtilizador(Utilizador users[], int *total, Operacao loans[], int totalLoans) {
