@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h> // Necessário para gerar datas automáticas
-#include "books.h"
-#include "users.h"
+
+//#include "books.h"
+//#include "users.h"
 #include "transactions.h"
 #include "utils.h"
-#include "files.h"
-#include "interface.h"
+//#include "files.h"
+//#include "interface.h"
 #include "structs.h"
 
 /**

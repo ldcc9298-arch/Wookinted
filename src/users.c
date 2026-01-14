@@ -3,10 +3,12 @@
 #include <ctype.h> // Necessário para a função isdigit
 #include <stdlib.h>
 #include <time.h>  // Necessário para obterDataAtual
+
 #include "utils.h"
-#include "files.h"
-#include "transactions.h"
+//#include "files.h"
+//#include "transactions.h"
 #include "structs.h"
+#include "users.h"
 
 
 void registarUtilizador(Utilizador users[], int *total, Operacao loans[], int totalLoans) {

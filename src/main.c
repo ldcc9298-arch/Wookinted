@@ -1,18 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "utils.h"
-#include "users.h"
-#include "books.h"
+//#include "users.h"
+//#include "books.h"
 #include "transactions.h"
 #include "files.h"
 #include "interface.h"
 #include "structs.h"
 
-// Definir tamanhos máximos para os arrays
-#define MAX_BOOKS 100
-#define MAX_LOANS 200
-#define MAX_FEEDBACKS 200
 
 int main() {
     // --- Inicialização de Dados ---

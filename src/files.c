@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+
 #include "files.h"
 #include "structs.h"
 
@@ -169,4 +170,3 @@ int emailExisteNaWhitelist(char *email) {
     fclose(f);
     return 0; // Não encontrado
 }
-
