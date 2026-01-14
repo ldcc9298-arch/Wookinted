@@ -220,31 +220,6 @@ void pesquisarLivroPorCategoria(Livro books[], int total, const char *categoria)
     pesquisarLivroGenerico(books, total, categoria, PESQUISA_CATEGORIA);
 }
 
-/**
- * @brief Pesquisa livros por Categoria.
- * Solicita ao utilizador a categoria e lista os resultados.
- 
-void pesquisarLivroPorCategoria(Livro books[], int total) {
-    // 1. Pedir a categoria ao utilizador
-    CategoriaLivro catAlvo = escolherCategoria();
-
-    printf("\n--- Livros de %s ---\n", obterNomeCategoria(catAlvo));
-
-    int encontrados = 0;
-    for (int i = 0; i < total; i++) {
-        // Verifica se o livro está ativo E se a categoria corresponde
-        if (books[i].retido == 0 && books[i].categoria == catAlvo) {
-            imprimirLinhaLivro(&books[i]);
-            encontrados++;
-        }
-    }
-
-    if (encontrados == 0) {
-        printf("Nenhum livro encontrado nesta categoria.\n");
-    }
-}
-*/
-
 // =============================================================
 // AÇÕES DE UTILIZADOR
 // =============================================================
