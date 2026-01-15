@@ -6,6 +6,8 @@
 #define MAX_OPERACOES 200
 #define MAX_FEEDBACKS 100
 #define MAX_STRING 100
+#define MAX_LOANS 200
+#define MAX_FEEDBACKS 200
 
 /**
  * @brief Estados da conta do utilizador.

@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "utils.h"
-#include "users.h"
-#include "books.h"
+//#include "users.h"
+//#include "books.h"
 #include "transactions.h"
 #include "files.h"
 #include "interface.h"
 #include "structs.h"
+
 
 int main() {
     // --- Inicialização de Dados ---

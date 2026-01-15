@@ -3,14 +3,18 @@
 #include <ctype.h> // Necessário para a função isdigit
 #include <stdlib.h>
 #include <time.h>  // Necessário para obterDataAtual
-#include "utils.h"
-#include "files.h"
-#include "transactions.h"
-#include "structs.h"
-#include "interface.h"
 
-void registarUtilizador(Utilizador users[], int *total, Operacao operacoes[], int totalOperacoes) {
-    if (*total >= MAX_UTILIZADORES) {
+#include "utils.h"
+//#include "files.h"
+//#include "transactions.h"
+#include "structs.h"
+
+
+void registarUtilizador(Utilizador users[], int *total, Operacao loans[], int totalLoans) {
+    
+    // 1. Validação de Limites (Só é critico se for conta nova, mas validamos já)
+    if (*total >= MAX_USERS) {
+        // Nota: Se for reativação, isto não seria problema, mas por segurança bloqueamos.
         printf("[Erro] Limite de utilizadores atingido!\n");
         return;
     }

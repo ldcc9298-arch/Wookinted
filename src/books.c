@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "utils.h"
-#include "transactions.h"
-#include "files.h"
-#include "interface.h"
+//#include "transactions.h"
+//#include "files.h"
+//#include "interface.h"
 #include "structs.h"
+#include "books.h"
 
 /**
  * @brief Exibe um menu para o utilizador escolher uma categoria.

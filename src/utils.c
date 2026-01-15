@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h> // Necessário para isspace
 #include <time.h>  // Necessário para calcularIdade
+
 #include "utils.h"
 #include "structs.h"
 #include "books.h"
