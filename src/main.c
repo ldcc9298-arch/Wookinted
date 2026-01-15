@@ -9,26 +9,21 @@
 #include "interface.h"
 #include "structs.h"
 
-// Definir tamanhos máximos para os arrays
-#define MAX_BOOKS 100
-#define MAX_LOANS 200
-#define MAX_FEEDBACKS 200
-
 int main() {
     // --- Inicialização de Dados ---
-    Utilizador users[MAX_USERS];
-    Livro books[MAX_BOOKS];
-    Operacao loans[MAX_LOANS];
+    Utilizador users[MAX_UTILIZADORES];
+    Livro books[MAX_LIVROS];
+    Operacao operacoes[MAX_OPERACOES];
     Feedback feedbacks[MAX_FEEDBACKS];
 
     int totalUsers = carregarUtilizadores(users);
     int totalBooks = carregarLivros(books);
-    int totalLoans = carregarEmprestimos(loans);
+    int totalOperacoes = carregarOperacoes(operacoes);
     int totalFeedbacks = carregarFeedbacks(feedbacks);
 
     limparEcra();
     printf("Sistema Wookinted Iniciado. Dados carregados.\n");
-    printf("Users: %d | Livros: %d | Emprestimos: %d\n", totalUsers, totalBooks, totalLoans);
+    printf("Users: %d | Livros: %d | Emprestimos: %d\n", totalUsers, totalBooks, totalOperacoes);
     esperarEnter();
 
     int idLogado = -1; // -1 significa ninguém logado
@@ -36,11 +31,9 @@ int main() {
 
     while (running) {
         
-
-        
         if (idLogado == -1) {
             // === MODO VISITANTE ===
-            int resultado = menuModoVisitante(users, &totalUsers);
+            int resultado = menuModoVisitante(users, &totalUsers, operacoes, totalOperacoes);
             
             if (resultado == -10) {
                 running = 0; // O utilizador escolheu Sair
@@ -48,50 +41,34 @@ int main() {
             } else if (resultado >= 0) {
                 idLogado = resultado; // Login feito!
                 
-                // VERIFICAÇÃO DE TIPO DE UTILIZADOR
-                char *email = users[idLogado].email;
-                
-                // Verifica se é Admin
-                if (strcmp(email, "admin@ipca.pt") == 0) {
-                    // Passamos agora TUDO o que o admin precisa ver
-                    menuAdministrador(users, totalUsers, books, totalBooks, loans, totalLoans, feedbacks, totalFeedbacks);
+                // VERIFICAÇÃO DE ADMIN (O Admin não tem saudações no login, por isso tratamos aqui)
+                if (strcmp(users[idLogado].email, "admin@ipca.pt") == 0) {
+                    
+                    verificarNotificacoesAdmin(users, totalUsers, books, totalBooks, operacoes, totalOperacoes);
+                    
+                    menuAdministrador(users, totalUsers, books, totalBooks, operacoes, totalOperacoes, feedbacks, totalFeedbacks);
                     idLogado = -1; 
                     printf("\nSessao de Administrador terminada.\n");
                     esperarEnter();
                 }
-                else {
-                    // Verifica se é Aluno (procura "alunos.ipca.pt" no email)
-                    if (strstr(email, "alunos.ipca.pt") != NULL) {
-                        printf("\n[Login OK] Bem-vindo, Aluno %s!\n", users[idLogado].nome);
-                    } 
-                    // Se não é aluno nem admin, e passou a validação IPCA, é Docente/Staff
-                    else {
-                        printf("\n[Login OK] Bem-vindo, Docente %s!\n", users[idLogado].nome);
-                    }
-
-                    // Verificar notificações logo após o login
-                    verificarNotificacoes(loans, totalLoans, idLogado);
-                }
             }
-
         } else {
             // === MODO LOGADO ===
             int opcao = mostrarMenuPrincipal(users[idLogado].nome);
 
             switch (opcao) {
                 case 1: 
-                    menuMercadoLivros(users, totalUsers, books, &totalBooks, loans, &totalLoans, idLogado);
+                    menuMercadoLivros(users, totalUsers, books, &totalBooks, operacoes, &totalOperacoes, idLogado);
                     break;
                 case 2:
                     menuMeusLivros(books, &totalBooks, idLogado);
                     break;
                 case 3:
-                    menuGestaoMovimentos(loans, &totalLoans, books, &totalBooks, feedbacks, &totalFeedbacks, idLogado);
+                    menuGestaoMovimentos(users, totalUsers, books, &totalBooks, operacoes, &totalOperacoes, feedbacks, &totalFeedbacks, idLogado);
                     break;
                 case 4:
-                    printf("--- MEU PERFIL ---\n");
-                    menuGestaoPerfil(users, totalUsers, &idLogado);
-                    listarFeedbacks(feedbacks, totalFeedbacks, idLogado);
+                    menuGestaoPerfil(users, totalUsers, feedbacks, totalFeedbacks, idLogado);
+
                     // Se a conta for apagada dentro do menu, idLogado volta como -1
                     if (idLogado == -1) {
                         printf("Sessao terminada (Conta eliminada).\n");

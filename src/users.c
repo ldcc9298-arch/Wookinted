@@ -7,335 +7,253 @@
 #include "files.h"
 #include "transactions.h"
 #include "structs.h"
+#include "interface.h"
 
-
-void registarUtilizador(Utilizador users[], int *total, Operacao loans[], int totalLoans) {
-    
-    // 1. Validação de Limites (Só é critico se for conta nova, mas validamos já)
-    if (*total >= MAX_USERS) {
-        // Nota: Se for reativação, isto não seria problema, mas por segurança bloqueamos.
+void registarUtilizador(Utilizador users[], int *total, Operacao operacoes[], int totalOperacoes) {
+    if (*total >= MAX_UTILIZADORES) {
         printf("[Erro] Limite de utilizadores atingido!\n");
         return;
     }
 
-    printf("\n=== REGISTO DE UTILIZADOR (IPCA) ===\n");
+    printf("\n=== REGISTO DE UTILIZADOR (Digite '0' para cancelar) ===\n");
 
-    // Variáveis de Controlo
-    int indice = -1;      // Onde vamos guardar os dados?
-    int isReativacao = 0; // É conta nova ou velha?
-    char emailTemp[MAX_STRING];
+    int indice = -1;
+    int isReativacao = 0;
+    char entradaTemp[MAX_STRING];
 
-    // --- 1. EMAIL (PRIMEIRO PASSO) ---
-    int emailValido = 0;
+    // --- 1. EMAIL ---
     do {
-        printf("Email Institucional (IPCA): ");
-        lerString(emailTemp, MAX_STRING);
-        
-        // A. Validação de Formato
-        if (!validarFormatoEmail(emailTemp)) {
-            printf("[Erro] Formato invalido!\n");
-            printf("- Alunos: aXXXXX@alunos.ipca.pt\n");
-            printf("- Docentes: [Nome]@ipca.pt\n");
+        printf("Email Institucional: ");
+        lerString(entradaTemp, MAX_STRING);
+        if (strcmp(entradaTemp, "0") == 0) return; // CANCELAR
+
+        if (!validarFormatoEmailIPCA(entradaTemp)) {
+            printf("[Erro] Formato invalido! (Alunos: a123@alunos.ipca.pt | Docentes: nome@ipca.pt)\n");
             continue; 
         }
 
-        // B. Verificar Existência na BD
+        // Verificar Existência
         int encontrado = -1;
         for (int k = 0; k < *total; k++) {
-            if (strcmp(users[k].email, emailTemp) == 0) {
+            if (strcmp(users[k].email, entradaTemp) == 0) {
                 encontrado = k;
                 break;
             }
         }
 
         if (encontrado != -1) {
-            // Se encontrou, verificamos o estado
-            if (users[encontrado].ativo == INATIVO) {
-                // SUCESSO: É uma reativação!
-                printf("\n[Aviso] Detetamos uma conta antiga inativa associada a este email.\n");
-                printf("Os seus dados serao atualizados.\n");
+            if (users[encontrado].estado == CONTA_INATIVA) {
+                printf("\n[Aviso] Conta inativa detetada. Procedendo a reativacao...\n");
                 indice = encontrado;
                 isReativacao = 1;
-                emailValido = 1;
+                break;
             } else {
-                // ERRO: Email já ativo
-                printf("[Erro] Este email ja esta registado e ativo/pendente.\n");
+                printf("[Erro] Este email ja se encontra ativo ou pendente.\n");
+                continue;
             }
         } else {
-            // SUCESSO: É um registo novo!
-            indice = *total; // Usa a próxima posição livre
+            indice = *total;
             isReativacao = 0;
-            emailValido = 1;
+            break;
         }
+    } while (1);
 
-    } while (!emailValido);
-
-    // Copiar o email validado para a struct definitiva
-    strcpy(users[indice].email, emailTemp);
-
+    // Guardar email temporário
+    char emailFinal[MAX_STRING];
+    strcpy(emailFinal, entradaTemp);
 
     // --- 2. NOME ---
-    int nomeValido = 0;
     do {
         printf("Nome Completo: ");
-        lerString(users[indice].nome, MAX_STRING);
+        lerString(entradaTemp, MAX_STRING);
+        if (strcmp(entradaTemp, "0") == 0) return; // CANCELAR
         
-        if (!stringNaoVazia(users[indice].nome)) {
-            printf("[Erro] O nome nao pode estar vazio.\n");
-        } 
-        else if (!validarApenasLetras(users[indice].nome, MAX_STRING)) {
-            printf("[Erro] O nome nao pode conter numeros.\n");
-        } 
-        else {
-            nomeValido = 1;
+        if (!stringNaoVazia(entradaTemp) || !validarApenasLetras(entradaTemp, MAX_STRING)) {
+            printf("[Erro] Nome invalido (nao pode conter numeros ou estar vazio).\n");
+            continue;
         }
-    } while (!nomeValido);
-
+        strcpy(users[indice].nome, entradaTemp);
+        break;
+    } while (1);
 
     // --- 3. TELEMOVEL ---
-    int telemovelValido = 0;
     do {
         printf("Telemovel (9 digitos): ");
-        lerString(users[indice].telemovel, sizeof(users[indice].telemovel));
+        lerString(entradaTemp, MAX_STRING);
+        if (strcmp(entradaTemp, "0") == 0) return; // CANCELAR
 
-        // A. Tamanho
-        if (strlen(users[indice].telemovel) != 9) {
-            printf("[Erro] 9 digitos.\n"); continue; 
-        }
+        if (strlen(entradaTemp) != 9) { printf("[Erro] Deve ter 9 digitos.\n"); continue; }
+        
+        int soNumeros = 1;
+        for(int k=0; k<9; k++) if(!isdigit(entradaTemp[k])) soNumeros = 0;
+        if(!soNumeros) { printf("[Erro] Apenas numeros.\n"); continue; }
 
-        // B. Apenas Números
-        int apenasNumeros = 1;
-        for (int k = 0; k < 9; k++) {
-            if (!isdigit(users[indice].telemovel[k])) {
-                apenasNumeros = 0; break;
-            }
-        }
-        if (!apenasNumeros) { printf("[Erro] Apenas numeros.\n"); continue; }
-
-        // C. Duplicados (Cuidado com reativação!)
         int existe = 0;
         for (int k = 0; k < *total; k++) {
-            // Só é erro se o número existir NUMA OUTRA conta (k != indice)
-            if (k != indice && strcmp(users[k].telemovel, users[indice].telemovel) == 0) {
-                existe = 1; break;
-            }
+            if (k != indice && strcmp(users[k].telemovel, entradaTemp) == 0) { existe = 1; break; }
         }
-
-        if (existe) printf("[Erro] Telemovel ja associado a outra conta.\n");
-        else telemovelValido = 1; 
-
-    } while (!telemovelValido); 
-
+        if (existe) printf("[Erro] Telemovel ja registado.\n");
+        else { strcpy(users[indice].telemovel, entradaTemp); break; }
+    } while (1);
 
     // --- 4. DATA NASCIMENTO ---
-    int idadeValida = 0;
     do {
         printf("Data Nascimento (DD/MM/AAAA): ");
-        lerString(users[indice].dataNascimento, 11); 
+        lerString(entradaTemp, 11);
+        if (strcmp(entradaTemp, "0") == 0) return; // CANCELAR
 
-        int idade = calcularIdade(users[indice].dataNascimento);
-
+        int idade = calcularIdade(entradaTemp);
         if (idade == -1) printf("[Erro] Formato invalido.\n");
         else if (idade < 18) {
-            printf("[Erro] Apenas maiores de 18 anos.\n");
-            return; // Sai da função
-        } 
-        else idadeValida = 1;
-
-    } while (!idadeValida);
-
+            printf("[Erro] Registo apenas para maiores de 18 anos.\n");
+            return;
+        } else { strcpy(users[indice].dataNascimento, entradaTemp); break; }
+    } while (1);
 
     // --- 5. PASSWORD ---
     do {
         printf("Password: ");
-        lerString(users[indice].password, 50);
-    } while (!stringNaoVazia(users[indice].password));
+        lerString(entradaTemp, 50);
+        if (strcmp(entradaTemp, "0") == 0) return; // CANCELAR
+        if (stringNaoVazia(entradaTemp)) {
+            strcpy(users[indice].password, entradaTemp);
+            break;
+        }
+    } while (1);
 
+    // Aplicar o email guardado no início
+    strcpy(users[indice].email, emailFinal);
 
-    // --- 6. DEFINIÇÃO DE ESTADO E FUSÃO ---
-
+    // --- 6. ESTADO FINAL ---
     if (isReativacao) {
-        // É REATIVAÇÃO: Mantém o ID antigo
-        // users[indice].id já existe, não mexemos.
-        
-        // Verificar Fusão de Histórico
-        if (verificarHistoricoUtilizador(users[indice].id, loans, totalLoans)) {
-            users[indice].ativo = PENDENTE_REATIVACAO;
-            printf("\n[Info] Detetamos historico antigo nesta conta.\n");
-            printf("A conta ficou PENDENTE para reativacao.\n"); // Admin precisa aprovar. Faz fusão do histórico antigo.
-        } 
-        else {
-            // Reativação sem histórico: Trata como novo para efeitos de whitelist
-            if (emailExisteNaWhitelist(users[indice].email)) {
-                users[indice].ativo = ATIVO;
-                printf("[Sucesso] Conta reativada automaticamente.\n");
-            } else {
-                users[indice].ativo = PENDENTE_APROVACAO; 
-                printf("[Info] Conta reativada. Aguarde validacao.\n");
-            }
+        if (verificarHistoricoUtilizador(users[indice].id, operacoes, totalOperacoes)) {
+            users[indice].estado = CONTA_PENDENTE_REATIVACAO;
+            printf("\n[Info] Conta aguarda validacao do Administrador (tem historico).\n");
+        } else {
+            users[indice].estado = CONTA_PENDENTE_APROVACAO;
+            printf("\n[Info] Reativacao pendente de aprovacao.\n");
         }
-    } 
-    else {
-        // É NOVO REGISTO
-        users[indice].id = indice + 1; // Gera novo ID
-
-        // Verificar Whitelist
+    } else {
+        users[indice].id = indice + 1;
         if (strcmp(users[indice].email, "admin@ipca.pt") == 0) {
-            users[indice].ativo = ATIVO;
+            users[indice].estado = CONTA_ATIVA;
+        } else {
+            users[indice].estado = CONTA_PENDENTE_APROVACAO;
+            printf("\n[Info] Registo efetuado com sucesso. Aguarde aprovacao.\n");
         }
-        else if (emailExisteNaWhitelist(users[indice].email)) { // Função no files.c
-            users[indice].ativo = ATIVO;
-            printf("[Sucesso] Conta criada e ativa!\n");
-        } 
-        else {
-            users[indice].ativo = PENDENTE_APROVACAO;
-            printf("[Info] Registo efetuado. Aguarde validacao do Admin.\n");
-        }
-
-        (*total)++; // Só incrementa se for novo!
+        (*total)++;
     }
-
-    printf("Registo concluido para %s (ID: %d).\n", users[indice].nome, users[indice].id);
 }
 
-/**
- * @brief Realiza o login de um utilizador.
- * @param users Array de utilizadores.
- * @param total Número total de utilizadores.
- * @return Índice do utilizador no array se sucesso, ou código de erro negativo.
- */
-int loginUtilizador(Utilizador users[], int total) {
+int loginUtilizador(Utilizador users[], int totalUsers, Operacao operacoes[], int totalOperacoes) {
     char email[MAX_STRING], pass[50];
-    
-    printf("\n=== LOGIN ===\n");
+    int indice = -1;
+
+    printf("\n=== LOGIN (0 para cancelar) ===\n");
     printf("Email: "); 
     lerString(email, MAX_STRING);
     
+    // Se o utilizador digitar 0, cancela imediatamente
+    if (strcmp(email, "0") == 0) return -5;
+
+    // PASSO 1: O email existe?
+    for (int i = 0; i < totalUsers; i++) { // Corrigido para totalUsers
+        if (strcmp(users[i].email, email) == 0) {
+            indice = i;
+            break;
+        }
+    }
+
+    if (indice == -1) {
+        printf("\n[Erro] Email nao encontrado.\n");
+        return -1;
+    }
+
+    // PASSO 2: A conta está em que estado?
+    if (users[indice].estado == CONTA_PENDENTE_APROVACAO || users[indice].estado == CONTA_PENDENTE_REATIVACAO) {
+        printf("\n[Acesso Negado] A sua conta aguarda validacao do Administrador.\n");
+        return -4;
+    } 
+    else if (users[indice].estado == CONTA_INATIVA) {
+        printf("\n[Aviso] Esta conta foi eliminada anteriormente.\n");
+        printf("Por favor, use o menu 'Registar' para a reativar.\n");
+        return -3;
+    }
+
+    // PASSO 3: Password (só pedimos se a conta existir e estiver ativa)
     printf("Password: "); 
     lerString(pass, 50);
+    if (strcmp(pass, "0") == 0) return -5;
 
-    for (int i = 0; i < total; i++) {
-        // Passo 1: Email existe?
-        if (strcmp(users[i].email, email) == 0) {
+    if (strcmp(users[indice].password, pass) == 0) {
+        // SAUDAÇÃO E NOTIFICAÇÕES (Ignorado se for Admin)
+        if (strcmp(users[indice].email, "admin@ipca.pt") != 0) {
             
-            // Passo 2: Password coincide?
-            if (strcmp(users[i].password, pass) == 0) {
-                
-                // Passo 3: Verificar Estado da Conta
-                if (users[i].ativo == ATIVO) {
-                    return i; // SUCESSO
-                } 
-                else if (users[i].ativo == PENDENTE_APROVACAO || users[i].ativo == PENDENTE_REATIVACAO) {
-                    printf("\n[Acesso Negado] A sua conta aguarda validacao do Administrador.\n");
-                    return -4; 
-                } 
-                else { 
-                    // Estado INATIVO (Eliminado)
-                    printf("\n[Aviso] Esta conta foi eliminada anteriormente.\n");
-                    printf("Por favor, va ao menu 'Registar' para reativar a sua conta.\n");
-                    return -3; 
-                }
-            } else {
-                printf("\n[Erro] Password incorreta.\n");
-                return -2; 
-            }
+            if (strstr(users[indice].email, "@alunos.ipca.pt") != NULL)
+                printf("\nBem-vindo Aluno %s!\n", users[indice].nome);
+            else
+                printf("\nBem-vindo Docente %s!\n", users[indice].nome);
+
+            // Chamada da função de notificações
+            verificarNotificacoes(operacoes, totalOperacoes, users[indice].id);
+            
+            // Pausa para o utilizador ler a saudação e os alertas
+            esperarEnter(); 
         }
+
+        return indice; // Retorna o índice para o main/menuModoVisitante
+    } else {
+        printf("\n[Erro] Password incorreta.\n");
+        return -2;
     }
-    return -1; // Email não encontrado
 }
 
-/**
- * @brief Valida o formato do email institucional do IPCA.
- * @param email A string do email a validar.
- * @return int Retorna 1 se o formato for válido, 0 caso contrário.
- */
-int validarFormatoEmailIPCA(char *email) {
-    // Regra Base: Admin
-    if (strcmp(email, "admin@ipca.pt") == 0) return 1;
-
-    char *arroba = strchr(email, '@');
-    if (arroba == NULL) return 0;
-
-    // Separar utilizador e domínio
-    int tamanhoUser = arroba - email;
-    char dominio[50];
-    strcpy(dominio, arroba + 1);
-
-    // --- CASO 1: ALUNOS (@alunos.ipca.pt) ---
-    if (strcmp(dominio, "alunos.ipca.pt") == 0) {
-        // Tem de começar por 'a' ou 'A'
-        if (email[0] != 'a' && email[0] != 'A') return 0;
-        
-        // O resto do utilizador tem de ser números
-        for (int i = 1; i < tamanhoUser; i++) {
-            if (!isdigit(email[i])) return 0;
-        }
-        return 1; // Válido
-    }
-
-    // --- CASO 2: DOCENTES/INSTITUIÇÃO (@ipca.pt) ---
-    else if (strcmp(dominio, "ipca.pt") == 0) {
-        // Deve ser composto por letras ou pontos (ex: ldccastro, jose.silva)
-        for (int i = 0; i < tamanhoUser; i++) {
-            // Se encontrarmos um número, REJEITAMOS
-            if (isdigit((unsigned char)email[i])) {
-                return 0; 
-            }
-        }
-        return 1; // Válido (não tem números)
-    }
-
-    return 0; // Domínio desconhecido
-}
-
-/**
- * @brief Recupera a password de um utilizador.
- * @param users Array de utilizadores.
- * @param total Número total de utilizadores.
- */
 void recuperarPassword(Utilizador users[], int total) {
     char emailInput[MAX_STRING];
     char telInput[15];
     
-    printf("\n=== RECUPERACAO DE CONTA ===\n");
+    printf("\n=== RECUPERACAO DE CONTA (0 para cancelar) ===\n");
     printf("Introduza o seu Email: ");
     lerString(emailInput, MAX_STRING);
+    if (strcmp(emailInput, "0") == 0) return;
 
-    // 1. Procurar o utilizador pelo Email
+    // 1. Procurar o utilizador
     int indiceEncontrado = -1;
-    
     for (int i = 0; i < total; i++) {
         if (strcmp(users[i].email, emailInput) == 0) {
             indiceEncontrado = i;
-            break; // Parar assim que encontrar
+            break;
         }
     }
 
-    // Se não encontrou o email, aborta por segurança
-    // (Em sistemas reais, às vezes não se diz "email não existe" para não revelar dados,
-    // mas num projeto académico a clareza ajuda).
     if (indiceEncontrado == -1) {
         printf("[Erro] Email nao encontrado no sistema.\n");
         return;
     }
 
-    // 2. Validação de Segurança (Simulação de 2FA)
-    printf("Para seguranca, confirme o seu Telemovel: ");
+    // 2. Validação de Telemóvel
+    printf("Confirme o seu Telemovel (9 digitos): ");
     lerString(telInput, 15);
+    if (strcmp(telInput, "0") == 0) return;
 
-    // Compara o telemóvel inserido com o que está gravado na struct
     if (strcmp(users[indiceEncontrado].telemovel, telInput) == 0) {
-        
-        // 3. Segurança OK -> Pedir nova password
         printf("\n[Identidade Confirmada]\n");
-        printf("Nova Password: ");
-        lerString(users[indiceEncontrado].password, 50);
         
+        // 3. Nova Password com validação de "não vazia"
+        char novaPass[50];
+        do {
+            printf("Nova Password: ");
+            lerString(novaPass, 50);
+            if (strcmp(novaPass, "0") == 0) return;
+        } while (!stringNaoVazia(novaPass));
+
+        strcpy(users[indiceEncontrado].password, novaPass);
         printf("[Sucesso] A sua password foi alterada.\n");
         
     } else {
         printf("[Erro] O telemovel nao corresponde ao registo deste email.\n");
     }
+    esperarEnter();
 }
 
 /**
@@ -349,7 +267,7 @@ void mostrarPerfil(Utilizador user) {
     printf("Email: %s\n", user.email);
     printf("Telemovel: %s\n", user.telemovel);
     printf("Data Nascimento: %s\n", user.dataNascimento);
-    printf("Estado: %s\n", (user.ativo == ATIVO ? "Ativo" : "Inativo"));
+    printf("Estado: %s\n", (user.estado == CONTA_ATIVA ? "Ativo" : "Inativo"));
     printf("====================\n");
 }
 
@@ -397,7 +315,7 @@ int eliminarConta(Utilizador *user) {
     lerString(confirmacao, 10);
     
     if (strcmp(confirmacao, "ELIMINAR") == 0) {
-        user->ativo = INATIVO; // Soft Delete (Muda estado para 0)
+        user->estado = CONTA_INATIVA; // Soft Delete (Muda estado para 0)
         printf("[Conta Eliminada] Lamentamos ve-lo partir.\n");
         return 1; // Confirma que eliminou
     } else {

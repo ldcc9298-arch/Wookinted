@@ -56,11 +56,7 @@ int calcularIdade(char *dataNascimento);
  */
 int validarApenasLetras(char *nome, int tamanho);
 
-/**
- * @brief Valida o formato do email (deve conter '@' e '.').
- * @param email A string do email a validar.
- */
-int validarFormatoEmail(char *email);
+int validarFormatoEmailIPCA(char *email);
 
 /**
  * @brief Gera o próximo ID único para um novo livro.
@@ -80,10 +76,10 @@ void imprimirLinhaLivro(Livro *book);
  * @brief Gera um relatório dos 5 utilizadores com mais transações.
  * @param users Array de utilizadores.
  * @param totalUsers Número total de utilizadores.
- * @param loans Array de empréstimos.
- * @param totalLoans Número total de empréstimos.
+ * @param operacoes Array de empréstimos.
+ * @param totalOperacoes Número total de empréstimos.
  */
-void relatorioTopTransacoes(Utilizador users[], int totalUsers, Operacao loans[], int totalLoans);
+void relatorioTopTransacoes(Operacao operacoes[], int totalOperacoes, Livro books[], int totalBooks);
 
 /**
  * @brief Gera um relatório dos 5 livros mais requisitados.
@@ -91,6 +87,16 @@ void relatorioTopTransacoes(Utilizador users[], int totalUsers, Operacao loans[]
  * @param totalBooks Número total de livros.
  */
 void relatorioTopLivros(Livro books[], int totalBooks);
+
+/**
+ * @brief Calcula a média de avaliações (notas) recebidas por um utilizador.
+ * @param feedbacks Array de feedbacks.
+ * @param totalFeedbacks Número total de feedbacks no array.
+ * @param idUser ID do utilizador alvo.
+ * @param qtdReviews Ponteiro para armazenar a quantidade de reviews (pode ser NULL).
+ * @return Média das notas (float). Retorna 0.0 se não houver avaliações.
+ */
+float calcularMediaUtilizador(Feedback feedbacks[], int totalFeedbacks, int idUser, int *qtdReviews); 
 
 /**
  * @brief Gera um relatório dos 5 utilizadores com melhor reputação.
@@ -102,13 +108,16 @@ void relatorioTopLivros(Livro books[], int totalBooks);
 void relatorioTopReputacao(Utilizador users[], int totalUsers, Feedback feedbacks[], int totalFeedbacks);
 
 /**
- * @brief Verifica se o utilizador tem histórico de empréstimos.
- * @param idUser ID do utilizador a verificar.
- * @param loans Array de empréstimos.
- * @param totalLoans Número total de empréstimos no array.
- * @return 1 se o utilizador tiver histórico, 0 caso contrário.
+ * @brief Lista o histórico completo de operações do utilizador logado.
+ * @param operacoes Array de operações.
+ * @param totalOperacoes Total de operações.
+ * @param books Array de livros.
+ * @param totalBooks Total de livros.
+ * @param users Array de utilizadores.
+ * @param totalUsers Total de utilizadores.
+ * @param idLogado ID do utilizador logado.
  */
-int verificarHistoricoUtilizador(int idUser, Operacao loans[], int totalLoans);
+void listarHistoricoCompleto(Operacao operacoes[], int totalOperacoes, Livro books[], int totalBooks, Utilizador users[], int totalUsers, int idLogado);
 
 /**
  * @brief Valida o formato do ISBN-13.
@@ -116,5 +125,69 @@ int verificarHistoricoUtilizador(int idUser, Operacao loans[], int totalLoans);
  * @return 1 se válido, 0 se inválido.
  */
 int validarISBN(const char *isbn);
+
+/**
+ * @brief Verifica se um ISBN já existe no sistema.
+ * @param isbn String do ISBN a verificar.
+ * @param books Array de livros existentes.
+ * @param total Número total de livros no array.
+ * @return 1 se o ISBN existir, 0 caso contrário.
+ */
+int existeISBN(Livro books[], int totalBooks, char *isbn);
+
+/**
+ * @brief Converte uma string para minúsculas.
+ * @param origem String original.
+ * @param destino Buffer onde a string em minúsculas será armazenada.
+ */
+void paraMinusculas(const char *origem, char *destino);
+
+/**
+ * @brief Obtém o nome da categoria visual de um livro, considerando categorias manuais.
+ * @param b Apontador para o livro.
+ * @return Nome da categoria visual (pode ser a manual se for "Outro").
+ */
+const char* obterNomeVisualCategoria(Livro *b);
+
+
+const char* obterNomeCategoria(CategoriaLivro cat, char* manualDesc);
+
+/**
+ * @brief Obtém o nome da categoria visual de um livro, considerando categorias manuais.
+ * @param b Apontador para o livro.
+ * @return Nome da categoria visual (pode ser a manual se for "Outro").
+ */
+const char* obterNomeVisualCategoria(Livro *b);
+
+/**
+ * @brief Obtém a data atual no formato AAAAMMDD.
+ * @return Data atual como inteiro.
+ */
+int obterDataAtual();
+
+/**
+ * @brief Formata uma data do formato inteiro AAAAMMDD para DD/MM/AAAA.
+ * @param dataInt Data no formato inteiro (AAAAMMDD).
+ * @param buffer Buffer onde a data formatada será armazenada.
+ */
+void formatarData(int dataInt, char *buffer);
+
+/**
+ * @brief Soma um número de dias a uma data no formato YYYYMMDD.
+ * @param dataInicio Data inicial no formato inteiro YYYYMMDD.
+ * @param dias Número de dias a somar.
+ * @return Nova data no formato inteiro YYYYMMDD.
+ */
+int somarDias(int dataInicio, int dias);
+
+int verificarHistoricoUtilizador(int idUser, Operacao operacoes[], int totalOperacoes);
+
+void adminValidarUtilizadores(Utilizador users[], int totalUsers);
+
+void adminValidarLivros(Utilizador users[], int totalUsers, Livro livros[], int totalLivros);
+
+void adminGerirPropostas(Operacao operacao[], int totalOperacao, Livro livros[], int totalLivros, Utilizador users[], int totalUsers);
+
+
 
 #endif // UTILS_H

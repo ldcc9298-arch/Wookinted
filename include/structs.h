@@ -1,29 +1,68 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
-#define MAX_USERS 50
-#define MAX_BOOKS 100
+#define MAX_UTILIZADORES 50
+#define MAX_LIVROS 100
+#define MAX_OPERACOES 200
+#define MAX_FEEDBACKS 100
 #define MAX_STRING 100
 
 /**
  * @brief Estados da conta do utilizador.
+ * Recomendação: Usar 0 para inativo ou pendente faz com que contas recém-criadas (que iniciam a zero) não fiquem "Ativas" por engano.
  */
-typedef enum {INATIVO, ATIVO, PENDENTE_APROVACAO, PENDENTE_REATIVACAO} EstadoConta;
+typedef enum {
+    CONTA_INATIVA = 0, 
+    CONTA_ATIVA = 1, 
+    CONTA_PENDENTE_APROVACAO = 2, 
+    CONTA_PENDENTE_REATIVACAO = 3
+} EstadoConta;
 
 /** @brief Estados do livro. */
-typedef enum { INDISPONIVEL, DISPONIVEL, EMPRESTADO, PENDENTE_CATEGORIA } EstadoLivro;
+typedef enum {
+    LIVRO_INDISPONIVEL = 0,  // Ex: Danificado/Removido
+    LIVRO_DISPONIVEL = 1,    // Visível no mercado
+    LIVRO_EMPRESTADO = 2,    // Fisicamente fora
+    LIVRO_PENDENTE_CAT = 3,  // Aguarda aprovação de categoria
+    LIVRO_RESERVADO = 4      // Tem uma proposta ativa (Case 3)
+} EstadoLivro;
 
 /** @brief Categorias de livros. */
-typedef enum { FICCAO, NAO_FICCAO, CIENCIA, HISTORIA, BIOGRAFIA, TECNOLOGIA, OUTRO } CategoriaLivro;
+typedef enum {
+    CAT_SEM_CATEGORIA = 0, // Reservado para "Cancelar" ou "Vazio"
+    CAT_FICCAO = 1,
+    CAT_NAO_FICCAO = 2,
+    CAT_CIENCIA = 3,
+    CAT_HISTORIA = 4,
+    CAT_BIOGRAFIA = 5,
+    CAT_TECNOLOGIA = 6,
+    CAT_OUTRO = 7
+} CategoriaLivro;
 
 /** @brief Tipos de operação. */
-typedef enum { DOACAO, EMPRESTIMO, TROCA } TipoOperacao;
+typedef enum {
+    OP_TIPO_DESCONHECIDO = 0, // Segurança (para inits a zero)
+    OP_TIPO_EMPRESTIMO = 1,
+    OP_TIPO_TROCA = 2,
+    OP_TIPO_DEVOLUCAO = 3,
+    OP_TIPO_DOACAO = 4
+} TipoOperacao;
 
-/** @brief Estados do empréstimo. */
-typedef enum { PENDENTE_PROPOSTA, ACEITE, REJEITADO, CONCLUIDO } EstadoEmprestimo;
+/** @brief Estados do empréstimo/troca. */
+typedef enum {
+    ESTADO_OP_PENDENTE = 0,  // Default (útil para novas operações)
+    ESTADO_OP_ACEITE = 1,    // Aprovado
+    ESTADO_OP_REJEITADO = 2, // Recusado
+    ESTADO_OP_CONCLUIDO = 3,  // Devolvido/Finalizado
+    ESTADO_OP_DEVOLUCAO_PENDENTE = 4 // Devolução aguardando confirmação do dono
+} EstadoOperacao;
 
 /** @brief Tipos de pesquisa. */
-typedef enum { PESQUISA_TITULO, PESQUISA_AUTOR, PESQUISA_CATEGORIA } TipoPesquisa;
+typedef enum {
+    PESQUISA_TITULO = 1,    // Começar em 1 facilita menus
+    PESQUISA_AUTOR = 2,
+    PESQUISA_CATEGORIA = 3
+} TipoPesquisa;
 
 // =============================================================
 // ESTRUTURAS
@@ -37,62 +76,75 @@ typedef struct {
     char password[50];
     char telemovel[15];
     char dataNascimento[11]; // DD-MM-YYYY
-    EstadoConta ativo;
+
+    EstadoConta estado;
 } Utilizador;
 
 /** @brief Estrutura que representa um livro. */
 typedef struct {
-    int id;                 // ID único do livro
+    int id;                
     char titulo[MAX_STRING];
     char autor[MAX_STRING];
-    CategoriaLivro categoria;
-    char categoriaManual[50];  // Categoria personalizada se OUTRO 
-    char isbn[20];          // ISBN-13 com hífens
-    
-    int retido;             // 0 = Ativo, 1 = Eliminado (Soft Delete)
-    EstadoLivro Disponivel;
+    char isbn[20];              // ISBN-13 com hifens
 
-    int userId;             // ID do DONO (Proprietário)
-    int userIdEmprestimo;   // ID de quem tem a POSSE atual (Detentor)
-    int numRequisicoes;   // Para relatório de mais procurados
+    CategoriaLivro categoria;   // Enum (1 a 7)
+    char categoriaManual[50];   // Texto se categoria == OUTRO
+    
+    int eliminado;              // 0 = Visível, 1 = Apagado pelo utilizador (Soft Delete)
+    EstadoLivro estado;         // Enum (DISPONIVEL, RESERVADO, EMPRESTADO...)
+
+    int idProprietario;         // Quem é o dono real
+    int idDetentor;             // Com quem está o livro agora
+
+    int numRequisicoes;         // Estatística
 } Livro;
 
 /**
  * @brief Estrutura que representa um empréstimo ou troca de livro.
  */
 typedef struct {
-    int id;
-    int userId;             // Quem pede (Requisitante)
-    int userIdEmprestimo;   // Quem tem o livro atualmente (Dador)
-    int bookId;
-    int idOperacao;         // ID auxiliar (opcional)
+    int id;                     // ID único da operação
+
+    int idRequerente;           // Quem pede (Requisitante)
+    int idProprietario;         // Quem tem o livro (Dono)
+    int idLivro;                // Qual o livro (bookId)
+    int idLivroTroca;          // Se for troca, qual o livro oferecido (0 se não for troca)
     
-    int dataEmprestimo;     // YYYYMMDD
-    int dataDevolucao;      // YYYYMMDD (0 se não devolvido)
-    
-    EstadoEmprestimo estado;
-    TipoOperacao tipoOperacao;
+    TipoOperacao tipo;          // Enum (EMPRESTIMO, TROCA, DEVOLUCAO)
+    EstadoOperacao estado;      // Enum (PENDENTE, ACEITE, CONCLUIDO)
+
+    int dias;                   // Duração pedida (0 se for Troca)
+
+    int dataPedido;             // Criação do pedido
+    int dataEmprestimo;         // Quando foi aceite
+    int dataDevolucaoPrevista;  // Calculado: dataEmprestimo + dias
+    int dataDevolucaoReal;      // Quando foi realmente devolvido/concluído
+    int dataFecho;              // Quando a operação foi fechada (rejeitada/concluída)
 } Operacao;
 
 /** @brief Estrutura de feedback mútuo. */
 typedef struct {
     int id;
-    int userId;             // Quem recebe o feedback ( redundantemente avaliadoId)
-    int loanId;             // Ligação à transação
-    int avaliadorId;        // Autor da crítica
-    int avaliadoId;         // Alvo da crítica
-    int dataAvaliacao;      // YYYYMMDD
-    int feedbackId;         // 0 = Original, >0 = Resposta
+    int idOperacao;         // A qual empréstimo/troca isto se refere
+
+    int idAvaliador;        // Autor da crítica
+    int idAvaliado;         // Alvo da crítica
+
     int nota;               // 1 a 5
+    char comentario[200];   // Texto opcional
+
+    int dataAvaliacao;      // DD/MM/YYYY
+    int idResposta;         // 0 = É original. >0 = É resposta a outro feedback
 } Feedback;
 
 /** @brief Estrutura para logs de auditoria. */
 typedef struct {
-    int userId;
-    int bookId;
-    int idOperacao;
-    char tipoOperacao[20];  // Texto descritivo da ação
-    int dataOperacao;       // YYYYMMDD
+    int id;
+    int idUtilizador;       // Quem fez a ação
+    int dataHora;           // Timestamp da ação
+
+    char acao[50];          // Texto descritivo da ação
+    char detalhes[100];     // Informação adicional
 } LogSistema;
 
 #endif // STRUCTS_H

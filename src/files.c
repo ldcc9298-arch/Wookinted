@@ -1,49 +1,34 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "files.h"
 #include "structs.h"
 
-/**
- * @brief Carrega os utilizadores do ficheiro binário.
- * @param users Array onde os utilizadores serão carregados.
- * @return Número total de utilizadores carregados.
- */
 int carregarUtilizadores(Utilizador users[]) {
     FILE *fp = fopen("data/users.dat", "rb");
     int total = 0;
     
-    if (fp == NULL) return 0; // Ficheiro não existe (primeira execução)
+    if (fp == NULL) return 0; // Ficheiro não existe (primeira vez)
 
-    fread(&total, sizeof(int), 1, fp); // Ler quantidade
+    // 1. Ler a quantidade total
+    fread(&total, sizeof(int), 1, fp);
+    
+    // Proteção: Se o ficheiro tiver mais users que o permitido, lemos apenas o máximo
+    if (total > MAX_UTILIZADORES) {
+        printf("[Aviso] Ficheiro contem mais utilizadores do que o permitido. A cortar.\n");
+        total = MAX_UTILIZADORES;
+    }
+
+    // 2. Ler o array
     if (total > 0) {
-        fread(users, sizeof(Utilizador), total, fp); // Ler array
+        fread(users, sizeof(Utilizador), total, fp);
     }
     
     fclose(fp);
+    printf("[Sistema] Carregados %d utilizadores.\n", total);
     return total;
 }
 
-/**
- * @brief Guarda os utilizadores no ficheiro binário.
- * @param users Array de utilizadores a serem guardados.
- * @param total Número total de utilizadores.
- */
-void guardarUtilizadores(Utilizador users[], int total) {
-    FILE *fp = fopen("data/users.dat", "wb");
-    if (fp == NULL) {
-        printf("Erro critico: Nao foi possivel escrever em data/users.dat\n");
-        return;
-    }
-    fwrite(&total, sizeof(int), 1, fp);
-    fwrite(users, sizeof(Utilizador), total, fp);
-    fclose(fp);
-}
-
-/**
- * @brief Carrega os livros do ficheiro binário.
- * @param books Array onde os livros serão carregados.
- * @return Número total de livros carregados.
- */
 int carregarLivros(Livro books[]) {
     FILE *fp = fopen("data/books.dat", "rb");
     int total = 0;
@@ -51,64 +36,41 @@ int carregarLivros(Livro books[]) {
     if (fp == NULL) return 0;
 
     fread(&total, sizeof(int), 1, fp);
+
+    // Proteção de limites
+    if (total > MAX_LIVROS) {
+        total = MAX_LIVROS;
+    }
+
     if (total > 0) {
         fread(books, sizeof(Livro), total, fp);
     }
     
     fclose(fp);
+    printf("[Sistema] Carregados %d livros.\n", total);
     return total;
 }
 
-/**
- * @brief Guarda os livros no ficheiro binário.
- * @param books Array de livros a serem guardados.
- * @param total Número total de livros.
- */
-void guardarLivros(Livro books[], int total) {
-    FILE *fp = fopen("data/books.dat", "wb");
-    if (fp == NULL) {
-        printf("Erro critico: Nao foi possivel escrever em data/books.dat\n");
-        return;
-    }
-    fwrite(&total, sizeof(int), 1, fp);
-    fwrite(books, sizeof(Livro), total, fp);
-    fclose(fp);
-}
-
-/**
- * @brief Carrega os empréstimos do ficheiro binário.
- * @param loans Array onde os empréstimos serão carregados.
- * @return Número total de empréstimos carregados.
- */
-int carregarEmprestimos(Operacao loans[]) {
-    FILE *fp = fopen("data/loans.dat", "rb");
+int carregarOperacoes(Operacao operacoes[]) {
+    FILE *fp = fopen("data/operations.dat", "rb");
     int total = 0;
     
     if (fp == NULL) return 0;
 
     fread(&total, sizeof(int), 1, fp);
+
+    // Proteção de limites
+    if (total > MAX_OPERACOES) {
+        total = MAX_OPERACOES;
+    }
+
     if (total > 0) {
-        fread(loans, sizeof(Operacao), total, fp);
+        fread(operacoes, sizeof(Operacao), total, fp);
     }
     
     fclose(fp);
+    printf("[Sistema] Carregados %d movimentos.\n", total);
     return total;
-}
-
-/**
- * @brief Guarda os empréstimos no ficheiro binário.
- * @param loans Array de empréstimos a serem guardados.
- * @param total Número total de empréstimos.
- */
-void guardarEmprestimos(Operacao loans[], int total) {
-    FILE *fp = fopen("data/loans.dat", "wb");
-    if (fp == NULL) {
-        printf("Erro critico: Nao foi possivel escrever em data/loans.dat\n");
-        return;
-    }
-    fwrite(&total, sizeof(int), 1, fp);
-    fwrite(loans, sizeof(Operacao), total, fp);
-    fclose(fp);
 }
 
 /**
@@ -117,56 +79,95 @@ void guardarEmprestimos(Operacao loans[], int total) {
  * @return Número total de feedbacks carregados.
  */
 int carregarFeedbacks(Feedback feedbacks[]) {
-    FILE *fp = fopen("data/feedbacks.dat", "rb");
+    // Certifica-te que o caminho e extensão batem certo com o teu sistema de ficheiros
+    // Se usas "data/" antes, a pasta "data" tem de existir.
+    FILE *fp = fopen("data/feedbacks.dat", "rb"); 
     int total = 0;
     
-    if (fp == NULL) return 0;
+    if (fp == NULL) return 0; // Ficheiro não existe (primeira execução)
 
-    fread(&total, sizeof(int), 1, fp);
+    fread(&total, sizeof(int), 1, fp); // 1. Ler a quantidade total
     if (total > 0) {
-        fread(feedbacks, sizeof(Feedback), total, fp);
+        // Opção de Segurança: Garantir que não ultrapassa o limite do array
+        // if (total > MAX_FEEDBACKS) total = MAX_FEEDBACKS; 
+        
+        fread(feedbacks, sizeof(Feedback), total, fp); // 2. Ler o array
     }
     
     fclose(fp);
     return total;
 }
 
-/**
- * @brief Guarda os feedbacks no ficheiro binário.
- * @param feedbacks Array de feedbacks a serem guardados.
- * @param total Número total de feedbacks.
- */
-void guardarFeedbacks(Feedback feedbacks[], int total) {
-    FILE *fp = fopen("data/feedbacks.dat", "wb");
+
+void guardarUtilizadores(Utilizador users[], int total) {
+    FILE *fp = fopen("data/users.dat", "wb"); // Modo de escrita binária
+    
     if (fp == NULL) {
-        printf("Erro critico: Nao foi possivel escrever em data/feedbacks.dat\n");
+        printf("[Erro] Nao foi possivel criar o ficheiro de utilizadores.\n");
         return;
     }
+
+    // 1. Escrever a quantidade total (Cabeçalho do ficheiro)
     fwrite(&total, sizeof(int), 1, fp);
-    fwrite(feedbacks, sizeof(Feedback), total, fp);
+
+    // 2. Escrever o array de dados
+    if (total > 0) {
+        fwrite(users, sizeof(Utilizador), total, fp);
+    }
+
     fclose(fp);
 }
 
-/**
- * @brief Verifica se um email está na lista de emails permitidos.
- * @param email Email a ser verificado.
- * @return 1 se o email estiver na lista, 0 caso contrário.
- */
-int emailExisteNaWhitelist(char *email) {
-    FILE *f = fopen("whitelist.txt", "r");
-    if (f == NULL) return 0; // Se não houver ficheiro, assumimos que não está na lista
-
-    char linha[100];
-    while (fgets(linha, sizeof(linha), f)) {
-        // Remover o \n do final da linha lida
-        linha[strcspn(linha, "\n")] = 0;
-        
-        if (strcmp(linha, email) == 0) {
-            fclose(f);
-            return 1; // Encontrado!
-        }
+// Guarda o total de livros seguido do array de estruturas
+void guardarLivros(Livro books[], int total) {
+    FILE *fp = fopen("data/books.dat", "wb");
+    
+    if (fp == NULL) {
+        printf("[Erro] Nao foi possivel criar o ficheiro de livros.\n");
+        return;
     }
-    fclose(f);
-    return 0; // Não encontrado
+
+    fwrite(&total, sizeof(int), 1, fp);
+
+    if (total > 0) {
+        fwrite(books, sizeof(Livro), total, fp);
+    }
+
+    fclose(fp);
 }
 
+// Guarda o total de empréstimos seguido do array de estruturas
+void guardarOperacoes(Operacao operacoes[], int total) {
+    FILE *fp = fopen("data/operations.dat", "wb");
+    
+    if (fp == NULL) {
+        printf("[Erro] Nao foi possivel criar o ficheiro de emprestimos.\n");
+        return;
+    }
+
+    fwrite(&total, sizeof(int), 1, fp);
+
+    if (total > 0) {
+        fwrite(operacoes, sizeof(Operacao), total, fp);
+    }
+
+    fclose(fp);
+}
+
+void guardarFeedbacks(Feedback feedbacks[], int total) {
+    FILE *fp = fopen("data/feedbacks.dat", "wb");
+    if (fp == NULL) {
+        printf("[Erro] Nao foi possivel guardar feedbacks.\n");
+        return;
+    }
+
+    // 1. Escreve o total PRIMEIRO (Fundamental para a leitura funcionar)
+    fwrite(&total, sizeof(int), 1, fp);
+
+    // 2. Escreve o array DEPOIS
+    if (total > 0) {
+        fwrite(feedbacks, sizeof(Feedback), total, fp);
+    }
+
+    fclose(fp);
+}

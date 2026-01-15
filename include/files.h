@@ -12,14 +12,11 @@ int carregarLivros(Livro books[]);
 void guardarLivros(Livro books[], int total);
 
 // Emprestimos
-int carregarEmprestimos(Operacao loans[]);
-void guardarEmprestimos(Operacao loans[], int total);
+int carregarOperacoes(Operacao operacoes[]);
+void guardarOperacoes(Operacao operacoes[], int total);
 
 // Feedbacks
 int carregarFeedbacks(Feedback feedbacks[]);
 void guardarFeedbacks(Feedback feedbacks[], int total);
 
-// Whitelist de emails
-int emailExisteNaWhitelist(char *email);
-
-#endif
+#endif // FILES_H

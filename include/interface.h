@@ -9,7 +9,7 @@
  * @brief Apresenta o menu de visitante (Login, Registo, Recuperar).
  * @return Retorna o ID do utilizador se fizer login, -1 se continuar visitante, ou -10 para Sair do programa.
  */
-int menuModoVisitante(Utilizador users[], int *totalUsers);
+int menuModoVisitante(Utilizador users[], int *totalUsers, Operacao operacoes[], int totalOperacoes);
 
 /**
  * @brief Mostra o menu principal do utilizador logado e pede a opção.
@@ -20,7 +20,7 @@ int mostrarMenuPrincipal(char *nome);
 
 // --- SUB-MENU VALIDACOES ADMINISTRADOR ---
 
-void submenuValidacoes(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao loans[], int totalLoans);
+void submenuValidacoes(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes);
 
 // --- MENU ADMINISTRADOR ---
 
@@ -29,17 +29,14 @@ void submenuValidacoes(Utilizador users[], int totalUsers, Livro books[], int to
  * @param users Array de utilizadores.
  * @param total Número total de utilizadores.
  */
-void menuAdministrador(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao loans[], int totalLoans, Feedback feedbacks[], int totalFeedbacks);
+void menuAdministrador(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes, Feedback feedbacks[], int totalFeedbacks);
 
 // --- SUB-MENU PESQUISA LIVROS ---
 
 /**
- * @brief Apresenta o sub-menu de pesquisa de livros.
- * @details Permite pesquisar por Título, Autor ou Categoria.
- * @param books Array de livros.
- * @param totalBooks Total de livros no array.
+ * @brief Submenu para pesquisar livros por título, autor ou categoria.
  */
-void submenuPesquisaLivros(Livro books[], int totalBooks);
+void submenuPesquisaLivros(Utilizador users[], int totalUsers, Livro books[], int totalBooks, int idLogado);
 
 // --- MENU MERCADO ---
 
@@ -47,11 +44,11 @@ void submenuPesquisaLivros(Livro books[], int totalBooks);
  * @brief Gere o menu do Mercado de Livros (Pesquisa, Requisição, Doação).
  * @param books Array de livros.
  * @param totalBooks Apontador para o total de livros (pode mudar se houver doação).
- * @param loans Array de empréstimos (necessário para requisitar).
- * @param totalLoans Apontador para o total de empréstimos.
+ * @param operacoes Array de empréstimos (necessário para requisitar).
+ * @param totalOperacoes Apontador para o total de empréstimos.
  * @param idLogado ID do utilizador atual.
  */
-void menuMercadoLivros(Utilizador users[], int totalUsers, Livro books[], int *totalBooks, Operacao loans[], int *totalLoans, int idLogado);
+void menuMercadoLivros(Utilizador users[], int totalUsers, Livro books[], int *totalBooks, Operacao operacoes[], int *totalOperacoes, int idLogado);
 
 // --- MENU MEUS LIVROS ---
 
@@ -65,7 +62,7 @@ void menuMeusLivros(Livro books[], int *totalBooks, int idLogado);
 /**
  * @brief Menu principal para gerir devoluções, aceitar pedidos e dar feedback.
  */
-void menuGestaoMovimentos(Operacao loans[], int *totalLoans, Livro books[], int *totalBooks, Feedback feedbacks[], int *totalFeedbacks, int idLogado);
+void menuGestaoMovimentos(Utilizador users[], int totalUsers, Livro books[], int *totalBooks, Operacao operacoes[], int *totalOperacoes, Feedback feedbacks[], int *totalFeedbacks, int idLogado);
 
 // --- MENU PERFIL ---
 
@@ -76,6 +73,12 @@ void menuGestaoMovimentos(Operacao loans[], int *totalLoans, Livro books[], int 
  * @param total Total de utilizadores.
  * @param idLogado Apontador para o ID atual (para poder fazer logout se eliminar conta).
  */
-void menuGestaoPerfil(Utilizador users[], int total, int *idLogado);
+void menuGestaoPerfil(Utilizador users[], int totalUsers, Feedback feedbacks[], int totalFeedbacks, int idLogado);
+
+void verificarNotificacoes(Operacao operacoes[], int totalOperacoes, int idLogado);
+
+void verificarNotificacoesAdmin(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes);
+
+
 
 #endif // INTERFACE_H

@@ -7,45 +7,20 @@
 #include "interface.h"
 #include "structs.h"
 
-// =============================================================
-// CATEGORIAS DE LIVROS
-// =============================================================
-
 /**
- * @brief Nomes das categorias de livros.
- */
-const char *NOME_CATEGORIAS[] = {
-    "Ficcao", 
-    "Nao Ficcao", 
-    "Ciencia", 
-    "Historia",    
-    "Biografia",   
-    "Tecnologia", 
-    "Outro"
-};
-
-/**
- * @brief Obtém o nome da categoria a partir do enum.
- * @param cat Categoria do livro.
- * @return Nome da categoria como string.
- */
-const char* obterNomeCategoria(CategoriaLivro cat) {
-    // Ajustar o limite conforme o numero de itens no array (0 a 6 neste caso)
-    if (cat < 0 || cat > 6) return "Desconhecido";
-    return NOME_CATEGORIAS[cat];
-}
-
-/**
- * @brief Permite ao utilizador escolher uma categoria de livro.
- * @return CategoriaLivro selecionada.
+ * @brief Exibe um menu para o utilizador escolher uma categoria.
+ * @return CategoriaLivro A categoria selecionada pelo utilizador.
  */
 CategoriaLivro escolherCategoria() {
     printf("\n--- Selecione a Categoria ---\n");
-    for (int i = 0; i <= 6; i++) {
-        printf("%d - %s\n", i, NOME_CATEGORIAS[i]);
+    
+    // Loop de 1 a 7
+    for (int i = 1; i <= 7; i++) {
+        printf("%d - %s\n", i, obterNomeCategoria((CategoriaLivro)i, ""));
     }
-    // Usa lerInteiro com limites seguros
-    int opcao = lerInteiro("Escolha uma opcao: ", 0, 6);
+    printf("0 - Cancelar\n");
+
+    int opcao = lerInteiro("Escolha uma opcao: ", 0, 7);
     return (CategoriaLivro)opcao;
 }
 
@@ -53,65 +28,158 @@ CategoriaLivro escolherCategoria() {
 // FUNÇÕES PRINCIPAIS
 // =============================================================
 
-void registarLivro(Livro books[], int total, int userId) {
-    // 1. Geração de ID (Usar total + 1 se não tiveres a função gerarProximoId, ou manter a tua)
-    books[total].id = total + 1; 
+void criarLivro(Livro books[], int *totalBooks, int idLogado) {
+    if (*totalBooks >= MAX_LIVROS) {
+        printf("[Erro] Limite de livros atingido.\n");
+        return;
+    }
+
+    limparEcra();
+    printf("\n=== REGISTAR NOVO LIVRO ---\n");
+    printf("(Digite '0' em qualquer campo para CANCELAR o registo)\n");
+
+    Livro novo;
     
-    // 2. Definição de Propriedade
-    books[total].userId = userId;
-    books[total].userIdEmprestimo = userId;
-    books[total].numRequisicoes = 0;
-
-    printf("Titulo: ");
-    lerString(books[total].titulo, MAX_STRING);
-
-    printf("Autor: ");
-    lerString(books[total].autor, MAX_STRING);
-
-    // Validação ISBN
-    int isbnValido = 0;
+    // =========================================================
+    // 1. TÍTULO
+    // =========================================================
     do {
-        printf("ISBN (13 digitos): ");
-        lerString(books[total].isbn, 20);
-        if (validarISBN(books[total].isbn)) isbnValido = 1;
-        else printf("[Erro] ISBN invalido.\n");
-    } while (!isbnValido);
-
-    // 3. Seleção de Categoria
-    books[total].categoria = escolherCategoria(); // Retorna um Enum (0 a 6)
-
-    // Lógica para "OUTRO" (Assumindo que OUTRO é o último valor do Enum, ex: 6)
-    if(books[total].categoria == OUTRO) {
+        printf("Titulo: ");
+        lerString(novo.titulo, MAX_STRING);
         
-        printf("Especifique a Categoria (Apenas letras): ");
-        // Validação de apenas letras
-        int catValida = 0;
+        // 1. Verificação de Saída
+        if (strcmp(novo.titulo, "0") == 0) { 
+            printf("[Info] Registo cancelado.\n"); 
+            return; 
+        }
+
+        // 2. Validação de Vazio
+        if (strlen(novo.titulo) == 0) {
+            printf("[Erro] O titulo e obrigatorio.\n");
+        } else {
+            break; // Válido
+        }
+    } while (1);
+
+
+    // =========================================================
+    // 2. AUTOR (CORRIGIDO)
+    // =========================================================
+    do {
+        printf("Autor: ");
+        lerString(novo.autor, MAX_STRING);
+
+        // 1. Verificação de Saída
+        if (strcmp(novo.autor, "0") == 0) { 
+            printf("[Info] Registo cancelado.\n"); 
+            return; 
+        }
+
+        // 2. Validação de Vazio
+        if (strlen(novo.autor) == 0) {
+            printf("[Erro] O autor e obrigatorio.\n");
+        } else {
+            break; // Válido
+        }
+    } while (1);
+
+
+    // =========================================================
+    // 3. ISBN
+    // =========================================================
+    do {
+        printf("ISBN: ");
+        lerString(novo.isbn, 20);
+        
+        // A. VERIFICAR CANCELAMENTO
+        if (strcmp(novo.isbn, "0") == 0) { 
+            printf("[Info] Registo cancelado.\n"); 
+            return; 
+        }
+
+        // B. VERIFICAR VAZIO
+        if (strlen(novo.isbn) == 0) {
+            printf("[Erro] O ISBN e obrigatorio.\n");
+        } 
+        
+        // C. VERIFICAR DUPLICADO
+        else if (existeISBN(books, *totalBooks, novo.isbn)) {
+            printf("[Erro] Este ISBN ja se encontra registado no sistema.\n");
+        }
+        
+        // D. VERIFICAR MATEMÁTICA
+        else if (validarISBN(novo.isbn) == 0) { 
+            printf("[Erro] O ISBN introduzido nao e valido (formato ou digitos incorretos).\n");
+        } 
+        
+        else {
+            break; // Passou
+        }
+    } while (1);
+
+
+    // =========================================================
+    // 4. CATEGORIA
+    // =========================================================
+    printf("\n--- Selecione a Categoria ---\n");
+    printf("1. Ficcao\n2. Nao Ficcao\n3. Ciencia\n4. Historia\n");
+    printf("5. Biografia\n6. Tecnologia\n7. Outro (Requer Aprovacao)\n");
+    
+    int catOp = lerInteiro("Opcao (0 para cancelar): ", 0, 7);
+    if (catOp == 0) {
+        printf("[Info] Registo cancelado.\n");
+        return;
+    }
+
+    novo.categoria = (CategoriaLivro)catOp;
+    strcpy(novo.categoriaManual, ""); 
+
+    // Se for OUTRO, pede especificação
+    if (novo.categoria == CAT_OUTRO) {
         do {
-            lerString(books[total].categoriaManual, 50); // <--- Campo novo na struct
-            if(validarApenasLetras(books[total].categoriaManual, 50)) { // Função auxiliar
-                catValida = 1;
-            } else {
-                printf("[Erro] Apenas letras sao permitidas. Tente novamente: ");
+            printf("Especifique a Categoria: ");
+            lerString(novo.categoriaManual, 50);
+            
+            // Valida Saída
+            if (strcmp(novo.categoriaManual, "0") == 0) {
+                 printf("[Info] Registo cancelado.\n");
+                 return;
             }
-        } while(!catValida);
 
-        // Define estado como PENDENTE para o Admin aprovar
-        books[total].Disponivel = PENDENTE_CATEGORIA; 
-        books[total].retido = 0;
+            // Valida Vazio
+            if(strlen(novo.categoriaManual) == 0) {
+                printf("[Erro] A especificacao manual e obrigatoria.\n");
+            } else {
+                break;
+            }
+        } while(1);
 
-        printf("\n[Aviso] Categoria '%s' registada.\n", books[total].categoriaManual);
-        printf("O livro ficou PENDENTE de validacao pelo Administrador.\n");
+        novo.estado = LIVRO_PENDENTE_CAT; 
+        printf("\n[Nota] O livro ficara PENDENTE de aprovacao.\n");
 
     } else {
-        // Caso Normal
-        books[total].Disponivel = DISPONIVEL;
-        books[total].retido = 0;
-        
-        // Limpar o campo manual para não ter lixo
-        strcpy(books[total].categoriaManual, ""); 
-
-        printf("[Sucesso] Livro registado na categoria '%s'.\n", obterNomeCategoria(books[total].categoria));
+        novo.estado = LIVRO_DISPONIVEL;
     }
+
+
+    // =========================================================
+    // 5. GRAVAR NA MEMÓRIA
+    // =========================================================
+    novo.id = (*totalBooks) + 1; 
+    novo.idProprietario = idLogado;
+    novo.idDetentor = idLogado;    
+    novo.eliminado = 0;            
+    novo.numRequisicoes = 0;
+
+    books[*totalBooks] = novo;
+    (*totalBooks)++;
+
+    if (novo.estado == LIVRO_DISPONIVEL)
+        printf("\n[Sucesso] Livro '%s' registado e disponivel!\n", novo.titulo);
+    else
+        printf("\n[Sucesso] Livro '%s' registado. Aguarde validacao do Admin.\n", novo.titulo);
+        
+    esperarEnter();
 }
 
 /**
@@ -124,21 +192,21 @@ void listarLivros(Livro books[], int total) {
     printf("-------------------------------------------------------------------------------------------------------\n");
 
     for (int i = 0; i < total; i++) {
-        if (books[i].retido == 0) {
+        if (books[i].eliminado == 0) {
             char estado[20];
-            if (books[i].Disponivel == INDISPONIVEL) strcpy(estado, "EMPRESTADO");
+            if (books[i].estado == LIVRO_INDISPONIVEL) strcpy(estado, "EMPRESTADO");
             else strcpy(estado, "DISPONIVEL");
 
             char donoStr[20];
-            if (books[i].userId == 0) strcpy(donoStr, "INSTITUTO");
-            else sprintf(donoStr, "User %d", books[i].userId);
+            if (books[i].idProprietario == 0) strcpy(donoStr, "INSTITUTO");
+            else sprintf(donoStr, "User %d", books[i].idProprietario);
 
             printf("%-4d | %-20.20s | %-15.15s | %-15.15s | %-15s\n",
                     books[i].id,
                     books[i].titulo,
                     books[i].autor,
                     books[i].isbn,
-                    obterNomeCategoria(books[i].categoria));
+                    obterNomeCategoria(books[i].categoria, books[i].categoriaManual));
         }
     }
 }
@@ -169,8 +237,8 @@ void pesquisarLivroGenerico(Livro books[], int total, const char *termo, TipoPes
     printf("\nResultados da pesquisa por '%s' (%s):\n", termo, labelTipo);
 
     for (int i = 0; i < total; i++) {
-        // Ignora livros eliminados (retido == 1)
-        if (books[i].retido == 1) continue;
+        // Ignora livros eliminados (eliminado == 1)
+        if (books[i].eliminado == 1) continue;
 
         // Seleção do campo correto
         const char *campoParaPesquisar = NULL;
@@ -184,7 +252,7 @@ void pesquisarLivroGenerico(Livro books[], int total, const char *termo, TipoPes
                 break;
             case PESQUISA_CATEGORIA: 
                 // Converter o Enum para String para poder pesquisar
-                campoParaPesquisar = obterNomeCategoria(books[i].categoria); 
+                campoParaPesquisar = (char*)obterNomeCategoria(books[i].categoria, books[i].categoriaManual);
                 break;
         }
 
@@ -196,8 +264,8 @@ void pesquisarLivroGenerico(Livro books[], int total, const char *termo, TipoPes
                    books[i].id, 
                    books[i].titulo, 
                    books[i].autor, 
-                   obterNomeCategoria(books[i].categoria),
-                   books[i].userId);
+                   obterNomeCategoria(books[i].categoria, books[i].categoriaManual),
+                   books[i].idProprietario);
             
             encontrados++;
         }
@@ -228,16 +296,16 @@ void pesquisarLivroPorCategoria(Livro books[], int total, const char *categoria)
  * @brief Edita um livro.
  * Segurança: Impede edição se o livro não estiver na posse do dono.
  */
-void editarLivro(Livro *book, int userId) {
+void editarLivro(Livro *book, int idProprietario) {
     // 1. Verificar propriedade
-    if (book->userId != userId) {
-        printf("Erro: Apenas o dono (User %d) pode editar este livro.\n", book->userId);
+    if (book->idProprietario != idProprietario) {
+        printf("Erro: Apenas o dono (User %d) pode editar este livro.\n", book->idProprietario);
         return;
     }
 
     // 2. Verificar posse (integração com empréstimos)
-    if (book->userId != book->userIdEmprestimo) {
-        printf("Erro: O livro esta emprestado ao User %d. Recupere-o antes de editar.\n", book->userIdEmprestimo);
+    if (book->idProprietario != book->idDetentor) {
+        printf("Erro: O livro esta emprestado ao User %d. Recupere-o antes de editar.\n", book->idDetentor);
         return;
     }
 
@@ -260,7 +328,7 @@ void editarLivro(Livro *book, int userId) {
         strcpy(book->autor, buffer);
     }
 
-    printf("Categoria atual: %s.\n", obterNomeCategoria(book->categoria));
+    printf("Categoria atual: %s.\n", obterNomeCategoria(book->categoria, book->categoriaManual));    
     printf("Deseja alterar a categoria? (1-Sim, 0-Nao): ");
     int alterar = lerInteiro("", 0, 1);
     if (alterar) {
@@ -274,16 +342,16 @@ void editarLivro(Livro *book, int userId) {
  * @brief Elimina (Soft Delete) um livro.
  * Segurança: Impede eliminação se o livro estiver emprestado.
  */
-int eliminarLivro(Livro *book, int userId) {   
+int eliminarLivro(Livro *book, int idProprietario) {   
     // 1. Verificar propriedade
-    if (book->userId != userId) {
+    if (book->idProprietario != idProprietario) {
         printf("Erro: Apenas o dono pode eliminar este livro.\n");
         return 0;
     }
 
     // 2. Verificar posse
-    if (book->userId != book->userIdEmprestimo) {
-        printf("Erro: Impossivel eliminar! O livro esta atualmente com o Utilizador %d.\n", book->userIdEmprestimo);
+    if (book->idProprietario != book->idDetentor) {
+        printf("Erro: Impossivel eliminar! O livro esta atualmente com o Utilizador %d.\n", book->idDetentor);
         printf("Deve solicitar a devolucao antes de o remover do sistema.\n");
         return 0;
     }
@@ -297,11 +365,11 @@ int eliminarLivro(Livro *book, int userId) {
     limparBuffer(); 
     
     if (strcmp(confirmacao, "ELIMINAR") == 0) {
-        book->retido = 1; // Soft Delete
+        book->eliminado = 1; // Soft Delete
         printf("[Sucesso] Livro removido do catalogo.\n");
         return 1; 
     } else {
-        printf("[Cancelado] O livro mantem-se ativo.\n");
+        printf("[Cancelado] O livro mantem-se estado.\n");
         return 0; 
     }
 }
@@ -317,15 +385,15 @@ void listarMeusLivros(Livro books[], int total, int idLogado) {
     
     int cont = 0;
     for (int i = 0; i < total; i++) {
-        // Filtra por Dono e garante que não mostra livros apagados (retido == 1)
-        if (books[i].userId == idLogado && books[i].retido == 0) {
+        // Filtra por Dono e garante que não mostra livros apagados (eliminado == 1)
+        if (books[i].idProprietario == idLogado && books[i].eliminado == 0) {
             
             char estado[40];
             // Lógica para mostrar onde o livro está fisicamente
-            if (books[i].userIdEmprestimo == idLogado) {
-                strcpy(estado, "Consigo (Disponivel)");
+            if (books[i].idDetentor == idLogado) {
+                strcpy(estado, "Consigo (estado)");
             } else {
-                sprintf(estado, "EMPRESTADO (User %d)", books[i].userIdEmprestimo);
+                sprintf(estado, "EMPRESTADO (User %d)", books[i].idDetentor);
             }
 
             printf("%-5d | %-25.25s | %-15.15s | %s\n", 

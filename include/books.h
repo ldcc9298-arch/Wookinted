@@ -8,9 +8,9 @@
  * Solicita os dados ao utilizador (título, autor, ISBN, categoria, ano) e guarda no array.
  * @param books Array de livros.
  * @param total Número total de livros registados (índice atual).
- * @param userId ID do utilizador que está a registar o livro.
+ * @param idProprietario ID do utilizador que está a registar o livro.
  */
-void registarLivro(Livro books[], int total, int userId);
+void criarLivro(Livro books[], int *totalBooks, int idProprietario);
 
 /**
  * @brief Gera o próximo ID único para um novo livro.
@@ -35,13 +35,6 @@ void listarLivros(Livro books[], int total);
  * @param book Apontador para o livro a imprimir.
  */
 void imprimirLinhaLivro(Livro *book);
-
-/**
- * @brief Converte o Enum de categoria para uma String legível.
- * @param cat Valor do Enum CategoriaLivro.
- * @return const char* Nome da categoria (ex: "Ficcao").
- */
-const char* obterNomeCategoria(CategoriaLivro cat);
 
 /**
  * @brief Exibe um menu para o utilizador escolher uma categoria.
@@ -88,26 +81,26 @@ void pesquisarLivroPorCategoria(Livro books[], int total, const char *categoria)
  * @brief Edita os detalhes de um livro existente.
  * Permite alterar título, autor, ISBN, ano e categoria. Verifica se o utilizador é o dono.
  * @param book Apontador para o livro a editar.
- * @param userId ID do utilizador que está a tentar editar (para validação de permissões).
+ * @param idProprietario ID do utilizador que está a tentar editar (para validação de permissões).
  */
-void editarLivro(Livro *book, int userId);
+void editarLivro(Livro *book, int idProprietario);
 
 /**
  * @brief Elimina um livro do sistema (Soft Delete).
- * Marca o livro como 'retido' em vez de o apagar da memória.
+ * Marca o livro como 'eliminado' em vez de o apagar da memória.
  * @param book Apontador para o livro a eliminar.
- * @param userId ID do utilizador que está a tentar eliminar (para validação).
+ * @param idProprietario ID do utilizador que está a tentar eliminar (para validação).
  * @return int Retorna 1 se o livro foi eliminado com sucesso, 0 caso contrário.
  */
-int eliminarLivro(Livro *book, int userId);
+int eliminarLivro(Livro *book, int idProprietario);
 
 /**
  * @brief Lista apenas os livros pertencentes ao utilizador logado.
  * Indica o estado de cada livro (se está com o dono ou emprestado a alguém).
  * @param books Array de livros.
  * @param total Número total de livros registados.
- * @param userId ID do utilizador logado.
+ * @param idProprietario ID do utilizador logado.
  */
-void listarMeusLivros(Livro books[], int total, int userId);
+void listarMeusLivros(Livro books[], int total, int idProprietario);
 
 #endif // BOOKS_H
