@@ -79,6 +79,12 @@ void verificarNotificacoes(Operacao operacoes[], int totalOperacoes, int idLogad
 
 void verificarNotificacoesAdmin(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes);
 
+void submenuHistoricoPessoal(Operacao operacoes[], int totalOperacoes, Utilizador users[], int totalUsers, Livro books[], int totalBooks, int idLogado);
 
+void submenuDevolverLivro(Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes, int idLogado);
+
+void submenuHistoricoGlobal(Operacao operacoes[], int totalOperacoes, Utilizador users[], int totalUsers, Livro books[], int totalBooks);
+
+void submenuAvaliarTransacoes(Operacao operacoes[], int totalOperacoes, Feedback feeds[], int *totalFeeds, Livro books[], int totalBooks, int idLogado);
 
 #endif // INTERFACE_H

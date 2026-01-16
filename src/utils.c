@@ -329,32 +329,60 @@ void relatorioTopReputacao(Utilizador users[], int totalUsers, Feedback feedback
     esperarEnter();
 }
 
-/**
- * @brief Relatório dos 5 livros mais requisitados.
- */
 void relatorioTopLivros(Livro livros[], int totalLivros) {
-    // Vamos criar um array de ponteiros para não duplicar dados pesados, apenas ordenar referências
+    // 1. Array de ponteiros para ordenação (Mantido da tua lógica original)
     Livro *ptrs[MAX_LIVROS];
     for(int i=0; i<totalLivros; i++) ptrs[i] = &livros[i];
 
-    // Sort por numRequisicoes
+    // 2. Ordenar por numRequisicoes (Bubble Sort Descrescente)
     for(int i=0; i<totalLivros-1; i++) {
         for(int j=0; j<totalLivros-i-1; j++) {
             if(ptrs[j]->numRequisicoes < ptrs[j+1]->numRequisicoes) {
-                Livro *temp = ptrs[j]; ptrs[j] = ptrs[j+1]; ptrs[j+1] = temp;
+                Livro *temp = ptrs[j]; 
+                ptrs[j] = ptrs[j+1]; 
+                ptrs[j+1] = temp;
             }
         }
     }
 
-    printf("\n--- TOP 5 LIVROS MAIS PROCURADOS ---\n");
-    for(int i=0; i<5 && i<totalLivros; i++) {
+    // 3. Apresentar Resultados (Formatação Tabela)
+    limparEcra();
+    printf("\n--- TOP 5 LIVROS MAIS REQUISITADOS ---\n");
+    // Ajustei as larguras: Título (25), Categoria (15)
+    printf("%-4s | %-25s | %-15s | %s\n", "POS.", "TITULO", "CATEGORIA", "TOTAL");
+    printf("------------------------------------------------------------------\n");
+
+    int mostrados = 0;
+    
+    for(int i=0; i<totalLivros; i++) {
+        // CRITÉRIOS DE PARAGEM:
+        // 1. Já mostramos 5?
+        // 2. O livro tem 0 requisições? (Como está ordenado, os seguintes também terão 0)
+        if(mostrados >= 5) break;
         if(ptrs[i]->numRequisicoes == 0) break;
-            printf("%d. '%s' (%s) - %d Pedidos\n", 
-                i+1, 
-                ptrs[i]->titulo, 
-                obterNomeCategoria(ptrs[i]->categoria, ptrs[i]->categoriaManual),
-                ptrs[i]->numRequisicoes);    
+
+        // Obter nome da categoria (assumindo que tens esta função auxiliar)
+        const char *nomeCat = obterNomeCategoria(ptrs[i]->categoria, ptrs[i]->categoriaManual);
+        // Imprimir Linha Formatada
+        // %.25s garante que se o título for gigante, corta para não estragar a tabela
+        printf("%-4d | %-25.25s | %-15.15s | %d\n", 
+               mostrados + 1, 
+               ptrs[i]->titulo, 
+               nomeCat,
+               ptrs[i]->numRequisicoes);    
+        
+        mostrados++;
     }
+
+    // Mensagem se a lista estiver vazia
+    if(mostrados == 0) {
+        printf("\n[Info] Ainda nao existem registos de requisicoes de livros.\n");
+    }
+
+    printf("------------------------------------------------------------------\n");
+    
+    // Mantém o enter aqui (e remove do switch no menu, tal como nos outros)
+    esperarEnter();
 }
 
 /**
@@ -508,14 +536,16 @@ int validarISBN(const char *isbn) {
              numeros[contador] = 10; // X vale 10
              contador++;
         }
-        else if (isbn[i] != '-' && isbn[i] != ' ') {
-            return 0; 
+        // --- AQUI ESTAVA O PROBLEMA ---
+        // Agora aceitamos também '\n' e '\r' (Enter) como caracteres a ignorar
+        else if (isbn[i] != '-' && isbn[i] != ' ' && isbn[i] != '\n' && isbn[i] != '\r') {
+            return 0; // Caracter inválido encontrado
         }
     }
 
     // 2. Validação Matemática
     
-    // CASO A: ISBN-13 (Padrão atual, ex: 978-3-16-148410-0)
+    // CASO A: ISBN-13 (Padrão atual)
     if (contador == 13) {
         int soma = 0;
         for (int i = 0; i < 12; i++) {
@@ -528,12 +558,12 @@ int validarISBN(const char *isbn) {
         return (check == numeros[12]);
     }
 
-    // CASO B: ISBN-10 (Antigo, apenas verificamos o tamanho para simplificar)
+    // CASO B: ISBN-10 (Antigo)
     if (contador == 10) {
-        return 1; // Aceitamos ISBN-10 antigo como válido se tiver 10 digitos
+        return 1; 
     }
 
-    return 0; // Tamanho incorreto (nem 10 nem 13)
+    return 0; // Tamanho incorreto
 }
 
 /**
@@ -821,145 +851,6 @@ void adminValidarLivros(Utilizador users[], int totalUsers, Livro livros[], int 
     } while (escolha != 0);
 }
 
-void adminGerirPropostas(Operacao operacao[], int totalOperacao, Livro livros[], int totalLivros, Utilizador users[], int totalUsers) {
-    int escolha;
-
-    do {
-        limparEcra();
-        printf("\n=== ADMIN: GERIR PROPOSTAS (IPCA) ===\n");
-        // [VISUAL] Cabeçalho organizado em colunas
-        printf("%-3s | %-20s | %-18s | %s\n", "N.", "REQUERENTE", "TIPO PEDIDO", "LIVRO");
-        printf("--------------------------------------------------------------------------------\n");
-
-        int visualId = 1;
-        int temPendentes = 0;
-
-        for (int i = 0; i < totalOperacao; i++) {
-            if (operacao[i].estado == ESTADO_OP_PENDENTE) {
-                
-                int idxLivro = -1;
-                for(int b=0; b<totalLivros; b++) {
-                    if(livros[b].id == operacao[i].idLivro) { idxLivro = b; break; }
-                }
-
-                if (idxLivro != -1 && (livros[idxLivro].idProprietario <= 1)) {
-                    
-                    // [VISUAL] Buscar Nome e Tipo (Aluno/Docente) para a tabela
-                    char infoUser[40] = "Desconhecido";
-                    for(int u=0; u<totalUsers; u++) {
-                        if(users[u].id == operacao[i].idRequerente) {
-                            const char *tipo = strstr(users[u].email, "alunos") ? "Aluno" : "Docente";
-                            snprintf(infoUser, 40, "%.20s (%s)", users[u].nome, tipo); 
-                            break;
-                        }
-                    }
-                    
-                    char tipoPedido[25];
-                    if (operacao[i].tipo == OP_TIPO_EMPRESTIMO) 
-                        sprintf(tipoPedido, "Emprestimo (%dd)", operacao[i].dias);
-                    else 
-                        strcpy(tipoPedido, "TROCA");
-
-                    // [VISUAL] Print formatado e alinhado
-                    printf("%-3d | %-20s | %-18s | %.25s\n", 
-                           visualId, infoUser, tipoPedido, livros[idxLivro].titulo);
-
-                    visualId++;
-                    temPendentes = 1;
-                }
-            }
-        }
-        printf("--------------------------------------------------------------------------------\n");
-
-        if (!temPendentes) {
-            printf("[Info] Nao existem propostas pendentes para aprovacao.\n");
-            esperarEnter(); 
-            return;        
-        }
-
-        printf("\nSelecione o pedido para tratar (0 para Voltar): ");
-        escolha = lerInteiro("", 0, visualId - 1);
-
-        if (escolha != 0) {
-            int contador = 1;
-            int idxOp = -1;
-            int idxLivro = -1;
-            
-             // Reencontrar o índice real baseado na escolha visual
-             for (int i = 0; i < totalOperacao; i++) {
-                if (operacao[i].estado == ESTADO_OP_PENDENTE) {
-                    int tempLivro = -1;
-                    for(int b=0; b<totalLivros; b++) {
-                        if(livros[b].id == operacao[i].idLivro) { tempLivro = b; break; }
-                    }
-                    if (tempLivro != -1 && livros[tempLivro].idProprietario <= 1) {
-                        if (contador == escolha) {
-                            idxOp = i; idxLivro = tempLivro; break;
-                        }
-                        contador++;
-                    }
-                }
-            }
-
-            if (idxOp != -1) {
-                printf("\n--- Detalhes da Acao ---\n");
-                printf("Livro: %s\n", livros[idxLivro].titulo);
-                printf("Tipo: %s\n", (operacao[idxOp].tipo == OP_TIPO_EMPRESTIMO) ? "Emprestimo" : "Troca");
-
-                printf("\n1. Aceitar\n2. Rejeitar\n0. Cancelar\n");
-                int acao = lerInteiro("Opcao: ", 0, 2);
-                 
-                // =========================================================
-                // AQUI ESTÁ A ALTERAÇÃO LÓGICA QUE PEDISTE
-                // =========================================================
-                if (acao == 1) { // APROVAR
-                     
-                    operacao[idxOp].dataEmprestimo = obterDataAtual();
-                     
-                     // --- CASO 1: EMPRÉSTIMO ---
-                    if (operacao[idxOp].tipo == OP_TIPO_EMPRESTIMO) {
-                        operacao[idxOp].estado = ESTADO_OP_PENDENTE;
-                         
-                        // Calcular Data Prevista
-                        operacao[idxOp].dataDevolucaoPrevista = operacao[idxOp].dataEmprestimo + operacao[idxOp].dias;
-                         
-                        // Atualizar o Livro
-                        livros[idxLivro].estado = LIVRO_EMPRESTADO;
-                        livros[idxLivro].idDetentor = operacao[idxOp].idRequerente;
-                        livros[idxLivro].numRequisicoes++;
-                         
-                        // === MUDANÇA AQUI: Mostrar Dias e Data ===
-                        printf("\n[Sucesso] Emprestimo de %d dias APROVADO.\n", operacao[idxOp].dias);
-                        printf("Data limite de entrega: %d\n", operacao[idxOp].dataDevolucaoPrevista);
-                    } 
-                     
-                    // --- CASO 2: TROCA ---
-                    else {
-                        operacao[idxOp].estado = ESTADO_OP_CONCLUIDO;
-                         
-                        // Troca de propriedade
-                        livros[idxLivro].idProprietario = operacao[idxOp].idRequerente;
-                        livros[idxLivro].idDetentor = operacao[idxOp].idRequerente;
-                        livros[idxLivro].estado = LIVRO_DISPONIVEL; 
-                        livros[idxLivro].numRequisicoes++;
-                         
-                        printf("\n[Sucesso] Troca aceite. A propriedade do livro foi transferida.\n");
-                    }
-                     
-                    esperarEnter();
-
-                } else if (acao == 2) {
-                    operacao[idxOp].estado = ESTADO_OP_REJEITADO;
-                    livros[idxLivro].estado = LIVRO_DISPONIVEL;
-                    printf("[Sucesso] Pedido Rejeitado.\n");
-                    esperarEnter();
-                }
-            }
-        }
-    } while (escolha != 0);
-}
-
-
 int verificarHistoricoUtilizador(int idUser, Operacao operacoes[], int totalOperacoes) {
     for (int i = 0; i < totalOperacoes; i++) {
         if (operacoes[i].idRequerente == idUser || operacoes[i].idProprietario == idUser) {
@@ -969,38 +860,95 @@ int verificarHistoricoUtilizador(int idUser, Operacao operacoes[], int totalOper
     return 0; // Limpo
 }
 
-// Relatório simples das transações mais recentes
-void relatorioTopTransacoes(Operacao operacoes[], int totalOperacoes, Livro books[], int totalBooks) {
+void relatorioTopUtilizadores(Utilizador users[], int totalUsers, Operacao operacoes[], int totalOperacoes) {
     limparEcra();
-    printf("\n--- RELATORIO: ULTIMAS TRANSACOES ---\n");
-    
-    if (totalOperacoes == 0) {
-        printf("Sem transacoes registadas.\n");
-    } else {
-        printf("%-4s | %-10s | %-20s | %s\n", "ID", "TIPO", "LIVRO", "ESTADO");
-        printf("----------------------------------------------------------\n");
-        
-        // Mostra as últimas 10 ou todas
-        int inicio = (totalOperacoes > 10) ? totalOperacoes - 10 : 0;
-        
-        for (int i = totalOperacoes - 1; i >= inicio; i--) {
-            // Procurar nome do livro
-            char titulo[50] = "Removido";
-            for(int b=0; b<totalBooks; b++) {
-                if(books[b].id == operacoes[i].idLivro) {
-                    strncpy(titulo, books[b].titulo, 20); titulo[19]='\0';
-                    break;
+    printf("\n=== TOP 5 UTILIZADORES MAIS ATIVOS ===\n");
+    printf("(Criterio: Minimo de 5 transacoes realizadas)\n\n");
+
+    // 1. Estrutura temporária para guardar contagens
+    // Usamos isto para poder ordenar sem estragar o array 'users' original
+    typedef struct {
+        int indexUser; // Para saber quem é o user no array original
+        int qtd;       // Quantidade de transações
+    } UserStats;
+
+    UserStats ranking[totalUsers]; // Array temporário (VLA)
+
+    // 2. Contar Transações para cada Utilizador
+    for (int i = 0; i < totalUsers; i++) {
+        ranking[i].indexUser = i;
+        ranking[i].qtd = 0;
+
+        // Ignorar o Admin/IPCA (geralmente não entra no top)
+        if (strcmp(users[i].email, "admin@ipca.pt") == 0) {
+            ranking[i].qtd = -1; // Forçamos a ficar no fundo
+            continue;
+        }
+
+        // Percorrer todas as operações
+        for (int k = 0; k < totalOperacoes; k++) {
+            // Conta se o user for o Requerente OU o Proprietário (envolvido na troca)
+            // E ignoramos operações pendentes/recusadas (apenas transações reais contam?)
+            // Se quiseres contar TUDO (mesmo pendentes), remove a verificação do estado.
+            if (operacoes[k].estado != ESTADO_OP_PENDENTE && operacoes[k].estado != ESTADO_OP_REJEITADO) {
+                
+                if (operacoes[k].idRequerente == users[i].id || 
+                    operacoes[k].idProprietario == users[i].id) {
+                    ranking[i].qtd++;
                 }
             }
-
-            char tipoStr[15];
-            if(operacoes[i].tipo == OP_TIPO_EMPRESTIMO) strcpy(tipoStr, "Emprestimo");
-            else if(operacoes[i].tipo == OP_TIPO_TROCA) strcpy(tipoStr, "Troca");
-            else strcpy(tipoStr, "Devolucao");
-
-            printf("%-4d | %-10s | %-20s | %d\n", operacoes[i].id, tipoStr, titulo, operacoes[i].estado);
         }
     }
-    printf("----------------------------------------------------------\n");
+
+    // 3. Ordenar (Bubble Sort Simples) - Do Maior para o Menor
+    for (int i = 0; i < totalUsers - 1; i++) {
+        for (int j = 0; j < totalUsers - i - 1; j++) {
+            if (ranking[j].qtd < ranking[j+1].qtd) {
+                // Troca de posição
+                UserStats temp = ranking[j];
+                ranking[j] = ranking[j+1];
+                ranking[j+1] = temp;
+            }
+        }
+    }
+
+    // 4. Apresentar Resultados
+    printf("%-4s | %-25s | %-15s | %s\n", "POS.", "NOME", "TIPO", "TOTAL MOV.");
+    printf("------------------------------------------------------------------\n");
+
+    int mostrados = 0;
+    int encontrouAlguem = 0;
+
+    for (int i = 0; i < totalUsers; i++) {
+        int qtd = ranking[i].qtd;
+        int idxReal = ranking[i].indexUser;
+
+        // CRITÉRIO DE PARAGEM:
+        // 1. Já mostramos 5 pessoas? Pára.
+        // 2. A quantidade é menor que 5? Pára (porque está ordenado, os seguintes serão menores).
+        if (mostrados >= 5) break;
+        if (qtd < 5) break; 
+
+        // Definir Tipo (Aluno/Docente)
+        char tipo[20];
+        if (strstr(users[idxReal].email, "@alunos.ipca.pt")) strcpy(tipo, "Aluno");
+        else strcpy(tipo, "Docente");
+
+        printf("%-4d | %-25.25s | %-15s | %d\n", 
+               mostrados + 1, 
+               users[idxReal].nome, 
+               tipo, 
+               qtd);
+
+        mostrados++;
+        encontrouAlguem = 1;
+    }
+
+    if (!encontrouAlguem) {
+        printf("\n[Info] Nenhum utilizador atingiu ainda o minimo de 5 transacoes.\n");
+    }
+
+    printf("------------------------------------------------------------------\n");
     esperarEnter();
 }
+

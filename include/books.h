@@ -103,4 +103,6 @@ int eliminarLivro(Livro *book, int idProprietario);
  */
 void listarMeusLivros(Livro books[], int total, int idProprietario);
 
+void transferirPosseLivro(Livro books[], int totalBooks, int idLivro, int idNovoDono);
+
 #endif // BOOKS_H

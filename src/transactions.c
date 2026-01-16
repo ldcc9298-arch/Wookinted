@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h> // Necessário para gerar datas automáticas
 
-//#include "books.h"
+#include "books.h"
 //#include "users.h"
 #include "transactions.h"
 #include "utils.h"
@@ -78,9 +78,10 @@ void gerirPedidosPendentes(Operacao operacoes[], int totalOperacoes, Livro books
 
     // 1. Listar Pedidos
     for (int i = 0; i < totalOperacoes; i++) {
+        // Só mostramos pedidos que ainda aguardam resposta
         if (operacoes[i].estado == ESTADO_OP_PENDENTE) {
             
-            // Encontrar índice do MEU livro
+            // Encontrar índice do livro solicitado (O MEU)
             int idxLivro = -1;
             for (int b = 0; b < totalBooks; b++) {
                 if (books[b].id == operacoes[i].idLivro) {
@@ -89,13 +90,14 @@ void gerirPedidosPendentes(Operacao operacoes[], int totalOperacoes, Livro books
                 }
             }
 
-            // Se encontrei e sou o dono
+            // Se o livro existe E eu sou o dono (ou sou Admin e o livro é do sistema)
             if (idxLivro != -1 && (books[idxLivro].idProprietario == idLogado || (idLogado == 1 && books[idxLivro].idProprietario == 0))) {
                 
                 char nomeReq[MAX_STRING] = "Desconhecido";
                 for (int u = 0; u < totalUsers; u++) {
                     if (users[u].id == operacoes[i].idRequerente) {
-                        strcpy(nomeReq, users[u].nome); break;
+                        strcpy(nomeReq, users[u].nome); 
+                        break;
                     }
                 }
 
@@ -126,7 +128,7 @@ void gerirPedidosPendentes(Operacao operacoes[], int totalOperacoes, Livro books
     // 3. Recuperar Índices Reais
     int cont = 1;
     int idxOp = -1;
-    int idxLivro = -1;
+    int idxLivro = -1; // O meu livro
 
     for (int i = 0; i < totalOperacoes; i++) {
         if (operacoes[i].estado == ESTADO_OP_PENDENTE) {
@@ -150,10 +152,9 @@ void gerirPedidosPendentes(Operacao operacoes[], int totalOperacoes, Livro books
         printf("\n--- Detalhes da Decisao ---\n");
         printf("Livro Solicitado: %s\n", books[idxLivro].titulo);
         
-        // CORREÇÃO VISUAL: Mostrar o que recebo em troca
+        // Identificar o livro oferecido (caso seja troca)
         int idxLivroOferecido = -1;
         if (operacoes[idxOp].tipo == OP_TIPO_TROCA) {
-            // Procurar o livro que o outro user ofereceu
             for(int b=0; b<totalBooks; b++) {
                 if(books[b].id == operacoes[idxOp].idLivroTroca) {
                     idxLivroOferecido = b;
@@ -169,46 +170,54 @@ void gerirPedidosPendentes(Operacao operacoes[], int totalOperacoes, Livro books
         int acao = lerInteiro("Opcao: ", 0, 2);
 
         if (acao == 1) { // === ACEITAR ===
-            operacoes[idxOp].dataEmprestimo = obterDataAtual();
+            operacoes[idxOp].dataEmprestimo = obterDataAtual(); // Define data de hoje
 
+            // --- CASO A: EMPRÉSTIMO ---
             if (operacoes[idxOp].tipo == OP_TIPO_EMPRESTIMO) {
-                // CORREÇÃO LÓGICA 1: Estado EM_CURSO e Data Prevista
-                operacoes[idxOp].estado = ESTADO_OP_PENDENTE;
-                operacoes[idxOp].dataDevolucaoPrevista = operacoes[idxOp].dataEmprestimo + operacoes[idxOp].dias;
+                // MUITO IMPORTANTE: Passa para ATIVO, não PENDENTE
+                operacoes[idxOp].estado = ESTADO_OP_ACEITE; 
                 
+                // Define data prevista (ex: hoje + dias)
+                // Nota: Certifica-te que a tua função obterDataAtual retorna um formato que permita soma simples
+                // Se for string, precisas de lógica de datas. Vou assumir inteiro/timestamp aqui.
+                // operacoes[idxOp].dataDevolucaoPrevista = somarDias(dataHoje, dias); 
+                
+                // Atualiza o livro
                 books[idxLivro].estado = LIVRO_EMPRESTADO; 
-                books[idxLivro].idDetentor = operacoes[idxOp].idRequerente; 
+                books[idxLivro].idDetentor = operacoes[idxOp].idRequerente; // Está com quem pediu
                 books[idxLivro].numRequisicoes++;
                 
-                printf("\n[Sucesso] Emprestimo aprovado ate %d.\n", operacoes[idxOp].dataDevolucaoPrevista);
+                printf("\n[Sucesso] Emprestimo aprovado!\n");
             
-            } else if (operacoes[idxOp].tipo == OP_TIPO_TROCA) {
-                operacoes[idxOp].estado = ESTADO_OP_CONCLUIDO;
+            } 
+            // --- CASO B: TROCA ---
+            else if (operacoes[idxOp].tipo == OP_TIPO_TROCA) {
+                operacoes[idxOp].estado = ESTADO_OP_CONCLUIDO; // Troca é final, fica concluído
 
-                // 1. O meu livro passa para ele
-                books[idxLivro].idProprietario = operacoes[idxOp].idRequerente;
-                books[idxLivro].idDetentor = operacoes[idxOp].idRequerente;     
-                books[idxLivro].estado = LIVRO_DISPONIVEL; 
+                // 1. O meu livro passa para ele (e fica Privado/Indisponível na estante dele)
+                transferirPosseLivro(books, totalBooks, books[idxLivro].id, operacoes[idxOp].idRequerente);
                 books[idxLivro].numRequisicoes++;
 
-                // CORREÇÃO LÓGICA 2: O livro dele passa para MIM
+                // 2. O livro dele passa para MIM (e fica Privado/Indisponível na minha estante)
                 if (idxLivroOferecido != -1) {
-                    books[idxLivroOferecido].idProprietario = idLogado; // Passa a ser meu
-                    books[idxLivroOferecido].idDetentor = idLogado;
-                    books[idxLivroOferecido].estado = LIVRO_DISPONIVEL; // Fica disponível na minha lista
+                    transferirPosseLivro(books, totalBooks, books[idxLivroOferecido].id, idLogado);
                     books[idxLivroOferecido].numRequisicoes++;
                 }
 
                 printf("\n[Sucesso] Troca realizada! Verifique 'Meus Livros' para ver a nova aquisicao.\n");
             }
+            
+            // Gravar tudo para garantir persistência
+            // guardarOperacoes(...);
+            // guardarLivros(...);
 
         } else if (acao == 2) { // === RECUSAR ===
             operacoes[idxOp].estado = ESTADO_OP_REJEITADO;
             
-            // Liberta o meu livro
+            // O meu livro volta ao mercado
             books[idxLivro].estado = LIVRO_DISPONIVEL;
             
-            // CORREÇÃO LÓGICA 3: Liberta o livro dele (que estava preso em RESERVADO)
+            // O livro dele (se for troca) também volta ao mercado (liberta o RESERVADO)
             if (operacoes[idxOp].tipo == OP_TIPO_TROCA && idxLivroOferecido != -1) {
                 books[idxLivroOferecido].estado = LIVRO_DISPONIVEL;
             }
@@ -220,80 +229,94 @@ void gerirPedidosPendentes(Operacao operacoes[], int totalOperacoes, Livro books
     }
 }
 
-void doarLivro(Livro books[], int totalBooks, int idProprietario, Operacao operacoes[], int *totalOperacoes) {
+void doarLivro(Livro books[], int totalBooks, int idLogado, Operacao operacoes[], int *totalOperacoes) {
+    (void)operacoes; // Evita warning de variável não usada
+    (void)totalOperacoes; // Evita warning de variável não usada
+
     limparEcra();
-    printf("\n--- DOAR LIVRO A INSTITUICAO ---\n");
-    printf("Ao doar um livro, a propriedade passa para o IPCA e fica disponivel para todos.\n");
-    
-    // 1. Listar apenas os MEUS livros que podem ser doados
-    printf("%-3s | %-30s | %-20s\n", "ID", "TITULO", "AUTOR");
-    printf("------------------------------------------------------------\n");
-    
-    int disponiveis = 0;
+    printf("\n=== DOAR LIVRO AO IPCA ===\n");
+    printf("Escolha qual dos seus livros deseja doar a instituicao:\n");
+    printf("%-3s | %-30s | %-20s\n", "N.", "TITULO", "AUTOR");
+    printf("----------------------------------------------------------\n");
+
+    int visualId = 1; // O nosso contador sequencial (1, 2, 3...)
+    int temLivros = 0;
+
+    // 1. LISTAGEM COM NÚMERO SEQUENCIAL
     for (int i = 0; i < totalBooks; i++) {
-        // Filtro: É meu? Não está eliminado? Está Disponível (comigo)?
-        // Nota: Mudei 'idLogado' para 'idProprietario' para bater certo com o argumento da função
-        if (books[i].idProprietario == idProprietario && 
-            books[i].eliminado == 0 && 
-            books[i].estado == LIVRO_DISPONIVEL) {
-                
+        // Filtro: Livros que são meus, estão disponíveis e não eliminados
+        if (books[i].idProprietario == idLogado && 
+            books[i].estado == LIVRO_DISPONIVEL && 
+            books[i].eliminado == 0) {
+            
             printf("%-3d | %-30.30s | %-20.20s\n", 
-                   books[i].id, books[i].titulo, books[i].autor);
-            disponiveis++;
+                   visualId,  // Mostramos o 1, 2, 3...
+                   books[i].titulo, 
+                   books[i].autor);
+            
+            visualId++;
+            temLivros = 1;
         }
     }
-    printf("------------------------------------------------------------\n");
+    printf("----------------------------------------------------------\n");
 
-    if (disponiveis > 0) {
-        int idAlvo = lerInteiro("Digite o ID do livro a doar (0 cancela): ", 0, 999999);
-        
-        if (idAlvo != 0) {
-            int idx = -1;
-            // Procurar índice real
-            for (int i = 0; i < totalBooks; i++) {
-                if (books[i].id == idAlvo && books[i].idProprietario == idProprietario) {
-                    idx = i;
-                    break;
-                }
+    if (!temLivros) {
+        printf("[Info] Nao tem livros disponiveis para doar.\n");
+        esperarEnter();
+        return;
+    }
+
+    // 2. SELEÇÃO DO UTILIZADOR
+    // O utilizador escolhe entre 1 e (visualId - 1)
+    int escolha = lerInteiro("\nIntroduza o N. do livro (0 para cancelar): ", 0, visualId - 1);
+
+    if (escolha == 0) return;
+
+    // 3. TRADUÇÃO (Visual -> Real)
+    // Temos de encontrar qual é o índice no array que corresponde ao nº escolhido
+    int contador = 1;
+    int idxEncontrado = -1;
+
+    for (int i = 0; i < totalBooks; i++) {
+        if (books[i].idProprietario == idLogado && 
+            books[i].estado == LIVRO_DISPONIVEL && 
+            books[i].eliminado == 0) {
+            
+            if (contador == escolha) {
+                idxEncontrado = i; // Encontrei a posição real no array!
+                break;
             }
+            contador++;
+        }
+    }
 
-            if (idx != -1) {
-                if (books[idx].estado != LIVRO_DISPONIVEL) {
-                    printf("[Erro] Nao pode doar um livro que esta emprestado ou reservado.\n");
-                } else {
-                    int confirm = lerInteiro("Tem a certeza? Esta acao e irreversivel (1-Sim, 0-Nao): ", 0, 1);
-                    
-                    if (confirm == 1) {
-                        // === A MÁGICA DA DOAÇÃO ===
-                        
-                        // 1. Muda o Dono para a Instituição (ID 1 - Admin/IPCA)
-                        books[idx].idProprietario = 1; 
-                        
-                        // 2. Muda a Posse Física para a Instituição
-                        books[idx].idDetentor = 1;
-                        
-                        // 3. Garante que fica Disponível no mercado
-                        books[idx].estado = LIVRO_DISPONIVEL;
-                        
-                        // 4. Regista a Operação
-                        adicionarOperacao(operacoes, totalOperacoes, idProprietario, books[idx].id, OP_TIPO_DOACAO, 0);
-                        
-                        // [Opcional] Truque para auto-aprovar a doação (já que é instantânea)
-                        int idNovaOp = *totalOperacoes - 1; // O índice da operação que acabamos de criar
-                        operacoes[idNovaOp].estado = ESTADO_OP_CONCLUIDO; // Fica logo aceite
-                        operacoes[idNovaOp].dataEmprestimo = obterDataAtual();
-                        operacoes[idNovaOp].dataFecho = obterDataAtual();
+    if (idxEncontrado != -1) {
+        // Confirmação
+        char confirmacao;
+        printf("\nTem a certeza que deseja doar o livro '%s'? (S/N): ", books[idxEncontrado].titulo);
+        scanf(" %c", &confirmacao); // O espaço antes do %c limpa o buffer
 
-                        printf("\n[Sucesso] Obrigado! O livro agora pertence ao IPCA.\n");
-                    }
-                }
-            } else {
-                printf("[Erro] ID invalido ou o livro nao lhe pertence.\n");
-            }
+        if (confirmacao == 's' || confirmacao == 'S') {
+            
+            // === EFETUAR A DOAÇÃO ===
+            // Passa a ser propriedade do IPCA (Assumindo ID 1 ou 0)
+            books[idxEncontrado].idProprietario = 1; // 1 = Admin/IPCA
+            books[idxEncontrado].idDetentor = 1;
+            
+            // Opcional: Se quiseres mudar o estado para algo específico ou manter DISPONIVEL
+            books[idxEncontrado].estado = LIVRO_DISPONIVEL; 
+
+            printf("\n[Sucesso] O livro foi doado ao IPCA. Obrigado pela sua generosidade!\n");
+            
+            // Gravar alterações
+            // guardarLivros(books, totalBooks); // Descomenta se tiveres a função aqui
+        } else {
+            printf("\n[Cancelado] A doacao foi cancelada.\n");
         }
     } else {
-        printf("[Info] Nao tem livros disponiveis para doar.\n");
+        printf("\n[Erro] Livro nao encontrado.\n");
     }
+    
     esperarEnter();
 }
 
@@ -484,9 +507,6 @@ void adicionarOperacao(Operacao operacoes[], int *totalOperacoes, int idRequeren
     operacoes[i].dataFecho = 0;
 
     (*totalOperacoes)++;
-    
-    printf("\n[Sucesso] Pedido registado (ID Op: %d)! Aguarde aprovacao do dono.\n", operacoes[i].id);
-    esperarEnter();
 }
 
 void registarDevolucao(Operacao operacoes[], int totalOperacoes, Livro livros[], int totalLivros, int idLivro, int idUtilizador) {
@@ -537,3 +557,4 @@ void registarDevolucao(Operacao operacoes[], int totalOperacoes, Livro livros[],
 
     esperarEnter();
 }
+

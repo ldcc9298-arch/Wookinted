@@ -111,7 +111,7 @@ void criarLivro(Livro books[], int *totalBooks, int idLogado) {
         
         // D. VERIFICAR MATEMÁTICA
         else if (validarISBN(novo.isbn) == 0) { 
-            printf("[Erro] O ISBN introduzido nao e valido (formato ou digitos incorretos).\n");
+            printf("[Erro] O ISBN introduzido nao e valido.\n");
         } 
         
         else {
@@ -409,4 +409,20 @@ void listarMeusLivros(Livro books[], int total, int idLogado) {
     
     if (cont == 0) printf("    (Ainda nao registou livros)\n");
     printf("----------------------------------------------------------------------\n");
+}
+
+void transferirPosseLivro(Livro books[], int totalBooks, int idLivro, int idNovoDono) {
+    for (int k = 0; k < totalBooks; k++) {
+        if (books[k].id == idLivro) {
+            // 1. Muda o dono
+            books[k].idProprietario = idNovoDono;
+            
+            // 2. Define o estado
+            // IMPORTANTE: Se meteres LIVRO_DISPONIVEL, ele vai logo para o mercado do novo dono.
+            // Se meteres 0 (Indisponível), vai para a "estante" privada dele.
+            books[k].estado = 1; // Tira do mercado e tira de RESERVADO.
+            
+            return;
+        }
+    }
 }

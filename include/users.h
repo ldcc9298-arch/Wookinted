@@ -37,4 +37,7 @@ void editarPerfil(Utilizador *user);
  */
 int eliminarConta(Utilizador *user);
 
+void garantirAdminPadrao(Utilizador users[], int *totalUsers);
+
+
 #endif // USERS_H

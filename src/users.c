@@ -6,7 +6,7 @@
 
 #include "utils.h"
 #include "interface.h"
-//#include "files.h"
+#include "files.h"
 //#include "transactions.h"
 #include "structs.h"
 
@@ -124,6 +124,7 @@ void registarUtilizador(Utilizador users[], int *total, Operacao operacoes[], in
             strcpy(users[indice].password, entradaTemp);
             break;
         }
+        printf("[Erro] A password nao pode estar vazia.\n");
     } while (1);
 
     // Aplicar o email guardado no início
@@ -191,19 +192,15 @@ int loginUtilizador(Utilizador users[], int totalUsers, Operacao operacoes[], in
     if (strcmp(pass, "0") == 0) return -5;
 
     if (strcmp(users[indice].password, pass) == 0) {
-        // SAUDAÇÃO E NOTIFICAÇÕES (Ignorado se for Admin)
-        if (strcmp(users[indice].email, "admin@ipca.pt") != 0) {
-            
+        limparEcra();
+        if (strcmp(users[indice].email, "admin@ipca.pt") == 0) {
+                printf("\nBem-vindo Administrador (IPCA)!\n"); 
+        }
+        else {
             if (strstr(users[indice].email, "@alunos.ipca.pt") != NULL)
                 printf("\nBem-vindo Aluno %s!\n", users[indice].nome);
             else
                 printf("\nBem-vindo Docente %s!\n", users[indice].nome);
-
-            // Chamada da função de notificações
-            verificarNotificacoes(operacoes, totalOperacoes, users[indice].id);
-            
-            // Pausa para o utilizador ler a saudação e os alertas
-            esperarEnter(); 
         }
 
         return indice; // Retorna o índice para o main/menuModoVisitante
@@ -258,7 +255,6 @@ void recuperarPassword(Utilizador users[], int total) {
     } else {
         printf("[Erro] O telemovel nao corresponde ao registo deste email.\n");
     }
-    esperarEnter();
 }
 
 /**
@@ -326,5 +322,26 @@ int eliminarConta(Utilizador *user) {
     } else {
         printf("[Cancelado] A conta mantem-se ativa.\n");
         return 0; // Não eliminou
+    }
+}
+
+void garantirAdminPadrao(Utilizador users[], int *totalUsers) {
+    if (*totalUsers == 0) {
+        users[0].id = 1;
+        
+        // Define os dados de login
+        strcpy(users[0].nome, "IPCA");
+        strcpy(users[0].email, "admin@ipca.pt");
+        strcpy(users[0].password, "admin"); // Password simples para testes
+        strcpy(users[0].dataNascimento, "01/01/2000");
+        strcpy(users[0].telemovel, "253000000");
+
+        users[0].estado = CONTA_ATIVA;
+
+        *totalUsers = 1; // Agora temos 1 utilizador
+        
+        printf("\n[Sistema] Base de dados vazia. Admin criado (User: admin@ipca.pt / Pass: admin)\n");
+        
+        guardarUtilizadores(users, *totalUsers); 
     }
 }

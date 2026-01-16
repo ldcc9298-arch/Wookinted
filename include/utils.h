@@ -72,14 +72,8 @@ int gerarProximoId(Livro books[], int total);
  */
 void imprimirLinhaLivro(Livro *book);
 
-/**
- * @brief Gera um relatório dos 5 utilizadores com mais transações.
- * @param users Array de utilizadores.
- * @param totalUsers Número total de utilizadores.
- * @param operacoes Array de empréstimos.
- * @param totalOperacoes Número total de empréstimos.
- */
-void relatorioTopTransacoes(Operacao operacoes[], int totalOperacoes, Livro books[], int totalBooks);
+
+void relatorioTopUtilizadores(Utilizador users[], int totalUsers, Operacao operacoes[], int totalOperacoes);
 
 /**
  * @brief Gera um relatório dos 5 livros mais requisitados.
@@ -185,9 +179,6 @@ int verificarHistoricoUtilizador(int idUser, Operacao operacoes[], int totalOper
 void adminValidarUtilizadores(Utilizador users[], int totalUsers);
 
 void adminValidarLivros(Utilizador users[], int totalUsers, Livro livros[], int totalLivros);
-
-void adminGerirPropostas(Operacao operacao[], int totalOperacao, Livro livros[], int totalLivros, Utilizador users[], int totalUsers);
-
 
 
 #endif // UTILS_H
