@@ -56,6 +56,8 @@ int calcularIdade(char *dataNascimento);
  */
 int validarApenasLetras(char *nome, int tamanho);
 
+int validarApenasNumeros(const char *str);
+
 int validarFormatoEmailIPCA(char *email);
 
 /**
@@ -137,23 +139,6 @@ int existeISBN(Livro books[], int totalBooks, char *isbn);
 void paraMinusculas(const char *origem, char *destino);
 
 /**
- * @brief Obtém o nome da categoria visual de um livro, considerando categorias manuais.
- * @param b Apontador para o livro.
- * @return Nome da categoria visual (pode ser a manual se for "Outro").
- */
-const char* obterNomeVisualCategoria(Livro *b);
-
-
-const char* obterNomeCategoria(CategoriaLivro cat, char* manualDesc);
-
-/**
- * @brief Obtém o nome da categoria visual de um livro, considerando categorias manuais.
- * @param b Apontador para o livro.
- * @return Nome da categoria visual (pode ser a manual se for "Outro").
- */
-const char* obterNomeVisualCategoria(Livro *b);
-
-/**
  * @brief Obtém a data atual no formato AAAAMMDD.
  * @return Data atual como inteiro.
  */
@@ -178,7 +163,11 @@ int verificarHistoricoUtilizador(int idUser, Operacao operacoes[], int totalOper
 
 void adminValidarUtilizadores(Utilizador users[], int totalUsers);
 
-void adminValidarLivros(Utilizador users[], int totalUsers, Livro livros[], int totalLivros);
+void registarLog(int idUser, char *acao, char *detalhes);
+
+int validarData(char *data);
+
+int adicionarDias(int dataAtual, int diasParaAdicionar);
 
 
 #endif // UTILS_H

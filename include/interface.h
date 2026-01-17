@@ -20,16 +20,14 @@ int mostrarMenuPrincipal(char *nome);
 
 // --- SUB-MENU VALIDACOES ADMINISTRADOR ---
 
-void submenuValidacoes(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes);
+void submenuValidacoes(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes, Feedback feedbacks[], int totalFeedbacks);
 
 // --- MENU ADMINISTRADOR ---
 
-/**
- * @brief Gere o menu do Administrador (Validar Utilizadores).
- * @param users Array de utilizadores.
- * @param total Número total de utilizadores.
- */
-void menuAdministrador(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes, Feedback feedbacks[], int totalFeedbacks);
+void menuAdministrador(Utilizador users[], int *totalUsers, 
+                       Livro books[], int *totalBooks, 
+                       Operacao operacoes[], int *totalOperacoes, 
+                       Feedback feedbacks[], int *totalFeedbacks);
 
 // --- SUB-MENU PESQUISA LIVROS ---
 
@@ -40,16 +38,8 @@ void submenuPesquisaLivros(Utilizador users[], int totalUsers, Livro books[], in
 
 // --- MENU MERCADO ---
 
-/**
- * @brief Gere o menu do Mercado de Livros (Pesquisa, Requisição, Doação).
- * @param books Array de livros.
- * @param totalBooks Apontador para o total de livros (pode mudar se houver doação).
- * @param operacoes Array de empréstimos (necessário para requisitar).
- * @param totalOperacoes Apontador para o total de empréstimos.
- * @param idLogado ID do utilizador atual.
- */
-void menuMercadoLivros(Utilizador users[], int totalUsers, Livro books[], int *totalBooks, Operacao operacoes[], int *totalOperacoes, int idLogado);
 
+void menuMercadoLivros(Utilizador users[], int totalUsers, Livro books[], int *totalBooks, Operacao operacoes[], int *totalOperacoes, int idLogado, Feedback feedbacks[], int totalFeedbacks);
 // --- MENU MEUS LIVROS ---
 
 /**
@@ -73,18 +63,19 @@ void menuGestaoMovimentos(Utilizador users[], int totalUsers, Livro books[], int
  * @param total Total de utilizadores.
  * @param idLogado Apontador para o ID atual (para poder fazer logout se eliminar conta).
  */
-void menuGestaoPerfil(Utilizador users[], int totalUsers, Feedback feedbacks[], int totalFeedbacks, int idLogado);
+int menuGestaoPerfil(Utilizador users[], int totalUsers, Feedback feedbacks[], int totalFeedbacks, int idLogado);
 
-void verificarNotificacoes(Operacao operacoes[], int totalOperacoes, int idLogado);
+void verificarNotificacoes(Operacao operacoes[], int totalOperacoes, Feedback feedbacks[], int totalFeedbacks, int idLogado);
 
-void verificarNotificacoesAdmin(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes);
+void verificarNotificacoesAdmin(Utilizador users[], int totalUsers, Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes, Feedback feedbacks[], int totalFeedbacks, int idLogado);
 
-void submenuHistoricoPessoal(Operacao operacoes[], int totalOperacoes, Utilizador users[], int totalUsers, Livro books[], int totalBooks, int idLogado);
-
-void submenuDevolverLivro(Livro books[], int totalBooks, Operacao operacoes[], int totalOperacoes, int idLogado);
-
-void submenuHistoricoGlobal(Operacao operacoes[], int totalOperacoes, Utilizador users[], int totalUsers, Livro books[], int totalBooks);
+void submenuDevolverLivro(Livro books[], int totalBooks, Operacao operacoes[], int *totalOperacoes, Utilizador users[], int totalUsers, int idLogado);
 
 void submenuAvaliarTransacoes(Operacao operacoes[], int totalOperacoes, Feedback feeds[], int *totalFeeds, Livro books[], int totalBooks, int idLogado);
 
+void exibirLogSistema();
+
+void submenuHistoricoPessoal(Operacao operacoes[], int totalOperacoes, Utilizador users[], int totalUsers, Livro books[], int totalBooks, Feedback feedbacks[], int totalFeedbacks, int idLogado);
+
+void submenuHistoricoGlobal(Operacao operacoes[], int totalOperacoes, Utilizador users[], int totalUsers, Livro books[], int totalBooks, Feedback feedbacks[], int totalFeedbacks);
 #endif // INTERFACE_H

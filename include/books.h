@@ -105,4 +105,6 @@ void listarMeusLivros(Livro books[], int total, int idProprietario);
 
 void transferirPosseLivro(Livro books[], int totalBooks, int idLivro, int idNovoDono);
 
+int procurarISBNnaBaseDados(char *isbnProcurado, char *titulo, char *autor, char *categoria);
+
 #endif // BOOKS_H

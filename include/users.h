@@ -4,10 +4,10 @@
 #include "structs.h"
 
 
-void registarUtilizador(Utilizador users[], int *total, Operacao operacoes[], int totalOperacoes);
+void registarUtilizador(Utilizador users[], int *total);
 
 
-int loginUtilizador(Utilizador users[], int totalUsers, Operacao operacoes[], int totalOperacoes);
+int loginUtilizador(Utilizador users[], int totalUsers);
 
 /**
  * @brief Permite redefinir a password de um utilizador.

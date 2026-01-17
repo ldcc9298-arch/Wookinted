@@ -1,0 +1,67 @@
+[2026-01-17 | 00:32] [ID:2] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-17 | 00:33] [ID:3] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-17 | 00:33] [ID:4] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-17 | 00:36] [ID:5] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-17 | 00:37] [ID:6] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-17 | 00:44] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 00:44] [ID:0] [ADMIN_APROVA   ] a1@alunos.ipca.pt
+[2026-01-17 | 00:44] [ID:0] [ADMIN_APROVA   ] a4@alunos.ipca.pt
+[2026-01-17 | 00:44] [ID:0] [ADMIN_APROVA   ] a3@alunos.ipca.pt
+[2026-01-17 | 00:44] [ID:0] [ADMIN_APROVA   ] a2@alunos.ipca.pt
+[2026-01-17 | 00:44] [ID:0] [ADMIN_APROVA   ] ldcastro@ipca.pt
+[2026-01-17 | 00:44] [ID:2] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 00:45] [ID:2] [LIVRO_ADD      ] ISBN: 9789897110207 | Titulo: Os Maias
+[2026-01-17 | 00:45] [ID:2] [LIVRO_ADD      ] ISBN: 9789722100267 | Titulo: Memorial do Convento
+[2026-01-17 | 00:46] [ID:2] [LIVRO_DEL      ] ISBN: 9789722100267 | Titulo: Memorial do Convento (Removido)
+[2026-01-17 | 00:46] [ID:2] [LIVRO_ADD      ] ISBN: 9789720727602 | Titulo: Os Lusiadas
+[2026-01-17 | 00:46] [ID:3] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 00:46] [ID:3] [LIVRO_ADD      ] ISBN: 9789722100267 | Titulo: Memorial do Convento
+[2026-01-17 | 00:47] [ID:3] [LIVRO_ADD      ] ISBN: 9789897111228 | Titulo: 1984
+[2026-01-17 | 00:47] [ID:4] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 00:47] [ID:4] [LIVRO_ADD      ] ISBN: 9789722055932 | Titulo: O Principezinho
+[2026-01-17 | 00:48] [ID:4] [LIVRO_ADD      ] ISBN: 9780131103627 | Titulo: The C Programming Language
+[2026-01-17 | 00:48] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 00:48] [ID:5] [LIVRO_ADD      ] ISBN: 9789723830873 | Titulo: A Reliquia
+[2026-01-17 | 00:49] [ID:5] [LIVRO_ADD      ] ISBN: 9789720046833 | Titulo: Ensaio sobre a Cegueira
+[2026-01-17 | 00:49] [ID:5] [LIVRO_ADD      ] ISBN: 9781408855652 | Titulo: Harry Potter and the Philosophers Stone
+[2026-01-17 | 00:49] [ID:5] [LIVRO_ADD      ] ISBN: 9780553103540 | Titulo: A Game of Thrones
+[2026-01-17 | 00:49] [ID:5] [LIVRO_ADD      ] ISBN: 9789720727602 | Titulo: Os Lusiadas
+[2026-01-17 | 00:49] [ID:5] [LIVRO_ADD_FAIL ] Tentativa falhada ISBN: 9783127323207 (Nao consta na BD)
+[2026-01-17 | 00:51] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 00:56] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 01:01] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 01:07] [ID:2] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 01:18] [ID:2] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 01:23] [ID:2] [EMPRESTIMO_APROVADO] EMPRESTIMO ACEITE: Livro 'Os Lusiadas' (ID 3) emprestado ao Utilizador 5
+[2026-01-17 | 01:23] [ID:2] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 01:24] [ID:2] [TROCA_PROPOSTA ] Proposta de TROCA: Utilizador 2 ofereceu o livro ID 1 pelo livro ID 9
+[2026-01-17 | 01:28] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 01:49] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 01:49] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 01:50] [ID:5] [TROCA_CONCLUIDA] TROCA CONCLUIDA: Livro 'Ensaio sobre a Cegueira' (ID 9) trocado por 'Os Maias' (ID 1) com Utilizador 2
+[2026-01-17 | 01:50] [ID:5] [FEEDBACK_ADD   ] Nota 5 atribuida a operacao 2
+[2026-01-17 | 01:51] [ID:5] [FEEDBACK_ADD   ] Nota 5 atribuida a operacao 3
+[2026-01-17 | 01:55] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:03] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
+[2026-01-17 | 02:06] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
+[2026-01-17 | 02:08] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
+[2026-01-17 | 02:08] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:09] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:09] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:16] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:17] [ID:5] [LIVRO_DEVOLVIDO] Livro ID 3 devolvido
+[2026-01-17 | 02:24] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:24] [ID:5] [EMPRESTIMO_PEDIDO] Pedido de EMPRESTIMO: Livro ID 3 por 10 dias
+[2026-01-17 | 02:26] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:26] [ID:2] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:26] [ID:2] [EMPRESTIMO_APROVADO] EMPRESTIMO ACEITE: Livro 'Os Lusiadas' (ID 3) emprestado ao Utilizador 5. Limite: 20260127
+[2026-01-17 | 02:27] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:27] [ID:5] [FEEDBACK_ADD   ] Nota 4 atribuida a operacao 1
+[2026-01-17 | 02:27] [ID:2] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:28] [ID:2] [FEEDBACK_ADD   ] Nota 1 atribuida a operacao 1
+[2026-01-17 | 02:28] [ID:2] [FEEDBACK_ADD   ] Nota 4 atribuida a operacao 2
+[2026-01-17 | 02:28] [ID:2] [FEEDBACK_ADD   ] Nota 2 atribuida a operacao 3
+[2026-01-17 | 02:29] [ID:2] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:29] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 02:32] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
+[2026-01-17 | 02:32] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.

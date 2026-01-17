@@ -24,8 +24,7 @@ typedef enum {
     LIVRO_INDISPONIVEL = 0,  // Ex: Danificado/Removido
     LIVRO_DISPONIVEL = 1,    // Visível no mercado
     LIVRO_EMPRESTADO = 2,    // Fisicamente fora
-    LIVRO_PENDENTE_CAT = 3,  // Aguarda aprovação de categoria
-    LIVRO_RESERVADO = 4      // Tem uma proposta ativa (Case 3)
+    LIVRO_RESERVADO = 3      // Tem uma proposta ativa
 } EstadoLivro;
 
 /** @brief Categorias de livros. */
@@ -86,18 +85,17 @@ typedef struct {
     int id;                
     char titulo[MAX_STRING];
     char autor[MAX_STRING];
-    char isbn[20];              // ISBN-13 com hifens
+    char isbn[20];              // Sugestão: Guardar apenas números para facilitar busca
 
-    CategoriaLivro categoria;   // Enum (1 a 7)
-    char categoriaManual[50];   // Texto se categoria == OUTRO
+    char categoria[50];         // Alterado: Agora recebe o texto direto da BD ou input
     
-    int eliminado;              // 0 = Visível, 1 = Apagado pelo utilizador (Soft Delete)
-    EstadoLivro estado;         // Enum (DISPONIVEL, RESERVADO, EMPRESTADO...)
+    int eliminado;              // 0 = Visível, 1 = Soft Delete
+    EstadoLivro estado;         // Enum (DISPONIVEL, EMPRESTADO, etc.)
 
-    int idProprietario;         // Quem é o dono real
-    int idDetentor;             // Com quem está o livro agora
+    int idProprietario;         // Quem registou o livro
+    int idDetentor;             // Com quem está fisicamente (útil para empréstimos)
 
-    int numRequisicoes;         // Estatística
+    int numRequisicoes;         // Contador de popularidade
 } Livro;
 
 /**
@@ -131,7 +129,7 @@ typedef struct {
     int idAvaliador;        // Autor da crítica
     int idAvaliado;         // Alvo da crítica
 
-    int nota;               // 1 a 5
+    float nota;               // 1 a 5
     char comentario[200];   // Texto opcional
 
     int dataAvaliacao;      // DD/MM/YYYY

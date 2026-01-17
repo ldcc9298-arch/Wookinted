@@ -19,11 +19,12 @@ int main() {
     Feedback feedbacks[MAX_FEEDBACKS];
 
     int totalUsers = carregarUtilizadores(users);
+    garantirAdminPadrao(users, &totalUsers);
     int totalBooks = carregarLivros(books);
     int totalOperacoes = carregarOperacoes(operacoes);
     int totalFeedbacks = carregarFeedbacks(feedbacks);
 
-    garantirAdminPadrao(users, &totalUsers);
+    
 
     limparEcra();
     printf("Sistema Wookinted Iniciado. Dados carregados.\n");
@@ -50,33 +51,44 @@ int main() {
             } 
             else if (resultado >= 0) {
                 // === LOGIN COM SUCESSO ===
-                // Aqui tratamos APENAS da inicialização e Notificações
+                // resultado aqui é o ID retornado pelo loginUtilizador
                 
-                indiceUser = resultado;          
-                idLogado = users[resultado].id;  
+                int idRetornado = resultado;
+                indiceUser = -1;
 
-                // 1. Notificações (Saudação já veio do login)
-                if (strcmp(users[indiceUser].email, "admin@ipca.pt") == 0) {
-                    verificarNotificacoesAdmin(users, totalUsers, books, totalBooks, operacoes, totalOperacoes);
-                } else {
-                    verificarNotificacoes(operacoes, totalOperacoes, idLogado);
+                // Procurar qual é a posição no array que tem este ID
+                for (int i = 0; i < totalUsers; i++) {
+                    if (users[i].id == idRetornado) {
+                        indiceUser = i;
+                        break;
+                    }
                 }
 
-                esperarEnter();
+                if (indiceUser != -1) {
+                    idLogado = users[indiceUser].id;
+
+                    // 1. Notificações
+                    if (strcmp(users[indiceUser].email, "admin@ipca.pt") == 0) {
+                        verificarNotificacoesAdmin(users, totalUsers, books, totalBooks, operacoes, totalOperacoes, feedbacks, totalFeedbacks, 1);
+                    } else {
+                        verificarNotificacoes(operacoes, totalOperacoes, feedbacks, totalFeedbacks, idLogado);
+                    }
+                    esperarEnter();
+                } else {
+                    printf("[Erro] Utilizador nao encontrado no sistema.\n");
+                    idLogado = -1;
+                    esperarEnter();
+                }
             }
-        } 
         
         // =======================================================
         // CASO 2: JÁ ESTÁ LOGADO (Mostra o Menu Principal)
         // =======================================================
-        else { 
+        } else { 
             
-            // É AQUI QUE O SWITCH TEM DE ESTAR!
-            // Assim, quando voltas do Mercado, ele cai aqui e mostra o menu de novo.
-
             // A. Se for ADMIN
             if (strcmp(users[indiceUser].email, "admin@ipca.pt") == 0) {
-                menuAdministrador(users, totalUsers, books, totalBooks, operacoes, totalOperacoes, feedbacks, totalFeedbacks);
+                menuAdministrador(users, &totalUsers, books, &totalBooks, operacoes, &totalOperacoes, feedbacks, &totalFeedbacks);
                 
                 // Quando o Admin sai do seu menu, fazemos logout
                 idLogado = -1;
@@ -91,8 +103,7 @@ int main() {
                 
                 switch (opcao) {
                     case 1: 
-                        // VERIFICA SE TENS OS '&' NOS TOTAIS!
-                        menuMercadoLivros(users, totalUsers, books, &totalBooks, operacoes, &totalOperacoes, idLogado);
+                        menuMercadoLivros(users, totalUsers, books, &totalBooks, operacoes, &totalOperacoes, idLogado, feedbacks, totalFeedbacks);
                         break;
                     case 2:
                         menuMeusLivros(books, &totalBooks, idLogado);
@@ -101,12 +112,9 @@ int main() {
                         menuGestaoMovimentos(users, totalUsers, books, &totalBooks, operacoes, &totalOperacoes, feedbacks, &totalFeedbacks, idLogado);
                         break;
                     case 4:
-                        menuGestaoPerfil(users, totalUsers, feedbacks, totalFeedbacks, idLogado);
-                        // Se apagou a conta:
-                        if (idLogado == -1) { 
+                        if (menuGestaoPerfil(users, totalUsers, feedbacks, totalFeedbacks, idLogado) == 1) { 
+                            idLogado = -1; 
                             indiceUser = -1; 
-                            printf("Conta eliminada.\n"); 
-                            esperarEnter(); 
                         }
                         break;
                     case 0:

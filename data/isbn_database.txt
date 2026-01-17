@@ -1,0 +1,10 @@
+9789897110207;Os Maias;Eca de Queiroz;Classico
+9789722100267;Memorial do Convento;Jose Saramago;Ficcao
+9789720727602;Os Lusiadas;Luis de Camoes;Poesia
+9789897111228;1984;George Orwell;Distopia
+9789722055932;O Principezinho;Antoine de Saint-Exupery;Infantil
+9780131103627;The C Programming Language;Kernighan & Ritchie;Tecnico
+9789723830873;A Reliquia;Eca de Queiroz;Classico
+9789720046833;Ensaio sobre a Cegueira;Jose Saramago;Ficcao
+9781408855652;Harry Potter and the Philosophers Stone;J.K. Rowling;Fantasia
+9780553103540;A Game of Thrones;George R.R. Martin;Fantasia

@@ -4,26 +4,10 @@
 #include <ctype.h> // Necessário para isspace
 #include <time.h>  // Necessário para calcularIdade
 
+#include "files.h"
 #include "utils.h"
 #include "structs.h"
 #include "books.h"
-
-// =============================================================
-// CATEGORIAS DE LIVROS
-// =============================================================
-
-const char* obterNomeCategoria(CategoriaLivro cat, char* manualDesc) {
-    switch (cat) {
-        case CAT_FICCAO: return "Ficcao";
-        case CAT_NAO_FICCAO: return "Nao Ficcao";
-        case CAT_CIENCIA: return "Ciencia";
-        case CAT_HISTORIA: return "Historia";
-        case CAT_BIOGRAFIA: return "Biografia";
-        case CAT_TECNOLOGIA: return "Tecnologia";
-        case CAT_OUTRO: return manualDesc; // Retorna o texto manual se for Outro
-        default: return "Desconhecido";
-    }
-}
 
 /**
  * @brief Limpa o buffer de entrada para evitar lixo.
@@ -165,6 +149,14 @@ int validarApenasLetras(char *str, int tamanho) {
     return 1;
 }
 
+int validarApenasNumeros(const char *str) {
+    while (*str) {
+        if (*str < '0' || *str > '9') return 0;
+        str++;
+    }
+    return 1;
+}
+
 
 int validarFormatoEmailIPCA(char *email) {
     if (strcmp(email, "admin@ipca.pt") == 0) return 1;
@@ -215,80 +207,70 @@ int gerarProximoId(Livro livros[], int total) {
     return maxId + 1;
 }
 
-/**
- * @brief Imprime uma linha formatada de um livro.
- * Usado para evitar repetição de código nas pesquisas.
- */
 void imprimirLinhaLivro(Livro *book) {
     char donoStr[20];
-    if (book->idProprietario == 0) strcpy(donoStr, "INSTITUTO");
-    else sprintf(donoStr, "User %d", book->idProprietario);
+    
+    // Ajustado para ID 1 (Admin/IPCA)
+    if (book->idProprietario == 1) {
+        strcpy(donoStr, "IPCA (Admin)");
+    } else {
+        sprintf(donoStr, "User %d", book->idProprietario);
+    }
 
-    printf("- ID: %d | ISBN: %-13s | Titulo: %-20.20s | Autor: %-15.15s | Cat: %s\n", 
+    printf("- ID: %d | ISBN: %-13s | Titulo: %-20.20s | Autor: %-15.15s | Cat: %-10s | Dono: %s\n", 
            book->id,
            book->isbn,
            book->titulo, 
            book->autor, 
-           obterNomeCategoria(book->categoria, book->categoriaManual));
+           book->categoria,
+           donoStr); // Adicionei o dono no print para ser mais informativo
 }
 
-/**
- * @brief Calcula a média de avaliações (notas) recebidas por um utilizador.
- * @param feedbacks Array de feedbacks.
- * @param totalFeedbacks Número total de feedbacks no array.
- * @param idLogado ID do utilizador alvo.
- * @param qtdReviews Ponteiro para armazenar a quantidade de reviews (pode ser NULL).
- * @return Média das notas (float). Retorna 0.0 se não houver avaliações.
- */
-float calcularMediaUtilizador(Feedback feedbacks[], int totalFeedbacks, int idLogado, int *qtdReviews) {
-    int somaNotas = 0;
+
+float calcularMediaUtilizador(Feedback feedbacks[], int totalFeedbacks, int idUtilizador, int *quantidade) {
+    float soma = 0.0f; // IMPORTANTE: Inicializar sempre a zero
     int contador = 0;
 
     for (int i = 0; i < totalFeedbacks; i++) {
-        // Verifica se o feedback é dirigido ao utilizador alvo
-        if (feedbacks[i].idAvaliado == idLogado) {
-            somaNotas += feedbacks[i].nota;
+        // Verifica se o feedback é para o utilizador correto
+        if (feedbacks[i].idAvaliado == idUtilizador) {
+            soma += (float)feedbacks[i].nota;
             contador++;
         }
     }
 
-    // "Devolvemos" o contador para fora através do ponteiro
-    if (qtdReviews != NULL) {
-        *qtdReviews = contador;
+    *quantidade = contador;
+
+    if (contador > 0) {
+        return soma / (float)contador;
     }
 
-    // Evitar divisão por zero
-    if (contador == 0) return 0.0;
-
-    return (float)somaNotas / contador;
+    return 0.0f; // Se não houver avaliações, a média é 0
 }
 
-/**
- * @brief Relatório dos 5 utilizadores com melhor reputação (média de feedback).
- */
 void relatorioTopReputacao(Utilizador users[], int totalUsers, Feedback feedbacks[], int totalFeedbacks) {
-    
-// Estrutura temporária para ordenação
     typedef struct { 
-        int indexUser; // Guardamos a posição no array 'users' para saber o nome depois
+        int indexUser; 
         float media; 
         int qtd; 
     } UserStats;
 
-    UserStats stats[MAX_UTILIZADORES]; // Ou usar totalUsers se o compilador permitir VLA
+    // Inicializamos tudo a zero para evitar lixo de memória
+    UserStats stats[MAX_UTILIZADORES] = {0}; 
 
-    // 1. Calcular médias usando a função DRY (Don't Repeat Yourself)
+    // 1. Calcular médias
     for(int i = 0; i < totalUsers; i++) {
-        stats[i].indexUser = i; // Guardamos onde este user está no array original
-        
-        // A função faz o trabalho sujo de somar e contar
+        stats[i].indexUser = i;
         stats[i].media = calcularMediaUtilizador(feedbacks, totalFeedbacks, users[i].id, &stats[i].qtd);
     }
 
-    // 2. Ordenar (Bubble Sort - Do maior para o menor)
+    // 2. Ordenar (Bubble Sort)
     for(int i = 0; i < totalUsers - 1; i++) {
         for(int j = 0; j < totalUsers - i - 1; j++) {
-            if(stats[j].media < stats[j+1].media) {
+            // Critério Principal: Média
+            // Critério Secundário (Desempate): Quantidade de avaliações
+            if(stats[j].media < stats[j+1].media || 
+              (stats[j].media == stats[j+1].media && stats[j].qtd < stats[j+1].qtd)) {
                 UserStats temp = stats[j]; 
                 stats[j] = stats[j+1]; 
                 stats[j+1] = temp;
@@ -298,17 +280,16 @@ void relatorioTopReputacao(Utilizador users[], int totalUsers, Feedback feedback
 
     // 3. Apresentar Resultados
     limparEcra();
-    printf("\n--- TOP 5 REPUTACAO (Min. 5 Avaliacoes) ---\n");
-    printf("%-3s | %-20s | %-10s | %s\n", "N.", "NOME", "MEDIA", "QTD");
-    printf("----------------------------------------------------\n");
+    printf("\n=== TOP 5 REPUTACAO (Min. 5 Avaliacoes) ===\n");
+    printf("%-3s | %-20s | %-10s | %s\n", "N.", "NOME", "MEDIA", "AVALIACOES");
+    printf("------------------------------------------------------------\n");
 
     int contador = 0;
     for(int i = 0; i < totalUsers; i++) {
-        // Filtro: Mínimo 5 avaliações E conta ativa (opcional)
-        // Usamos stats[i].indexUser para ir buscar o nome correto com segurança
         int idxReal = stats[i].indexUser;
 
-        if(stats[i].qtd >= 5 && users[idxReal].estado == CONTA_ATIVA) { 
+        // Filtros: Min 5 avaliações, Conta Ativa e IGNORAR o Admin (ID 1)
+        if(stats[i].qtd >= 5 && users[idxReal].estado == CONTA_ATIVA && users[idxReal].id != 1) { 
             
             printf("%-3d | %-20.20s | %-10.1f | %d\n", 
                    contador + 1, 
@@ -322,21 +303,27 @@ void relatorioTopReputacao(Utilizador users[], int totalUsers, Feedback feedback
     }
 
     if(contador == 0) {
-        printf("\n[Info] Nenhum utilizador cumpre os criterios (min 5 avaliacoes).\n");
+        printf("\n[Info] Nenhum utilizador cumpre os criterios (min. 5 avaliacoes).\n");
     }
     
-    printf("----------------------------------------------------\n");
+    printf("------------------------------------------------------------\n");
     esperarEnter();
 }
 
 void relatorioTopLivros(Livro livros[], int totalLivros) {
-    // 1. Array de ponteiros para ordenação (Mantido da tua lógica original)
+    if (totalLivros == 0) {
+        printf("\n[Erro] Nao existem livros registados no sistema.\n");
+        esperarEnter();
+        return;
+    }
+
+    // 1. Criar array de ponteiros para não alterar a ordem original do array principal
     Livro *ptrs[MAX_LIVROS];
-    for(int i=0; i<totalLivros; i++) ptrs[i] = &livros[i];
+    for(int i = 0; i < totalLivros; i++) ptrs[i] = &livros[i];
 
     // 2. Ordenar por numRequisicoes (Bubble Sort Descrescente)
-    for(int i=0; i<totalLivros-1; i++) {
-        for(int j=0; j<totalLivros-i-1; j++) {
+    for(int i = 0; i < totalLivros - 1; i++) {
+        for(int j = 0; j < totalLivros - i - 1; j++) {
             if(ptrs[j]->numRequisicoes < ptrs[j+1]->numRequisicoes) {
                 Livro *temp = ptrs[j]; 
                 ptrs[j] = ptrs[j+1]; 
@@ -345,43 +332,35 @@ void relatorioTopLivros(Livro livros[], int totalLivros) {
         }
     }
 
-    // 3. Apresentar Resultados (Formatação Tabela)
+    // 3. Apresentar Resultados
     limparEcra();
-    printf("\n--- TOP 5 LIVROS MAIS REQUISITADOS ---\n");
-    // Ajustei as larguras: Título (25), Categoria (15)
-    printf("%-4s | %-25s | %-15s | %s\n", "POS.", "TITULO", "CATEGORIA", "TOTAL");
-    printf("------------------------------------------------------------------\n");
+    printf("\n==================== TOP 5 LIVROS MAIS REQUISITADOS ====================\n");
+    printf("%-4s | %-30s | %-15s | %s\n", "POS.", "TITULO", "ISBN", "REQUISICOES");
+    printf("------------------------------------------------------------------------\n");
 
     int mostrados = 0;
     
-    for(int i=0; i<totalLivros; i++) {
-        // CRITÉRIOS DE PARAGEM:
-        // 1. Já mostramos 5?
-        // 2. O livro tem 0 requisições? (Como está ordenado, os seguintes também terão 0)
-        if(mostrados >= 5) break;
+    for(int i = 0; i < totalLivros && mostrados < 5; i++) {
+        // Se chegarmos a livros com 0 requisições, paramos (não faz sentido estarem no top)
         if(ptrs[i]->numRequisicoes == 0) break;
 
-        // Obter nome da categoria (assumindo que tens esta função auxiliar)
-        const char *nomeCat = obterNomeCategoria(ptrs[i]->categoria, ptrs[i]->categoriaManual);
-        // Imprimir Linha Formatada
-        // %.25s garante que se o título for gigante, corta para não estragar a tabela
-        printf("%-4d | %-25.25s | %-15.15s | %d\n", 
+        // Print formatado: %-30.30s corta o título se exceder 30 caracteres
+        printf("%-4d | %-30.30s | %-15s | %d\n", 
                mostrados + 1, 
                ptrs[i]->titulo, 
-               nomeCat,
+               ptrs[i]->isbn, // Troquei categoria por ISBN pois é mais útil para o Admin identificar
                ptrs[i]->numRequisicoes);    
         
         mostrados++;
     }
 
-    // Mensagem se a lista estiver vazia
     if(mostrados == 0) {
-        printf("\n[Info] Ainda nao existem registos de requisicoes de livros.\n");
+        printf("\n[Info] Ainda nao foram realizadas requisicoes no sistema.\n");
+    } else {
+        printf("------------------------------------------------------------------------\n");
+        printf(" Relatorio gerado com base em %d livros.\n", totalLivros);
     }
 
-    printf("------------------------------------------------------------------\n");
-    
-    // Mantém o enter aqui (e remove do switch no menu, tal como nos outros)
     esperarEnter();
 }
 
@@ -511,59 +490,45 @@ void listarHistoricoCompleto(Operacao operacoes[], int totalOperacoes, Livro boo
     esperarEnter();
 }
 
-/**
- * @brief Valida um ISBN-10 ou ISBN-13.
- * @param isbn String do ISBN (pode conter hífens).
- * @return 1 se válido, 0 se inválido.
- */
 int validarISBN(const char *isbn) {
-    int len = strlen(isbn);
-    int numeros[13]; // Para guardar apenas os dígitos
-    int contador = 0;
+    char limpo[20];
+    int j = 0;
 
-    // 1. Limpar (Remover hífens e validar se são números)
-    for (int i = 0; i < len; i++) {
-        if (isdigit(isbn[i])) {
-            if (contador < 13) {
-                numeros[contador] = isbn[i] - '0';
-                contador++;
-            } else {
-                return 0; // Demasiados números
-            }
-        } 
-        // Lógica para aceitar 'X' ou 'x' apenas no ISBN-10 (último dígito)
-        else if ((isbn[i] == 'X' || isbn[i] == 'x') && contador == 9) {
-             numeros[contador] = 10; // X vale 10
-             contador++;
-        }
-        // --- AQUI ESTAVA O PROBLEMA ---
-        // Agora aceitamos também '\n' e '\r' (Enter) como caracteres a ignorar
-        else if (isbn[i] != '-' && isbn[i] != ' ' && isbn[i] != '\n' && isbn[i] != '\r') {
-            return 0; // Caracter inválido encontrado
+    // 1. Limpar hífenes ou espaços
+    for (int i = 0; isbn[i] != '\0'; i++) {
+        if (isdigit(isbn[i]) || isbn[i] == 'X' || isbn[i] == 'x') {
+            limpo[j++] = isbn[i];
         }
     }
+    limpo[j] = '\0';
 
-    // 2. Validação Matemática
-    
-    // CASO A: ISBN-13 (Padrão atual)
-    if (contador == 13) {
+    int tam = strlen(limpo);
+
+    // 2. Validação ISBN-10
+    if (tam == 10) {
         int soma = 0;
-        for (int i = 0; i < 12; i++) {
-            if (i % 2 == 0) soma += numeros[i] * 1;
-            else soma += numeros[i] * 3;
+        for (int i = 0; i < 9; i++) {
+            soma += (limpo[i] - '0') * (10 - i);
         }
-        int check = 10 - (soma % 10);
-        if (check == 10) check = 0;
+        char ultimo = toupper(limpo[9]);
+        if (ultimo == 'X') soma += 10;
+        else soma += (ultimo - '0');
 
-        return (check == numeros[12]);
+        return (soma % 11 == 0);
     }
 
-    // CASO B: ISBN-10 (Antigo)
-    if (contador == 10) {
-        return 1; 
+    // 3. Validação ISBN-13 (O padrão atual)
+    if (tam == 13) {
+        int soma = 0;
+        for (int i = 0; i < 13; i++) {
+            int digito = limpo[i] - '0';
+            if (i % 2 == 0) soma += digito;     // Peso 1
+            else soma += digito * 3;            // Peso 3
+        }
+        return (soma % 10 == 0);
     }
 
-    return 0; // Tamanho incorreto
+    return 0; // Se não tiver 10 nem 13 dígitos, é inválido
 }
 
 /**
@@ -595,28 +560,6 @@ void paraMinusculas(const char *origem, char *destino) {
         i++;
     }
     destino[i] = '\0'; // Fechar a string
-}
-
-/**
- * @brief Obtém o nome da categoria visual de um livro, considerando categorias manuais.
- * @param b Apontador para o livro.
- * @return Nome da categoria visual (pode ser a manual se for "Outro").
- */
-const char* obterNomeVisualCategoria(Livro *b) {
-    // 1. Se não for "Outro" (vamos assumir que o ID de Outro é, por exemplo, 5 ou 9 - ajusta ao teu enum)
-    // Nota: Estou a assumir que tens uma constante ou #define para OUTRO. Se não, usa o número correspondente.
-    if (b->categoria != 7) {
-        return obterNomeCategoria(b->categoria, b->categoriaManual); // Retorna a categoria normal
-    }
-    
-    // 2. Se for "Outro", verificamos se tem uma categoria manual definida
-    // (AQUI: Podes adicionar && b->status == APROVADO se tiveres esse campo)
-    if (strlen(b->categoriaManual) > 0) {
-        return b->categoriaManual; // Retorna "Fantasia", "Culinária", etc.
-    }
-
-    // 3. Se for Outro e não tiver nada manual, retorna "Outro"
-    return "Outro";
 }
 
 /**
@@ -686,32 +629,23 @@ void adminValidarUtilizadores(Utilizador users[], int totalUsers) {
     int escolha;
     do {
         limparEcra();
-        printf("\n--- VALIDAR UTILIZADORES PENDENTES ---\n");
-        // Alteração 1: Cabeçalho com as colunas pedidas
+        printf("\n--- VALIDAR PEDIDOS DE ACESSO ---\n");
         printf("%-3s | %-8s | %-30s | %s\n", "N.", "TIPO", "EMAIL", "NOME");
         printf("--------------------------------------------------------------------------------\n");
 
         int pendentes = 0;
         int visualId = 1;
 
-        // 1. Listagem e Contagem
         for(int i = 0; i < totalUsers; i++) {
+            // Utilizando os nomes exatos da tua struct/enum
             if (users[i].estado == CONTA_PENDENTE_APROVACAO || users[i].estado == CONTA_PENDENTE_REATIVACAO) {
                 
-                // Alteração 2: Determinar o Tipo baseado no domínio do email
                 char tipo[10];
-                if (strstr(users[i].email, "alunos.ipca.pt") != NULL) {
-                    strcpy(tipo, "Aluno");
-                } else {
-                    strcpy(tipo, "Docente"); // Assume Docente/Staff se for ipca.pt
-                }
+                if (strstr(users[i].email, "alunos.ipca.pt") != NULL) strcpy(tipo, "Aluno");
+                else strcpy(tipo, "Docente");
 
-                // Alteração 3: Print formatado (N. Visual, Tipo, Email, Nome)
                 printf("%-3d | %-8s | %-30.30s | %s\n", 
-                       visualId, 
-                       tipo, 
-                       users[i].email, 
-                       users[i].nome);
+                       visualId, tipo, users[i].email, users[i].nome);
                        
                 visualId++;
                 pendentes++;
@@ -725,173 +659,75 @@ void adminValidarUtilizadores(Utilizador users[], int totalUsers) {
             return;        
         }
 
-        // 2. Seleção
         printf("\nSelecione o N. para validar (0 para Voltar): ");
         escolha = lerInteiro("", 0, visualId - 1);
 
         if (escolha != 0) {
-            // Lógica de mapear o número visual para o índice real do array
             int contador = 1;
             int idx = -1;
             for(int i = 0; i < totalUsers; i++) {
                 if (users[i].estado == CONTA_PENDENTE_APROVACAO || users[i].estado == CONTA_PENDENTE_REATIVACAO) {
-                    if(contador == escolha) {
-                        idx = i; break;
-                    }
-                    contador++;
-                }
-            }
-
-            if(idx != -1) {
-                // Aqui mostramos os detalhes antes de confirmar
-                printf("\n--- Validar %s ---\n", users[idx].nome);
-                printf("Tipo: %s\n", (strstr(users[idx].email, "alunos") ? "Aluno" : "Docente"));
-                printf("Email: %s\n", users[idx].email);
-                printf("1. Aprovar\n2. Rejeitar\n0. Cancelar\n");
-                
-                int dec = lerInteiro("Decisao: ", 0, 2);
-
-                if (dec == 1) {
-                    users[idx].estado = CONTA_ATIVA;
-                    printf("[Sucesso] Conta ativada.\n");
-                } else if (dec == 2) {
-                    users[idx].estado = CONTA_INATIVA; // Ou podes ter um estado REJEITADO
-                    printf("[Sucesso] Registo rejeitado.\n");
-                }
-                if (dec != 0) esperarEnter();
-            }
-        }
-
-    } while (escolha != 0);
-}
-
-// Agora recebe também 'users' e 'totalUsers'
-void adminValidarLivros(Utilizador users[], int totalUsers, Livro livros[], int totalLivros) {
-    int escolha;
-    do {
-        limparEcra();
-        printf("\n--- VALIDAR LIVROS (CATEGORIA 'OUTRO') ---\n");
-        // Ajustei as larguras para caber a nova coluna
-        printf("%-3s | %-25s | %-15s | %s\n", "N.", "TITULO", "CAT. PROPOSTA", "ENVIADO POR");
-        printf("--------------------------------------------------------------------------------\n");
-
-        int pendentes = 0;
-        int visualId = 1;
-
-        for(int i = 0; i < totalLivros; i++) {
-            if (livros[i].estado == LIVRO_PENDENTE_CAT && livros[i].eliminado == 0) {
-                
-                // --- NOVO: Procurar o nome do dono do livro ---
-                char nomeDono[50] = "Desconhecido";
-                for(int u = 0; u < totalUsers; u++) {
-                    if(users[u].id == livros[i].idProprietario) {
-                        // Podes usar users[u].email se preferires algo mais curto/formal
-                        strncpy(nomeDono, users[u].nome, 19); 
-                        nomeDono[19] = '\0'; // Garante que a string termina
-                        break;
-                    }
-                }
-                // ----------------------------------------------
-
-                printf("%-3d | %-25.25s | %-15.15s | %s\n", 
-                       visualId, 
-                       livros[i].titulo, 
-                       livros[i].categoriaManual, 
-                       nomeDono); // Mostra quem enviou
-                       
-                visualId++;
-                pendentes++;
-            }
-        }
-        printf("--------------------------------------------------------------------------------\n");
-
-        if (pendentes == 0) {
-            printf("[Info] Sem livros pendentes de validacao.\n");
-            esperarEnter();
-            return;
-        }
-
-        printf("\nSelecione o N. para validar (0 para Voltar): ");
-        escolha = lerInteiro("", 0, visualId - 1);
-
-        if (escolha != 0) {
-            int contador = 1;
-            int idx = -1;
-            for(int i = 0; i < totalLivros; i++) {
-                if (livros[i].estado == LIVRO_PENDENTE_CAT && livros[i].eliminado == 0) {
                     if(contador == escolha) { idx = i; break; }
                     contador++;
                 }
             }
 
             if(idx != -1) {
-                // Mostrar mais detalhes na confirmação
-                printf("\n--- Detalhes da Validacao ---\n");
-                printf("Titulo: %s\n", livros[idx].titulo);
-                printf("Autor: %s\n", livros[idx].autor);
-                printf("Categoria Proposta: %s\n", livros[idx].categoriaManual);
+                printf("\n--- ACAO: %s ---\n", 
+                       (users[idx].estado == CONTA_PENDENTE_REATIVACAO) ? "REATIVAR CONTA" : "NOVO REGISTO");
+                printf("Utilizador: %s\n", users[idx].nome);
+                printf("\n1. Aprovar\n2. Rejeitar\n0. Cancelar\n");
                 
-                // Opção de editar a categoria seria interessante aqui, mas vamos manter simples
-                printf("\n1. Aprovar (Aceitar Categoria)\n2. Rejeitar (Remover Livro)\n0. Cancelar\n");
                 int dec = lerInteiro("Decisao: ", 0, 2);
 
                 if (dec == 1) {
-                    livros[idx].estado = LIVRO_DISPONIVEL;
-                    // Nota: Futuramente podias copiar a categoriaManual para um enum novo,
-                    // mas por agora fica apenas aprovado.
-                    printf("[Sucesso] Livro Aprovado e Disponivel no Mercado.\n");
+                    users[idx].estado = CONTA_ATIVA; // Nome da tua struct
+                    registarLog(0, "ADMIN_APROVA", users[idx].email);
+                    guardarUtilizadores(users, totalUsers); 
+                    // Removido o print e o esperarEnter para fluidez
                 } else if (dec == 2) {
-                    livros[idx].eliminado = 1;
-                    livros[idx].estado = LIVRO_INDISPONIVEL;
-                    printf("[Sucesso] Livro Removido do sistema.\n");
+                    users[idx].estado = CONTA_INATIVA; // Nome da tua struct
+                    registarLog(0, "ADMIN_REJEITA", users[idx].email);
+                    guardarUtilizadores(users, totalUsers);
+                    // Removido o print e o esperarEnter para fluidez
                 }
-                if (dec != 0) esperarEnter();
             }
         }
     } while (escolha != 0);
 }
 
-int verificarHistoricoUtilizador(int idUser, Operacao operacoes[], int totalOperacoes) {
-    for (int i = 0; i < totalOperacoes; i++) {
-        if (operacoes[i].idRequerente == idUser || operacoes[i].idProprietario == idUser) {
-            return 1; // Tem histórico
-        }
-    }
-    return 0; // Limpo
-}
+
 
 void relatorioTopUtilizadores(Utilizador users[], int totalUsers, Operacao operacoes[], int totalOperacoes) {
     limparEcra();
     printf("\n=== TOP 5 UTILIZADORES MAIS ATIVOS ===\n");
-    printf("(Criterio: Minimo de 5 transacoes realizadas)\n\n");
+    printf("(Criterio: Minimo de 5 transacoes concluidas)\n\n");
 
-    // 1. Estrutura temporária para guardar contagens
-    // Usamos isto para poder ordenar sem estragar o array 'users' original
     typedef struct {
-        int indexUser; // Para saber quem é o user no array original
-        int qtd;       // Quantidade de transações
+        int indexUser;
+        int qtd;
     } UserStats;
 
-    UserStats ranking[totalUsers]; // Array temporário (VLA)
+    UserStats ranking[MAX_UTILIZADORES]; // Usar a constante para maior segurança
 
-    // 2. Contar Transações para cada Utilizador
+    // 1. Inicializar e Contar
     for (int i = 0; i < totalUsers; i++) {
         ranking[i].indexUser = i;
         ranking[i].qtd = 0;
 
-        // Ignorar o Admin/IPCA (geralmente não entra no top)
-        if (strcmp(users[i].email, "admin@ipca.pt") == 0) {
-            ranking[i].qtd = -1; // Forçamos a ficar no fundo
+        // Ignorar o Admin pelo ID (mais seguro que string)
+        if (users[i].id == 1) {
+            ranking[i].qtd = -1; 
             continue;
         }
 
-        // Percorrer todas as operações
         for (int k = 0; k < totalOperacoes; k++) {
-            // Conta se o user for o Requerente OU o Proprietário (envolvido na troca)
-            // E ignoramos operações pendentes/recusadas (apenas transações reais contam?)
-            // Se quiseres contar TUDO (mesmo pendentes), remove a verificação do estado.
-            if (operacoes[k].estado != ESTADO_OP_PENDENTE && operacoes[k].estado != ESTADO_OP_REJEITADO) {
+            // Contamos apenas transações que chegaram a um estado ativo ou final
+            if (operacoes[k].estado == ESTADO_OP_ACEITE || 
+                operacoes[k].estado == ESTADO_OP_CONCLUIDO || 
+                operacoes[k].estado == ESTADO_OP_DEVOLUCAO_PENDENTE) {
                 
+                // Se o utilizador é o Requerente OU o Proprietário
                 if (operacoes[k].idRequerente == users[i].id || 
                     operacoes[k].idProprietario == users[i].id) {
                     ranking[i].qtd++;
@@ -900,11 +736,11 @@ void relatorioTopUtilizadores(Utilizador users[], int totalUsers, Operacao opera
         }
     }
 
-    // 3. Ordenar (Bubble Sort Simples) - Do Maior para o Menor
+    // 2. Ordenar (Bubble Sort)
     for (int i = 0; i < totalUsers - 1; i++) {
         for (int j = 0; j < totalUsers - i - 1; j++) {
+            // Critério 1: Quantidade | Critério 2: Ordem Alfabética (Desempate)
             if (ranking[j].qtd < ranking[j+1].qtd) {
-                // Troca de posição
                 UserStats temp = ranking[j];
                 ranking[j] = ranking[j+1];
                 ranking[j+1] = temp;
@@ -912,43 +748,97 @@ void relatorioTopUtilizadores(Utilizador users[], int totalUsers, Operacao opera
         }
     }
 
-    // 4. Apresentar Resultados
-    printf("%-4s | %-25s | %-15s | %s\n", "POS.", "NOME", "TIPO", "TOTAL MOV.");
+    // 3. Apresentar Resultados
+    printf("%-4s | %-25s | %-12s | %s\n", "POS.", "NOME", "TIPO", "MOVIMENTACOES");
     printf("------------------------------------------------------------------\n");
 
     int mostrados = 0;
-    int encontrouAlguem = 0;
-
-    for (int i = 0; i < totalUsers; i++) {
-        int qtd = ranking[i].qtd;
+    for (int i = 0; i < totalUsers && mostrados < 5; i++) {
         int idxReal = ranking[i].indexUser;
+        
+        // Mantemos o teu critério de 5 transações
+        if (ranking[i].qtd < 5) break;
 
-        // CRITÉRIO DE PARAGEM:
-        // 1. Já mostramos 5 pessoas? Pára.
-        // 2. A quantidade é menor que 5? Pára (porque está ordenado, os seguintes serão menores).
-        if (mostrados >= 5) break;
-        if (qtd < 5) break; 
-
-        // Definir Tipo (Aluno/Docente)
-        char tipo[20];
+        char tipo[15];
         if (strstr(users[idxReal].email, "@alunos.ipca.pt")) strcpy(tipo, "Aluno");
         else strcpy(tipo, "Docente");
 
-        printf("%-4d | %-25.25s | %-15s | %d\n", 
+        printf("%-4d | %-25.25s | %-12s | %d\n", 
                mostrados + 1, 
                users[idxReal].nome, 
                tipo, 
-               qtd);
+               ranking[i].qtd);
 
         mostrados++;
-        encontrouAlguem = 1;
     }
 
-    if (!encontrouAlguem) {
-        printf("\n[Info] Nenhum utilizador atingiu ainda o minimo de 5 transacoes.\n");
+    if (mostrados == 0) {
+        printf("\n[Info] Nenhum utilizador cumpre o requisito de 5 transacoes.\n");
     }
 
     printf("------------------------------------------------------------------\n");
     esperarEnter();
 }
 
+void registarLog(int idUser, char *acao, char *detalhes) {
+    FILE *f = fopen("data/log_sistema.txt", "a");
+    if (f == NULL) return;
+
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+
+    // Formato scannable: Data | Hora | UserID | Acao | Detalhes
+    fprintf(f, "[%04d-%02d-%02d | %02d:%02d] [ID:%d] [%-15s] %s\n",
+            tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
+            tm.tm_hour, tm.tm_min, idUser, acao, detalhes);
+
+    fclose(f);
+}
+
+int validarData(char *data) {
+    // 1. Verificar tamanho (DD/MM/AAAA = 10 caracteres)
+    if (strlen(data) != 10) return 0;
+
+    // 2. Verificar se as barras estão nos locais certos
+    if (data[2] != '/' || data[5] != '/') return 0;
+
+    // 3. Extrair valores (convertendo chars para inteiros)
+    int dia = atoi(data);
+    int mes = atoi(data + 3);
+    int ano = atoi(data + 6);
+
+    // 4. Validações lógicas básicas
+    if (ano < 1920 || ano > 2026) return 0; // 2026 é o ano atual
+    if (mes < 1 || mes > 12) return 0;
+    if (dia < 1 || dia > 31) return 0;
+
+    // 5. Validação de dias por mês (simplificada)
+    if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) return 0;
+    if (mes == 2) {
+        // Fevereiro (simplificado para 28 ou 29 se bissexto)
+        int bissexto = (ano % 4 == 0 && (ano % 100 != 0 || ano % 400 == 0));
+        if (dia > (bissexto ? 29 : 28)) return 0;
+    }
+
+    return 1; // Data válida!
+}
+
+#include <time.h>
+
+int adicionarDias(int dataAtual, int diasParaAdicionar) {
+    struct tm data = {0};
+    
+    // Decompõe YYYYMMDD
+    data.tm_year = (dataAtual / 10000) - 1900;
+    data.tm_mon = ((dataAtual % 10000) / 100) - 1;
+    data.tm_mday = (dataAtual % 100);
+
+    // Adiciona os dias
+    data.tm_mday += diasParaAdicionar;
+
+    // Normaliza a data (o C trata de virar o mês/ano se necessário)
+    mktime(&data);
+
+    // Retorna no formato YYYYMMDD
+    return (data.tm_year + 1900) * 10000 + (data.tm_mon + 1) * 100 + data.tm_mday;
+}
