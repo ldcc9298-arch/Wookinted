@@ -169,7 +169,7 @@ int validarData(char *data);
 
 int adicionarDias(int dataAtual, int diasParaAdicionar);
 
-float lerFloat(char* mensagem, float min, float max) {
+float lerFloat(char* mensagem, float min, float max);
 
 
 #endif // UTILS_H
