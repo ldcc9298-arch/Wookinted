@@ -65,4 +65,3 @@
 [2026-01-17 | 02:29] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
 [2026-01-17 | 02:32] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
 [2026-01-17 | 02:32] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
-[2026-01-17 | 12:16] [ID:2] [LOGIN          ] Sessao iniciada com sucesso.
