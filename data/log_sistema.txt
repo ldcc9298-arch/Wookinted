@@ -65,3 +65,20 @@
 [2026-01-17 | 02:29] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
 [2026-01-17 | 02:32] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
 [2026-01-17 | 02:32] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 11:57] [ID:7] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-17 | 11:57] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 11:57] [ID:0] [ADMIN_APROVA   ] a35311@alunos.ipca.pt
+[2026-01-17 | 11:59] [ID:7] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 12:01] [ID:7] [EMPRESTIMO_PEDIDO] Pedido de EMPRESTIMO: Livro ID 12 por 15 dias
+[2026-01-17 | 12:02] [ID:7] [LIVRO_ADD_FAIL ] Tentativa falhada ISBN: 9789898626912 (Nao consta na BD)
+[2026-01-17 | 12:03] [ID:7] [LIVRO_ADD      ] ISBN: 9780131103627 | Titulo: The C Programming Language
+[2026-01-17 | 12:03] [ID:7] [LIVRO_DEL      ] ISBN: 9780131103627 | Titulo: The C Programming Language (Removido)
+[2026-01-17 | 12:03] [ID:7] [LIVRO_ADD      ] ISBN: 9789722055932 | Titulo: O Principezinho
+[2026-01-17 | 12:08] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 12:08] [ID:1] [EMPRESTIMO_APROVADO] EMPRESTIMO ACEITE: Livro 'Os Lusiadas' (ID 12) emprestado ao Utilizador 7. Limite: 20260201
+[2026-01-17 | 12:10] [ID:7] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 12:11] [ID:7] [LIVRO_DEVOLVIDO] Livro ID 12 devolvido
+[2026-01-17 | 12:11] [ID:7] [FEEDBACK_ADD   ] Nota 4* atribuída ao utilizador 1 na operacao 5
+[2026-01-17 | 12:12] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
+[2026-01-17 | 12:12] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-17 | 12:15] [ID:7] [LOGIN          ] Sessao iniciada com sucesso.
