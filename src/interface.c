@@ -1014,7 +1014,7 @@ void submenuAvaliarTransacoes(Operacao operacoes[], int totalOperacoes, Feedback
 
     if (idxOp != -1) {
         printf("\n--- Avaliar Experiencia ---\n");
-        int nota = lerInteiro("Atribua uma nota (1 a 5): ", 1, 5);
+        float nota = lerFloat("Atribua uma nota (1 a 5): ", 1.0, 5.0);
         
         char comentario[200];
         printf("Comentario (Max 200 chars): ");
@@ -1033,20 +1033,20 @@ void submenuAvaliarTransacoes(Operacao operacoes[], int totalOperacoes, Feedback
             }
             feeds[*totalFeeds].idAvaliado = idAvaliado;
             
-            feeds[*totalFeeds].nota = (float)nota;
+            feeds[*totalFeeds].nota = nota;
             strncpy(feeds[*totalFeeds].comentario, comentario, 199);
             feeds[*totalFeeds].comentario[199] = '\0';
             feeds[*totalFeeds].dataAvaliacao = obterDataAtual();
 
             // === ATUALIZAÇÃO DO REGISTO DE LOG ===
             char msgLog[250]; // Buffer maior para incluir o comentário se necessário
-            if (nota <= 2) {
+            if (nota <= 2.5) {
                 // Alerta especial no log para notas baixas
-                sprintf(msgLog, "ALERTA: Nota BAIXA (%d*) dada ao utilizador %d na operacao %d. Comentário: %s", 
+                sprintf(msgLog, "ALERTA: Nota BAIXA (%.1f*) dada ao utilizador %d na operacao %d. Comentário: %s", 
                         nota, idAvaliado, operacoes[idxOp].id, comentario);
                 registarLog(idLogado, "FEEDBACK_NEGATIVO", msgLog);
             } else {
-                sprintf(msgLog, "Nota %d* atribuída ao utilizador %d na operacao %d", 
+                sprintf(msgLog, "Nota %.1f* atribuída ao utilizador %d na operacao %d", 
                         nota, idAvaliado, operacoes[idxOp].id);
                 registarLog(idLogado, "FEEDBACK_ADD", msgLog);
             }

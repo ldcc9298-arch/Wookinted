@@ -120,14 +120,18 @@ void gerirPedidosPendentes(Operacao operacoes[], int *totalOperacoes, Livro book
                 books[idxLivro].idDetentor = operacoes[idxOp].idRequerente; 
                 books[idxLivro].numRequisicoes++;
                 
-                // === CÁLCULO DA DATA LIMITE (NOVO) ===
-                operacoes[idxOp].dataDevolucaoPrevista = adicionarDias(dataHoje, operacoes[idxOp].dias);
+                int dtLimite = adicionarDias(dataHoje, operacoes[idxOp].dias);
+                operacoes[idxOp].dataDevolucaoPrevista = dtLimite;
 
                 sprintf(detalheLog, "EMPRESTIMO ACEITE: Livro '%s' (ID %d) emprestado ao Utilizador %d. Limite: %d", 
-                        books[idxLivro].titulo, books[idxLivro].id, operacoes[idxOp].idRequerente, operacoes[idxOp].dataDevolucaoPrevista);
+                        books[idxLivro].titulo, books[idxLivro].id, operacoes[idxOp].idRequerente, dtLimite);
                 registarLog(idLogado, "EMPRESTIMO_APROVADO", detalheLog);
 
-                printf("\n[Sucesso] Emprestimo aprovado! Data limite: %d\n", operacoes[idxOp].dataDevolucaoPrevista);
+                printf("\n[Sucesso] Emprestimo aprovado!\n");
+                printf("Data limite de devolucao: %02d/%02d/%04d\n", 
+                        dtLimite % 100,           // Dia
+                        (dtLimite % 10000) / 100, // Mês
+                        dtLimite / 10000);        // Ano
             } 
             else if (operacoes[idxOp].tipo == OP_TIPO_TROCA) {
                 operacoes[idxOp].estado = ESTADO_OP_CONCLUIDO;

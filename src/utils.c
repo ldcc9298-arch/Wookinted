@@ -842,3 +842,19 @@ int adicionarDias(int dataAtual, int diasParaAdicionar) {
     // Retorna no formato YYYYMMDD
     return (data.tm_year + 1900) * 10000 + (data.tm_mon + 1) * 100 + data.tm_mday;
 }
+
+float lerFloat(char* mensagem, float min, float max) {
+    float valor;
+    int res;
+    do {
+        printf("%s", mensagem);
+        res = scanf("%f", &valor);
+        limparBuffer(); // Função que já deves ter para limpar o \n
+
+        if (res != 1 || valor < min || valor > max) {
+            printf("[Erro] Por favor, introduza um valor entre %.1f e %.1f.\n", min, max);
+        }
+    } while (res != 1 || valor < min || valor > max);
+    
+    return valor;
+}
