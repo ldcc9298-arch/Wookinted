@@ -153,3 +153,4 @@
 [2026-01-18 20:13] [ID:  2] [EMPRESTIMO_PEDIDO   ] Pedido de EMPRESTIMO, Livro A Reliquia por 20 dias a ID 1
 [2026-01-18 20:13] [ID:  2] [TROCA_PROPOSTA      ] Livro Os Lusiadas trocado por A Game of Thrones com Utilizador ID 1
 [2026-01-18 20:16] [ID:  2] [LOGIN               ] Sessao iniciada com sucesso a1@alunos.ipca.pt
+[2026-01-18 20:25] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
