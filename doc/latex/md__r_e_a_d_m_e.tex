@@ -1,0 +1,52 @@
+\chapter{📚 Wookinted -\/ Sistema de Gestão de Biblioteca Partilhada }
+\hypertarget{md__r_e_a_d_m_e}{}\label{md__r_e_a_d_m_e}\index{📚 Wookinted -\/ Sistema de Gestão de Biblioteca Partilhada@{📚 Wookinted -\/ Sistema de Gestão de Biblioteca Partilhada}}
+\label{md__r_e_a_d_m_e_autotoc_md0}%
+\Hypertarget{md__r_e_a_d_m_e_autotoc_md0}%
+
+
+{\bfseries{Wookinted}} é uma aplicação em C desenvolvida para facilitar a troca, empréstimo e doação de livros dentro da comunidade académica do IPCA.
+
+\DoxyHorRuler{0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md2}{}\doxysection{\texorpdfstring{🚀 Funcionalidades Principais}{🚀 Funcionalidades Principais}}\label{md__r_e_a_d_m_e_autotoc_md2}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md3}{}\doxysubsection{\texorpdfstring{👤 Gestão de Utilizadores}{👤 Gestão de Utilizadores}}\label{md__r_e_a_d_m_e_autotoc_md3}
+
+\begin{DoxyItemize}
+\item {\bfseries{Registo e Login:\+}} Autenticação segura com validação de emails institucionais ({\ttfamily @ipca.\+pt}, {\ttfamily @alunos.\+ipca.\+pt}).
+\item {\bfseries{Recuperação de Conta:\+}} Sistema de segurança para redefinir passwords.
+\item {\bfseries{Perfis:\+}} Edição de dados e histórico de reputação.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md4}{}\doxysubsection{\texorpdfstring{📖 Mercado de Livros}{📖 Mercado de Livros}}\label{md__r_e_a_d_m_e_autotoc_md4}
+
+\begin{DoxyItemize}
+\item {\bfseries{Catálogo Global:\+}} Pesquisa avançada por Título, Autor ou Categoria.
+\item {\bfseries{Inventário Pessoal:\+}} Os utilizadores podem registar os seus próprios livros para disponibilizar à comunidade.
+\item {\bfseries{Estado do Livro:\+}} Gestão automática de estados ({\ttfamily Disponível}, {\ttfamily Emprestado}, {\ttfamily Reservado}).
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md5}{}\doxysubsection{\texorpdfstring{🤝 Transações e Movimentos}{🤝 Transações e Movimentos}}\label{md__r_e_a_d_m_e_autotoc_md5}
+
+\begin{DoxyItemize}
+\item {\bfseries{Empréstimos:\+}} Pedidos com datas de devolução definidas.
+\item {\bfseries{Trocas:\+}} Mecanismo de troca direta de livros entre utilizadores.
+\item {\bfseries{Doações:\+}} Possibilidade de doar livros ao espólio da Instituição.
+\item {\bfseries{Sistema de Aprovação:\+}} Os donos dos livros aceitam ou recusam os pedidos recebidos.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md6}{}\doxysubsection{\texorpdfstring{⭐ Sistema de Reputação}{⭐ Sistema de Reputação}}\label{md__r_e_a_d_m_e_autotoc_md6}
+
+\begin{DoxyItemize}
+\item {\bfseries{Feedback:\+}} Avaliação (1 a 5 estrelas) e comentários após cada transação.
+\item {\bfseries{Média:\+}} Cálculo automático da reputação de cada utilizador.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md7}{}\doxysubsection{\texorpdfstring{🛡️ Painel de Administrador}{🛡️ Painel de Administrador}}\label{md__r_e_a_d_m_e_autotoc_md7}
+
+\begin{DoxyItemize}
+\item Validação de novas contas.
+\item Monitorização de logs de atividade.
+\item Relatórios estatísticos (Top Users, Top Livros).
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md9}{}\doxysection{\texorpdfstring{🛠️ Como Compilar e Executar}{🛠️ Como Compilar e Executar}}\label{md__r_e_a_d_m_e_autotoc_md9}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md10}{}\doxysubsection{\texorpdfstring{Pré-\/requisitos}{Pré-\/requisitos}}\label{md__r_e_a_d_m_e_autotoc_md10}
+
+\begin{DoxyItemize}
+\item Compilador GCC.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md11}{}\doxysubsection{\texorpdfstring{Compilação}{Compilação}}\label{md__r_e_a_d_m_e_autotoc_md11}
+Abra o terminal na pasta do projeto e execute:\+
+
+\`{}\`{}\`{}bash gcc main.\+c users.\+c books.\+c transactions.\+c interface.\+c files.\+c utils.\+c -\/o wookinted 

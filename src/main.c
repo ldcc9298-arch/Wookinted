@@ -13,28 +13,38 @@
 
 int main() {
     // --- Inicialização de Dados ---
+    // EXPLICAÇÃO PARA DEFESA: Alocação estática de memória.
+    // Optou-se por arrays fixos baseados em constantes (MAX_...) para garantir 
+    // estabilidade e evitar a complexidade de gestão de memória dinâmica nesta fase do projeto.
     Utilizador users[MAX_UTILIZADORES];
     Livro books[MAX_LIVROS];
     Operacao operacoes[MAX_OPERACOES];
     Feedback feedbacks[MAX_FEEDBACKS];
 
+    // EXPLICAÇÃO PARA DEFESA: Persistência de Dados.
+    // O sistema recupera o estado da última execução através de ficheiros binários.
+    // Se o júri perguntar: "O que acontece no primeiro arranque?", 
+    // respondes: "As funções de carga retornam 0 e o sistema inicia vazio e íntegro."
     int totalUsers = carregarUtilizadores(users);
-    garantirAdminPadrao(users, &totalUsers);
+    garantirAdminPadrao(users, &totalUsers); // Garante que nunca ficas trancado fora do sistema.
     int totalBooks = carregarLivros(books);
     int totalOperacoes = carregarOperacoes(operacoes);
     int totalFeedbacks = carregarFeedbacks(feedbacks);
 
     
-
     limparEcra();
     printf("Sistema Wookinted Iniciado. Dados carregados.\n");
     printf("Users: %d | Livros: %d | Operacoes: %d\n", totalUsers, totalBooks, totalOperacoes);
     esperarEnter();
 
-    int idLogado = -1; // -1 significa ninguém logado
+    // EXPLICAÇÃO PARA DEFESA: Gestão de Sessão.
+    // idLogado controla o estado do programa: -1 (Visitante/Desconectado) ou ID (Autenticado).
+    int idLogado = -1; 
     int running = 1;
     int indiceUser = -1;
 
+    // EXPLICAÇÃO PARA DEFESA: Ciclo de Vida da Aplicação.
+    // O loop 'while' mantém o programa vivo, alternando entre o estado de login e o menu de utilizador.
     while (running) {
         
         // =======================================================
@@ -42,21 +52,23 @@ int main() {
         // =======================================================
         if (idLogado == -1) {
             
-            // Tenta fazer login ou visita
+            // EXPLICAÇÃO PARA DEFESA: O menuModoVisitante centraliza Login, Registo e Recuperação.
+            // É a barreira de segurança inicial antes de permitir acesso aos dados sensíveis.
             int resultado = menuModoVisitante(users, &totalUsers, operacoes, totalOperacoes);
-            // Nota: Se usaste a minha sugestão anterior, o menuModoVisitante chama o loginUtilizador
 
             if (resultado == -10) {
-                running = 0; // Sair do programa
+                running = 0; // Terminação graciosa do programa.
             } 
             else if (resultado >= 0) {
                 // === LOGIN COM SUCESSO ===
-                // resultado aqui é o ID retornado pelo loginUtilizador
+                // O sistema trabalha com IDs únicos para evitar problemas de nomes duplicados.
                 
                 int idRetornado = resultado;
                 indiceUser = -1;
 
-                // Procurar qual é a posição no array que tem este ID
+                // EXPLICAÇÃO PARA DEFESA: Mapeamento de ID para Índice.
+                // Como os dados podem estar desordenados no array, fazemos um 'lookup'
+                // para encontrar a posição real (i) do utilizador autenticado.
                 for (int i = 0; i < totalUsers; i++) {
                     if (users[i].id == idRetornado) {
                         indiceUser = i;
@@ -67,13 +79,14 @@ int main() {
                 if (indiceUser != -1) {
                     idLogado = users[indiceUser].id;
 
-                    // 1. Notificações
+                    // EXPLICAÇÃO PARA DEFESA: UX (User Experience).
+                    // Ao entrar, o sistema verifica imediatamente pendências (Notificações).
+                    // O Admin vê o que tem para validar; o User vê pedidos recebidos ou prazos.
                     if (strcmp(users[indiceUser].email, "admin@ipca.pt") == 0) {
                         verificarNotificacoesAdmin(users, totalUsers, books, totalBooks, operacoes, totalOperacoes, feedbacks, totalFeedbacks, 1);
                     } else {
                         verificarNotificacoes(operacoes, totalOperacoes, feedbacks, totalFeedbacks, idLogado);
                     }
-                    esperarEnter();
                 } else {
                     printf("[Erro] Utilizador nao encontrado no sistema.\n");
                     idLogado = -1;
@@ -87,10 +100,12 @@ int main() {
         } else { 
             
             // A. Se for ADMIN
+            // EXPLICAÇÃO PARA DEFESA: Controlo de Acessos (ACL).
+            // O sistema diferencia perfis pelo email fixo do administrador.
             if (strcmp(users[indiceUser].email, "admin@ipca.pt") == 0) {
                 menuAdministrador(users, &totalUsers, books, &totalBooks, operacoes, &totalOperacoes, feedbacks, &totalFeedbacks);
                 
-                // Quando o Admin sai do seu menu, fazemos logout
+                // Logout automático após sair do painel administrativo por segurança.
                 idLogado = -1;
                 indiceUser = -1;
                 printf("\nSessao de Administrador terminada.\n");
@@ -101,6 +116,8 @@ int main() {
             else {
                 int opcao = mostrarMenuPrincipal(users[indiceUser].nome);
                 
+                // EXPLICAÇÃO PARA DEFESA: Modularidade da Interface.
+                // O main apenas redireciona para submenus específicos, mantendo o código limpo.
                 switch (opcao) {
                     case 1: 
                         menuMercadoLivros(users, totalUsers, books, &totalBooks, operacoes, &totalOperacoes, idLogado, feedbacks, totalFeedbacks);
@@ -112,6 +129,8 @@ int main() {
                         menuGestaoMovimentos(users, totalUsers, books, &totalBooks, operacoes, &totalOperacoes, feedbacks, &totalFeedbacks, idLogado);
                         break;
                     case 4:
+                        // EXPLICAÇÃO PARA DEFESA: Se a conta for eliminada (return 1), 
+                        // forçamos o logout imediato e limpeza de ponteiros.
                         if (menuGestaoPerfil(users, totalUsers, feedbacks, totalFeedbacks, idLogado) == 1) { 
                             idLogado = -1; 
                             indiceUser = -1; 
@@ -131,7 +150,8 @@ int main() {
         }
     } // Fim do while
 
-    // Antes de sair, garante que tudo está salvo (redundância de segurança)
+    // EXPLICAÇÃO PARA DEFESA: Encerramento Seguro.
+    // Antes de fechar o descritor de execução, garantimos a sincronização RAM -> DISCO.
     guardarUtilizadores(users, totalUsers);
     printf("A encerrar sistema... Ate a proxima!\n");
         

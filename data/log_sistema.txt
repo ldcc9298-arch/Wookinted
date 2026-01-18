@@ -75,3 +75,81 @@
 [2026-01-18 | 01:08] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
 [2026-01-18 | 01:11] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
 [2026-01-18 | 01:11] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-18 | 11:50] [ID:8] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-18 | 11:54] [ID:9] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-18 | 11:57] [ID:10] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-18 | 12:00] [ID:2] [PASS_RECOVERY  ] Password recuperada via telemovel.
+[2026-01-18 | 12:00] [ID:0] [LOGIN_FAIL     ] Falha de pass para: admin@ipca.pt
+[2026-01-18 | 12:00] [ID:1] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 12:02] [ID:11] [REGISTO_NOVO   ] Novo registo efetuado.
+[2026-01-18 | 12:02] [ID:1] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 12:21] [ID:0] [ADMIN_APROVA   ] a321@alunos.ipca.pt
+[2026-01-18 | 12:22] [ID:0] [ADMIN_REJEITA  ] a123456@alunos.ipca.pt
+[2026-01-18 | 12:41] [ID:0] [LOGIN_FAIL     ] Falha de pass para: a1@alunos.ipca.pt
+[2026-01-18 | 12:41] [ID:2] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 15:27] [ID:2] [EMPRESTIMO_PEDIDO] Pedido de EMPRESTIMO: Livro ID 3 por 10 dias
+[2026-01-18 | 15:28] [ID:2] [TROCA_PROPOSTA ] Proposta de TROCA: Ofereceu ID 9 pelo ID 11
+[2026-01-18 | 15:30] [ID:2] [LIVRO_ADD      ] ISBN: 9789895245635 | Titulo: A Menina que Roubava Livros
+[2026-01-18 | 15:30] [ID:2] [LIVRO_DEL      ] ISBN: 9789895245635 | Titulo: A Menina que Roubava Livros (Removido)
+[2026-01-18 | 15:30] [ID:2] [LIVRO_DEVOLVIDO] Livro ID 1 devolvido
+[2026-01-18 | 15:31] [ID:2] [FEEDBACK_ADD   ] Nota 3.0* atribuída ao utilizador 5 na operacao 4
+[2026-01-18 | 15:31] [ID:2] [FEEDBACK_NEGATIVO] ALERTA: Nota BAIXA (2.0*) dada ao utilizador 5 na operacao 6. Comentário: 
+[2026-01-18 | 15:37] [ID:3] [PASS_RECOVERY  ] Password recuperada via telemovel.
+[2026-01-18 | 15:39] [ID:2] [REGISTO_REATIVACAO] Reativacao solicitada.
+[2026-01-18 | 15:39] [ID:1] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 15:40] [ID:0] [ADMIN_APROVA   ] a1@alunos.ipca.pt
+[2026-01-18 | 15:40] [ID:0] [ADMIN_APROVA   ] a8@alunos.ipca.pt
+[2026-01-18 | 15:40] [ID:0] [ADMIN_APROVA   ] bccastro@ipca.pt
+[2026-01-18 | 15:40] [ID:1] [PEDIDO_REJEITADO] PEDIDO RECUSADO: O proprietario 1 recusou o pedido (Tipo 1)
+[2026-01-18 | 15:41] [ID:1] [PEDIDO_REJEITADO] PEDIDO RECUSADO: O proprietario 1 recusou o pedido (Tipo 2)
+[2026-01-18 | 15:41] [ID:2] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 15:42] [ID:2] [TROCA_PROPOSTA ] Proposta de TROCA: Ofereceu ID 9 pelo ID 12
+[2026-01-18 | 15:42] [ID:2] [EMPRESTIMO_PEDIDO] Pedido de EMPRESTIMO: Livro ID 14 por 20 dias
+[2026-01-18 | 15:42] [ID:1] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 15:42] [ID:1] [TROCA_CONCLUIDA] TROCA CONCLUIDA: Livro 'Os Lusiadas' (ID 12) trocado por 'Ensaio sobre a Cegueira' (ID 9) com Utilizador 2
+[2026-01-18 | 15:42] [ID:1] [EMPRESTIMO_APROVADO] EMPRESTIMO ACEITE: Livro 'O Principezinho' (ID 14) emprestado ao Utilizador 2. Limite: 20260207
+[2026-01-18 | 15:44] [ID:2] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 15:44] [ID:2] [LIVRO_DEVOLVIDO] Livro ID 14 devolvido
+[2026-01-18 | 15:44] [ID:1] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 16:30] [ID:2] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 17:25] [ID:0] [LOGIN_FAIL     ] Falha de pass para: a2@alunos.ipca.pt
+[2026-01-18 | 17:25] [ID:4] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 17:25] [ID:4] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 17:25] [ID:1] [LOGIN          ] Sessao iniciada.
+[2026-01-18 | 17:26] [ID:5] [LOGIN          ] Sessao iniciada.
+[2026-01-18 19:38] [ID:  0] [REGISTO_FAIL        ] Registo falhado (a10@alunos.ipca.pt)
+[2026-01-18 19:38] [ID: 12] [REGISTO_NOVO        ] Novo registo (a10@alunos.ipca.pt)
+[2026-01-18 19:40] [ID:  0] [REGISTO_FAIL        ] Registo falhado (zxc@ipca.pt)
+[2026-01-18 19:40] [ID: 13] [REGISTO_NOVO        ] Novo registo (zxc@ipca.pt)
+[2026-01-18 19:40] [ID:  0] [PASS_RECOVERY_FAIL  ] Falha na recuperacao da Password (a1@alunos.ipca.pt)
+[2026-01-18 19:43] [ID:  0] [PASS_RECOVERY_FAIL  ] Falha na recuperacao da Password (a2@alunos.ipca.pt)
+[2026-01-18 19:43] [ID:  0] [PASS_RECOVERY_FAIL  ] Falha na recuperacao da Password (a2@alunos.ipca.pt)
+[2026-01-18 19:43] [ID:  3] [PASS_RECOVERY       ] Password recuperada (a2@alunos.ipca.pt)
+[2026-01-18 19:45] [ID:  3] [PASS_RECOVERY       ] Password recuperada (a2@alunos.ipca.pt)
+[2026-01-18 19:47] [ID:  3] [PASS_RECOVERY       ] Password recuperada (a2@alunos.ipca.pt)
+[2026-01-18 19:47] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-18 19:49] [ID:  3] [LOGIN               ] Sessao iniciada com sucesso a2@alunos.ipca.pt
+[2026-01-18 19:49] [ID:  3] [LOGIN               ] Sessao iniciada com sucesso a2@alunos.ipca.pt
+[2026-01-18 19:52] [ID:  3] [LOGIN               ] Sessao iniciada com sucesso a2@alunos.ipca.pt
+[2026-01-18 19:52] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-18 19:55] [ID:  3] [LOGIN               ] Sessao iniciada com sucesso a2@alunos.ipca.pt
+[2026-01-18 19:55] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-18 19:56] [ID:  3] [LOGIN               ] Sessao iniciada com sucesso a2@alunos.ipca.pt
+[2026-01-18 19:56] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-18 19:57] [ID:  3] [LOGIN               ] Sessao iniciada com sucesso a2@alunos.ipca.pt
+[2026-01-18 19:57] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-18 19:58] [ID:  0] [ADMIN_APROVA        ] Conta aprovada pelo Admin: a10@alunos.ipca.pt
+[2026-01-18 19:58] [ID:  0] [ADMIN_REJEITA       ] Registo rejeitado pelo Admin: zxc@ipca.pt
+[2026-01-18 20:00] [ID:  2] [REGISTO_REATIVACAO  ] Reativacao solicitada.
+[2026-01-18 20:00] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-18 20:00] [ID:  0] [ADMIN_APROVA        ] Conta aprovada pelo Admin: a1@alunos.ipca.pt
+[2026-01-18 20:01] [ID:  2] [LOGIN               ] Sessao iniciada com sucesso a1@alunos.ipca.pt
+[2026-01-18 20:01] [ID:  2] [FEEDBACK_ADD        ] NOTA 4.0 ao ID 1 na Operacao ID 9
+[2026-01-18 20:08] [ID:  2] [LOGIN               ] Sessao iniciada com sucesso a1@alunos.ipca.pt
+[2026-01-18 20:10] [ID:  2] [FEEDBACK_ADD        ] NOTA 3.0 ao ID 1 na Operacao ID 10
+[2026-01-18 20:11] [ID:  2] [LIVRO_ADD           ] Livro Sapiens: Historia da Humanidade adicionado.
+[2026-01-18 20:11] [ID:  2] [LIVRO_ADD           ] Livro Os Lusiadas adicionado.
+[2026-01-18 20:11] [ID:  2] [LIVRO_REMOVE        ] Livro Os Lusiadas removido.
+[2026-01-18 20:13] [ID:  2] [EMPRESTIMO_PEDIDO   ] Pedido de EMPRESTIMO, Livro A Reliquia por 20 dias a ID 1
+[2026-01-18 20:13] [ID:  2] [TROCA_PROPOSTA      ] Livro Os Lusiadas trocado por A Game of Thrones com Utilizador ID 1
+[2026-01-18 20:16] [ID:  2] [LOGIN               ] Sessao iniciada com sucesso a1@alunos.ipca.pt

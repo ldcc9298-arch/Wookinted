@@ -8,3 +8,23 @@
 9789720046833;Ensaio sobre a Cegueira;Jose Saramago;Ficcao
 9781408855652;Harry Potter and the Philosophers Stone;J.K. Rowling;Fantasia
 9780553103540;A Game of Thrones;George R.R. Martin;Fantasia
+9789722328296;A Sibila;Agustina Bessa-Luis;Classico
+9789721041165;A Costa dos Murmurios;Lidia Jorge;Ficcao
+9789722022132;O Codigo Da Vinci;Dan Brown;Suspense
+9789892335483;O Alquimista;Paulo Coelho;Ficcao
+9780262033848;Introduction to Algorithms;Cormen et al.;Tecnico
+9789896603779;O Rapaz do Pijama as Riscas;John Boyne;Drama
+9789720726407;Mensagem;Fernando Pessoa;Poesia
+9789722512688;Amor de Perdicao;Camilo Castelo Branco;Romance
+9789896167813;Sapiens: Historia da Humanidade;Yuval Noah Harari;Historia
+9788535902778;Dom Casmurro;Machado de Assis;Classico
+9780061120084;To Kill a Mockingbird;Harper Lee;Ficcao
+9789726656036;A Quinta dos Animais;George Orwell;Satira
+9781781100219;Harry Potter e a Camara dos Segredos;J.K. Rowling;Fantasia
+9789720049759;As Intermitencias da Morte;Jose Saramago;Ficcao
+9780132350884;Clean Code;Robert C. Martin;Tecnico
+9789895245635;A Menina que Roubava Livros;Markus Zusak;Drama
+9780547928227;The Hobbit;J.R.R. Tolkien;Fantasia
+9789720046710;Levantado do Chao;Jose Saramago;Ficcao
+9780141036137;Brave New World;Aldous Huxley;Distopia
+9789723707755;Livro do Desassossego;Fernando Pessoa;Poesia
