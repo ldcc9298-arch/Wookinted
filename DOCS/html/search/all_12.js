@@ -1,9 +1,0 @@
-var searchData=
-[
-  ['validarapenasletras_0',['validarApenasLetras',['../utils_8h.html#a9e6ee62834380c2fff01a3e53e65bc28',1,'validarApenasLetras(char *nome, int tamanho):&#160;utils.c'],['../utils_8c.html#abfdbe56e13009b6a12ee045024f3e006',1,'validarApenasLetras(char *str, int tamanho):&#160;utils.c']]],
-  ['validarformatoemail_1',['validarFormatoEmail',['../utils_8h.html#aa7a460a150baad4a9ac0fec25b70fed7',1,'validarFormatoEmail(char *email):&#160;utils.c'],['../utils_8c.html#acac0f1f33a7448b42670687cb18db131',1,'validarFormatoEmail(char *str):&#160;utils.c']]],
-  ['validarformatoemailipca_2',['validarFormatoEmailIPCA',['../users_8h.html#a474df1f30ee586ea999b7fe357449397',1,'validarFormatoEmailIPCA(char *email):&#160;users.c'],['../users_8c.html#a474df1f30ee586ea999b7fe357449397',1,'validarFormatoEmailIPCA(char *email):&#160;users.c']]],
-  ['validarisbn_3',['validarISBN',['../utils_8h.html#a0f7a6073599d2a538944c3d6b373795e',1,'validarISBN(const char *isbn):&#160;utils.c'],['../utils_8c.html#a0f7a6073599d2a538944c3d6b373795e',1,'validarISBN(const char *isbn):&#160;utils.c']]],
-  ['verificarhistoricoutilizador_4',['verificarHistoricoUtilizador',['../utils_8h.html#a00e3b63436491618e7b54df80d2debd5',1,'verificarHistoricoUtilizador(int idUser, Operacao loans[], int totalLoans):&#160;utils.c'],['../utils_8c.html#a00e3b63436491618e7b54df80d2debd5',1,'verificarHistoricoUtilizador(int idUser, Operacao loans[], int totalLoans):&#160;utils.c']]],
-  ['verificarnotificacoes_5',['verificarNotificacoes',['../transactions_8h.html#a8de89c6cea6c5e1cb18476f5871d09c2',1,'verificarNotificacoes(Operacao loans[], int totalLoans, int idLogado):&#160;transactions.c'],['../transactions_8c.html#a8de89c6cea6c5e1cb18476f5871d09c2',1,'verificarNotificacoes(Operacao loans[], int totalLoans, int idLogado):&#160;transactions.c']]]
-];

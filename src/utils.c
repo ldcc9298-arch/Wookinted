@@ -823,26 +823,6 @@ int validarData(char *data) {
     return 1; // Data válida!
 }
 
-#include <time.h>
-
-int adicionarDias(int dataAtual, int diasParaAdicionar) {
-    struct tm data = {0};
-    
-    // Decompõe YYYYMMDD
-    data.tm_year = (dataAtual / 10000) - 1900;
-    data.tm_mon = ((dataAtual % 10000) / 100) - 1;
-    data.tm_mday = (dataAtual % 100);
-
-    // Adiciona os dias
-    data.tm_mday += diasParaAdicionar;
-
-    // Normaliza a data (o C trata de virar o mês/ano se necessário)
-    mktime(&data);
-
-    // Retorna no formato YYYYMMDD
-    return (data.tm_year + 1900) * 10000 + (data.tm_mon + 1) * 100 + data.tm_mday;
-}
-
 float lerFloat(char* mensagem, float min, float max) {
     float valor;
     int res;

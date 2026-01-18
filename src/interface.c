@@ -828,13 +828,14 @@ void submenuHistoricoPessoal(Operacao operacoes[], int totalOperacoes, Utilizado
                              Livro books[], int totalBooks, Feedback feedbacks[], int totalFeedbacks, int idLogado) {
     limparEcra();
     printf("\n======================================= O MEU HISTORICO PESSOAL =======================================\n");
-    // 1. ALTERAÇÃO NO CABEÇALHO: Adicionada a coluna "NOTA" e "COMENTARIO"
-    printf("%-4s | %-10s | %-18s | %-20s | %-10s | %-10s | %-5s | %-20s\n", 
-           "N.", "TIPO", "FLUXO (DE->PARA)", "LIVRO", "ESTADO", "DATA", "NOTA", "COMENTARIO");
+    
+    // 1. ALTERAÇÃO: Data na primeira coluna, removido o N.
+    printf("%-12s | %-10s | %-18s | %-20s | %-10s | %-5s | %-20s\n", 
+           "DATA", "TIPO", "FLUXO (DE->PARA)", "LIVRO", "ESTADO", "NOTA", "COMENTARIO");
     printf("-----------------------------------------------------------------------------------------------------------------------\n");
 
     int encontrou = 0;
-    int visualID = 1;
+    // Removido visualID pois já não é necessário
 
     for(int i = totalOperacoes - 1; i >= 0; i--) {
 
@@ -844,7 +845,7 @@ void submenuHistoricoPessoal(Operacao operacoes[], int totalOperacoes, Utilizado
 
         int idDe = 0, idPara = 0, dataRaw = 0;
         char dataFormatada[12], tipoStr[15], estadoStr[15];
-        char notaStr[10] = "---", comentarioStr[25] = "---"; // Nova variável para o comentário
+        char notaStr[10] = "---", comentarioStr[25] = "---"; 
         char nomeDe[30] = "Sistema", nomePara[30] = "Sistema", titulo[30] = "Livro Desconhecido";
 
         // Lógica de tipo
@@ -856,18 +857,17 @@ void submenuHistoricoPessoal(Operacao operacoes[], int totalOperacoes, Utilizado
             default: strcpy(tipoStr, "Outro"); idDe = operacoes[i].idProprietario; idPara = operacoes[i].idRequerente; dataRaw = operacoes[i].dataPedido;
         }
 
-        // 2. BUSCAR A NOTA E O COMENTÁRIO (Alterado)
+        // Buscar nota e comentário
         for (int f = 0; f < totalFeedbacks; f++) {
             if (feedbacks[f].idOperacao == operacoes[i].id) {
                 sprintf(notaStr, "%.1f*", feedbacks[f].nota);
-                // Copiamos o comentário e garantimos que não rebenta a tabela
                 strncpy(comentarioStr, feedbacks[f].comentario, 20);
                 comentarioStr[20] = '\0';
                 break;
             }
         }
 
-        // 3. BUSCAR NOMES E TÍTULO (Mantém o teu código)
+        // Buscar Nomes
         if (idDe == idLogado) strcpy(nomeDe, "EU");
         else if (idDe == 1) strcpy(nomeDe, "IPCA");
         else { for(int u=0; u < totalUsers; u++) if(users[u].id == idDe) { strncpy(nomeDe, users[u].nome, 8); nomeDe[8]='\0'; break; } }
@@ -878,7 +878,7 @@ void submenuHistoricoPessoal(Operacao operacoes[], int totalOperacoes, Utilizado
 
         for(int b=0; b < totalBooks; b++) if(books[b].id == operacoes[i].idLivro) { strncpy(titulo, books[b].titulo, 19); titulo[19] = '\0'; break; }
 
-        // 4. ESTADOS E DATA
+        // Estados e Data
         switch(operacoes[i].estado) {
             case ESTADO_OP_PENDENTE: strcpy(estadoStr, "Pendente"); break;
             case ESTADO_OP_ACEITE: strcpy(estadoStr, "Aprovado"); break;
@@ -887,15 +887,16 @@ void submenuHistoricoPessoal(Operacao operacoes[], int totalOperacoes, Utilizado
             case ESTADO_OP_DEVOLUCAO_PENDENTE: strcpy(estadoStr, "Dev. Aguarda"); break;
             default: strcpy(estadoStr, "---");
         }
+        
         if (dataRaw > 0) sprintf(dataFormatada, "%02d/%02d/%04d", dataRaw % 100, (dataRaw % 10000) / 100, dataRaw / 10000);
         else strcpy(dataFormatada, "n/a");
 
-        // 5. IMPRIMIR LINHA (Ajustada para incluir comentário)
         char fluxo[30];
         sprintf(fluxo, "%.7s->%.7s", nomeDe, nomePara); 
 
-        printf("%-4d | %-10s | %-18s | %-20.20s | %-10s | %-10s | %-5s | %-20.20s\n", 
-               visualID++, tipoStr, fluxo, titulo, estadoStr, dataFormatada, notaStr, comentarioStr); 
+        // 2. ALTERAÇÃO: Printf reordenado (Data primeiro, removido visualID)
+        printf("%-12s | %-10s | %-18s | %-20.20s | %-10s | %-5s | %-20.20s\n", 
+               dataFormatada, tipoStr, fluxo, titulo, estadoStr, notaStr, comentarioStr); 
 
         encontrou = 1;
     }
@@ -909,28 +910,30 @@ void submenuHistoricoGlobal(Operacao operacoes[], int totalOperacoes, Utilizador
                             Livro books[], int totalBooks, Feedback feedbacks[], int totalFeedbacks) {
     limparEcra();
     printf("\n=============================== LOG GLOBAL DE TRANSACOES E FEEDBACKS ===============================\n");
-    // 1. AJUSTE DO CABEÇALHO: Incluímos Nota e Comentário
-    printf("%-4s | %-10s | %-20s | %-18s | %-4s | %-20s\n", 
-           "ID", "TIPO", "FLUXO (DE->PARA)", "LIVRO", "NOTA", "COMENTARIO");
-    printf("----------------------------------------------------------------------------------------------------\n");
+    
+    // 1. ALTERAÇÃO: Adicionada a coluna DATA na segunda posição
+    printf("%-4s | %-12s | %-10s | %-20s | %-18s | %-4s | %-20s\n", 
+           "ID", "DATA", "TIPO", "FLUXO (DE->PARA)", "LIVRO", "NOTA", "COMENTARIO");
+    printf("------------------------------------------------------------------------------------------------------------------\n");
 
     int encontrouLog = 0;
 
     for(int i = totalOperacoes - 1; i >= 0; i--) {
-        int idDe = 0, idPara = 0;
+        int idDe = 0, idPara = 0, dataRaw = 0; // Variável para guardar a data inteira
+        char dataFormatada[12];                // Buffer para a data formatada
         char tipoStr[15], notaStr[10] = "---", comentarioStr[25] = "---";
         char nomeDe[30] = "Sistema", nomePara[30] = "Sistema", titulo[30] = "Desconhecido";
 
-        // 1. LÓGICA DE TIPO (Igual ao que já tinhas)
+        // 2. ALTERAÇÃO: Lógica de Tipo atualizada para capturar a DATA correta (dataRaw)
         switch(operacoes[i].tipo) {
-            case OP_TIPO_EMPRESTIMO: strcpy(tipoStr, "Emprest."); idDe = operacoes[i].idProprietario; idPara = operacoes[i].idRequerente; break;
-            case OP_TIPO_DEVOLUCAO: strcpy(tipoStr, "Devoluc."); idDe = operacoes[i].idRequerente; idPara = operacoes[i].idProprietario; break;
-            case OP_TIPO_TROCA: strcpy(tipoStr, "Troca"); idDe = operacoes[i].idProprietario; idPara = operacoes[i].idRequerente; break;
-            case OP_TIPO_DOACAO: strcpy(tipoStr, "Doacao"); idDe = operacoes[i].idRequerente; idPara = 1; break;
-            default: strcpy(tipoStr, "Outro"); idDe = operacoes[i].idProprietario; idPara = operacoes[i].idRequerente;
+            case OP_TIPO_EMPRESTIMO: strcpy(tipoStr, "Emprest."); idDe = operacoes[i].idProprietario; idPara = operacoes[i].idRequerente; dataRaw = operacoes[i].dataPedido; break;
+            case OP_TIPO_DEVOLUCAO: strcpy(tipoStr, "Devoluc."); idDe = operacoes[i].idRequerente; idPara = operacoes[i].idProprietario; dataRaw = operacoes[i].dataDevolucaoReal; break;
+            case OP_TIPO_TROCA: strcpy(tipoStr, "Troca"); idDe = operacoes[i].idProprietario; idPara = operacoes[i].idRequerente; dataRaw = operacoes[i].dataPedido; break;
+            case OP_TIPO_DOACAO: strcpy(tipoStr, "Doacao"); idDe = operacoes[i].idRequerente; idPara = 1; dataRaw = operacoes[i].dataPedido; break;
+            default: strcpy(tipoStr, "Outro"); idDe = operacoes[i].idProprietario; idPara = operacoes[i].idRequerente; dataRaw = operacoes[i].dataPedido;
         }
 
-        // 2. BUSCAR FEEDBACK (Nova Lógica para o Admin)
+        // Buscar Feedback
         for (int f = 0; f < totalFeedbacks; f++) {
             if (feedbacks[f].idOperacao == operacoes[i].id) {
                 sprintf(notaStr, "%.1f*", feedbacks[f].nota);
@@ -940,7 +943,7 @@ void submenuHistoricoGlobal(Operacao operacoes[], int totalOperacoes, Utilizador
             }
         }
 
-        // 3. BUSCAR NOMES (Otimizado para a tabela)
+        // Buscar Nomes
         if (idDe == 1) strcpy(nomeDe, "IPCA");
         else { for(int u=0; u < totalUsers; u++) if(users[u].id == idDe) { strncpy(nomeDe, users[u].nome, 8); nomeDe[8] = '\0'; break; } }
 
@@ -949,18 +952,22 @@ void submenuHistoricoGlobal(Operacao operacoes[], int totalOperacoes, Utilizador
 
         for(int b=0; b < totalBooks; b++) if(books[b].id == operacoes[i].idLivro) { strncpy(titulo, books[b].titulo, 17); titulo[17] = '\0'; break; }
 
-        // 4. IMPRIMIR LINHA
+        // 3. ALTERAÇÃO: Formatar a Data
+        if (dataRaw > 0) sprintf(dataFormatada, "%02d/%02d/%04d", dataRaw % 100, (dataRaw % 10000) / 100, dataRaw / 10000);
+        else strcpy(dataFormatada, "n/a");
+
         char fluxo[30];
         sprintf(fluxo, "%.8s->%.8s", nomeDe, nomePara);
 
-        printf("%-4d | %-10s | %-20s | %-18.18s | %-4s | %-20.20s\n", 
-               operacoes[i].id, tipoStr, fluxo, titulo, notaStr, comentarioStr); 
+        // 4. ALTERAÇÃO: Printf atualizado com ID e DATA no início
+        printf("%-4d | %-12s | %-10s | %-20s | %-18.18s | %-4s | %-20.20s\n", 
+               operacoes[i].id, dataFormatada, tipoStr, fluxo, titulo, notaStr, comentarioStr); 
 
         encontrouLog = 1;
     }
 
     if (!encontrouLog) printf("\n[Info] Sem historico de transacoes.\n");
-    printf("----------------------------------------------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------------------------------------------------------\n");
     esperarEnter();
 }
 

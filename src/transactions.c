@@ -120,7 +120,7 @@ void gerirPedidosPendentes(Operacao operacoes[], int *totalOperacoes, Livro book
                 books[idxLivro].idDetentor = operacoes[idxOp].idRequerente; 
                 books[idxLivro].numRequisicoes++;
                 
-                int dtLimite = adicionarDias(dataHoje, operacoes[idxOp].dias);
+                int dtLimite = somarDias(dataHoje, operacoes[idxOp].dias);
                 operacoes[idxOp].dataDevolucaoPrevista = dtLimite;
 
                 sprintf(detalheLog, "EMPRESTIMO ACEITE: Livro '%s' (ID %d) emprestado ao Utilizador %d. Limite: %d", 

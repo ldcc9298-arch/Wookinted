@@ -65,3 +65,13 @@
 [2026-01-17 | 02:29] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
 [2026-01-17 | 02:32] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
 [2026-01-17 | 02:32] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-18 | 00:57] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: a1@alunos.ipca.pt
+[2026-01-18 | 00:58] [ID:2] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-18 | 00:58] [ID:2] [EMPRESTIMO_PEDIDO] Pedido de EMPRESTIMO: Livro ID 1 por 10 dias
+[2026-01-18 | 00:58] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-18 | 00:58] [ID:5] [EMPRESTIMO_APROVADO] EMPRESTIMO ACEITE: Livro 'Os Maias' (ID 1) emprestado ao Utilizador 2. Limite: 20260128
+[2026-01-18 | 00:58] [ID:5] [LIVRO_DEVOLVIDO] Livro ID 3 devolvido
+[2026-01-18 | 01:06] [ID:5] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-18 | 01:08] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.
+[2026-01-18 | 01:11] [ID:0] [LOGIN_FAIL     ] Tentativa de login falhada para o email: admin@ipca.pt
+[2026-01-18 | 01:11] [ID:1] [LOGIN          ] Sessao iniciada com sucesso.

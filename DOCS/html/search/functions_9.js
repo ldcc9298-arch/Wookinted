@@ -1,7 +1,0 @@
-var searchData=
-[
-  ['pesquisarlivrogenerico_0',['pesquisarLivroGenerico',['../books_8h.html#a39cfbde157afa20d8f3cda2d2e1033b1',1,'pesquisarLivroGenerico(Livro books[], int total, const char *termo, TipoPesquisa tipo):&#160;books.c'],['../books_8c.html#a39cfbde157afa20d8f3cda2d2e1033b1',1,'pesquisarLivroGenerico(Livro books[], int total, const char *termo, TipoPesquisa tipo):&#160;books.c']]],
-  ['pesquisarlivroporautor_1',['pesquisarLivroPorAutor',['../books_8h.html#ade463688e837153d84716b283f31dd18',1,'pesquisarLivroPorAutor(Livro books[], int total, const char *autor):&#160;books.c'],['../books_8c.html#ade463688e837153d84716b283f31dd18',1,'pesquisarLivroPorAutor(Livro books[], int total, const char *autor):&#160;books.c']]],
-  ['pesquisarlivroporcategoria_2',['pesquisarLivroPorCategoria',['../books_8h.html#a85a9683481125107764ed481cdb0a118',1,'pesquisarLivroPorCategoria(Livro books[], int total, const char *categoria):&#160;books.c'],['../books_8c.html#a85a9683481125107764ed481cdb0a118',1,'pesquisarLivroPorCategoria(Livro books[], int total, const char *categoria):&#160;books.c']]],
-  ['pesquisarlivroportitulo_3',['pesquisarLivroPorTitulo',['../books_8h.html#a4dfc5c9f3f6fbd380c16eddf55684f94',1,'pesquisarLivroPorTitulo(Livro books[], int total, const char *titulo):&#160;books.c'],['../books_8c.html#a4dfc5c9f3f6fbd380c16eddf55684f94',1,'pesquisarLivroPorTitulo(Livro books[], int total, const char *titulo):&#160;books.c']]]
-];

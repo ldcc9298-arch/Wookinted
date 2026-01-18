@@ -167,8 +167,6 @@ void registarLog(int idUser, char *acao, char *detalhes);
 
 int validarData(char *data);
 
-int adicionarDias(int dataAtual, int diasParaAdicionar);
-
 float lerFloat(char* mensagem, float min, float max);
 
 

@@ -27,18 +27,6 @@ typedef enum {
     LIVRO_RESERVADO = 3      // Tem uma proposta ativa
 } EstadoLivro;
 
-/** @brief Categorias de livros. */
-typedef enum {
-    CAT_SEM_CATEGORIA = 0, // Reservado para "Cancelar" ou "Vazio"
-    CAT_FICCAO = 1,
-    CAT_NAO_FICCAO = 2,
-    CAT_CIENCIA = 3,
-    CAT_HISTORIA = 4,
-    CAT_BIOGRAFIA = 5,
-    CAT_TECNOLOGIA = 6,
-    CAT_OUTRO = 7
-} CategoriaLivro;
-
 /** @brief Tipos de operação. */
 typedef enum {
     OP_TIPO_DESCONHECIDO = 0, // Segurança (para inits a zero)

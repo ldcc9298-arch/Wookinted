@@ -37,12 +37,6 @@ void listarLivros(Livro books[], int total);
 void imprimirLinhaLivro(Livro *book);
 
 /**
- * @brief Exibe um menu para o utilizador escolher uma categoria.
- * @return CategoriaLivro A categoria selecionada pelo utilizador.
- */
-CategoriaLivro escolherCategoria();
-
-/**
  * @brief Pesquisa livros de forma genérica (por título ou autor).
  * @param books Array de livros.
  * @param total Número total de livros registados.
