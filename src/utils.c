@@ -216,13 +216,6 @@ void registarLog(int idUser, char *acao, char *detalhes) {
     fclose(f);
 }
 
-int existeISBN(Livro livros[], int totalLivros, char *isbn) {
-    for (int i = 0; i < totalLivros; i++) {
-        if (livros[i].eliminado == 0 && strcmp(livros[i].isbn, isbn) == 0) return 1;
-    }
-    return 0; 
-}
-
 void paraMinusculas(const char *origem, char *destino) {
     int i = 0;
     while (origem[i] != '\0') {

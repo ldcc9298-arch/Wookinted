@@ -154,3 +154,45 @@
 [2026-01-18 20:13] [ID:  2] [TROCA_PROPOSTA      ] Livro Os Lusiadas trocado por A Game of Thrones com Utilizador ID 1
 [2026-01-18 20:16] [ID:  2] [LOGIN               ] Sessao iniciada com sucesso a1@alunos.ipca.pt
 [2026-01-18 20:25] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-19 09:24] [ID: 14] [REGISTO_NOVO        ] Novo registo (a24610@alunos.ipca.pt)
+[2026-01-19 09:24] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-19 09:25] [ID:  0] [ADMIN_APROVA        ] Conta aprovada pelo Admin: a24610@alunos.ipca.pt
+[2026-01-19 09:25] [ID: 14] [LOGIN               ] Sessao iniciada com sucesso a24610@alunos.ipca.pt
+[2026-01-19 09:25] [ID: 14] [LIVRO_ADD           ] Livro Mensagem adicionado.
+[2026-01-19 09:25] [ID: 14] [TROCA_PROPOSTA      ] Livro Mensagem trocado por O Principezinho com Utilizador ID 1
+[2026-01-19 09:25] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-19 09:26] [ID:  1] [TROCA_CONCLUIDA     ] Livro O Principezinho trocado por Mensagem com Utilizador ID 14
+[2026-01-19 09:26] [ID: 14] [LOGIN               ] Sessao iniciada com sucesso a24610@alunos.ipca.pt
+[2026-01-19 09:28] [ID: 14] [LOGIN               ] Sessao iniciada com sucesso a24610@alunos.ipca.pt
+[2026-01-19 09:28] [ID: 14] [FEEDBACK_ADD        ] NOTA 4.3 ao ID 1 na Operacao ID 14
+[2026-01-19 09:29] [ID: 15] [REGISTO_NOVO        ] Novo registo (a24606@alunos.ipca.pt)
+[2026-01-19 09:29] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-19 09:29] [ID:  0] [ADMIN_APROVA        ] Conta aprovada pelo Admin: a24606@alunos.ipca.pt
+[2026-01-19 09:29] [ID: 15] [LOGIN               ] Sessao iniciada com sucesso a24606@alunos.ipca.pt
+[2026-01-19 09:29] [ID: 15] [LIVRO_ADD           ] Livro Mensagem adicionado.
+[2026-01-19 09:29] [ID: 15] [TROCA_PROPOSTA      ] Livro Mensagem trocado por Mensagem com Utilizador ID 1
+[2026-01-19 09:29] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-19 09:31] [ID: 16] [REGISTO_NOVO        ] Novo registo (a24600@alunos.ipca.pt)
+[2026-01-19 09:31] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-19 09:31] [ID:  0] [ADMIN_APROVA        ] Conta aprovada pelo Admin: a24600@alunos.ipca.pt
+[2026-01-19 09:31] [ID: 16] [LOGIN               ] Sessao iniciada com sucesso a24600@alunos.ipca.pt
+[2026-01-19 09:31] [ID: 16] [LIVRO_ADD           ] Livro A Sibila adicionado.
+[2026-01-19 09:33] [ID: 17] [REGISTO_NOVO        ] Novo registo (a24500@alunos.ipca.pt)
+[2026-01-19 09:33] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-19 09:33] [ID:  0] [ADMIN_APROVA        ] Conta aprovada pelo Admin: a24500@alunos.ipca.pt
+[2026-01-19 09:33] [ID: 17] [LOGIN               ] Sessao iniciada com sucesso a24500@alunos.ipca.pt
+[2026-01-19 09:33] [ID: 17] [LIVRO_ADD           ] Livro A Sibila adicionado.
+[2026-01-19 09:35] [ID: 18] [REGISTO_NOVO        ] Novo registo (teste@ipca.pt)
+[2026-01-19 09:35] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-19 09:35] [ID:  0] [ADMIN_APROVA        ] Conta aprovada pelo Admin: teste@ipca.pt
+[2026-01-19 09:35] [ID: 18] [LOGIN               ] Sessao iniciada com sucesso teste@ipca.pt
+[2026-01-19 09:35] [ID: 18] [LIVRO_ADD           ] Livro Harry Potter e a Camara dos Segredos adicionado.
+[2026-01-19 09:35] [ID: 18] [TROCA_PROPOSTA      ] Livro Harry Potter e a Camara dos Segredos trocado por Os Lusiadas com Utilizador ID 1
+[2026-01-19 09:35] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-19 09:35] [ID:  1] [TROCA_CONCLUIDA     ] Livro Os Lusiadas trocado por Harry Potter e a Camara dos Segredos com Utilizador ID 18
+[2026-01-19 09:36] [ID: 18] [LOGIN               ] Sessao iniciada com sucesso teste@ipca.pt
+[2026-01-19 09:36] [ID: 18] [FEEDBACK_ADD        ] NOTA 5.0 ao ID 1 na Operacao ID 16
+[2026-01-19 09:47] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-23 12:02] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-23 12:08] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt
+[2026-01-23 12:12] [ID:  1] [LOGIN               ] Sessao iniciada com sucesso admin@ipca.pt

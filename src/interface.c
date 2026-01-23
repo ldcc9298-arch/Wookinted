@@ -1683,13 +1683,14 @@ int listarPedidosPendentes(Operacao operacoes[], int totalOperacoes, Livro books
                 
                 if (operacoes[i].tipo == OP_TIPO_EMPRESTIMO) {
                     strcpy(tipoStr, "EMPRESTIMO");
+                    // No empréstimo, a informação é curta (dias), cabe bem na coluna 'Detalhe'.
                     sprintf(detalheStr, "%d dias", operacoes[i].dias);
                     
                     printf("%-3d | %-12s | %-25.25s | %-15.15s | %-12s | %.1f* (%d)\n", 
                            visualId, tipoStr, books[idxMeuLivro].titulo, nomeReq, detalheStr, mediaReq, qtdAval);
                 } 
                 else {
-                    // CASO DE TROCA: Requer a localização de um segundo livro (o oferecido pelo requerente)
+                    // CASO DE TROCA: Requer a localização do livro oferecido
                     strcpy(tipoStr, "TROCA");
                     
                     int idxLivroOferecido = -1;
@@ -1700,8 +1701,10 @@ int listarPedidosPendentes(Operacao operacoes[], int totalOperacoes, Livro books
                         }
                     }
 
+                    // UX/UI Decision: Como os títulos dos livros são longos, não os colocamos na coluna 'Detalhe'
+                    // para não partir a tabela. Usamos um placeholder e mostramos a info completa na linha seguinte.
                     if (idxLivroOferecido != -1) {
-                        snprintf(detalheStr, 30, "Recebe: %.15s", books[idxLivroOferecido].titulo);
+                        strcpy(detalheStr, "(Ver abaixo)"); 
                     } else {
                         strcpy(detalheStr, "Livro N/A");
                     }
@@ -1709,12 +1712,10 @@ int listarPedidosPendentes(Operacao operacoes[], int totalOperacoes, Livro books
                     printf("%-3d | %-12s | %-25.25s | %-15.15s | %-12s | %.1f* (%d)\n", 
                            visualId, tipoStr, books[idxMeuLivro].titulo, nomeReq, detalheStr, mediaReq, qtdAval);
                     
-                    // UX: Linha extra de clareza para transações de troca, explicitando o "ganho" do utilizador.
+                    // UX: Linha de detalhe expandida para clareza total da proposta de troca
                     if (idxLivroOferecido != -1) {
-                        printf("    └─> PROPOSTA: Trocar o seu [%s] por [%s]\n", 
-                               books[idxMeuLivro].titulo, books[idxLivroOferecido].titulo);
+                        printf("    └─> OFERTA RECEBIDA: [%s]\n", books[idxLivroOferecido].titulo);                    }
                     }
-                }
                 
                 // Explicação para Defesa (Mapeamento): Armazenamos o índice real 'i' na posição 'visualId'.
                 // Isto permite que a função de decisão posterior aceda à operação correta na memória.
